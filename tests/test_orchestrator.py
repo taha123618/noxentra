@@ -31,6 +31,21 @@ def test_full_recon_pipeline_runs_nmap_on_hosts(tmp_path, monkeypatch):
     assert len(result) == 1
     assert result[0].source_tool == "nmap"
 
+
+def test_run_pipeline_emits_progress_events(tmp_path, monkeypatch):
+    _root(tmp_path, monkeypatch)
+    e = engagement.create("acme", targets=["10.0.0.1"])
+    monkeypatch.setattr(orchestrator.shutil, "which", lambda t: "/usr/bin/" + t if t == "nmap" else None)
+
+    def fake_run(cmd, input=None, **kwargs):
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+    monkeypatch.setattr(orchestrator.subprocess, "run", fake_run)
+
+    events = []
+    orchestrator.run_pipeline(e, "full_recon", on_progress=events.append)
+    assert any("[1/4] running nmap" in ev for ev in events)
+    assert any("skip subfinder" in ev for ev in events)
+
 def test_run_pipeline_wires_stdin_and_normalizes(tmp_path, monkeypatch):
     _root(tmp_path, monkeypatch)
     e = engagement.create("acme", targets=["example.com"])

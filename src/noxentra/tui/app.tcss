@@ -16,7 +16,15 @@ OptionList { border: round $panel; padding: 0 1; }
 OptionList > .option-list--option-highlighted { background: $boost; color: $text; }
 
 /* list fills the middle and scrolls within itself; prompt pinned at the bottom */
-#main-cats, #cat-tools, #recommend-tools, #report-engagements, #tags-list, #find-results, #goal-steps, #skill-scroll { height: 1fr; }
+#main-cats, #cat-tools, #recommend-tools, #report-engagements, #tags-list, #find-results, #skill-scroll { height: 1fr; }
+#goal-steps { height: auto; max-height: 10; }
+#tool-detail { padding: 0 1; height: auto; }
+#tool-actions { height: auto; max-height: 8; }
+.live-panel { height: 1fr; }
+.live-status-row { height: 1; padding: 0 1; }
+.live-status { width: 1fr; color: $warning; }
+.live-progress { width: 24; }
+.live-log { height: 1fr; border: round $panel; padding: 0 1; }
 #nx-prompt { dock: bottom; height: 3; border: round $panel; padding: 0 1; }
 
 #nx-hint { color: $text-muted; height: 1; padding: 0 1; }

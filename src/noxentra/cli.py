@@ -770,7 +770,8 @@ def _run_headless(args) -> None:
         else:
             pipeline = args.pipeline or "recon"
             console.print(f"[cyan]Running pipeline '{pipeline}'...[/cyan]")
-            result = orchestrator.run_pipeline(e, pipeline)
+            with orchestrator.live_progress(console.print):
+                result = orchestrator.run_pipeline(e, pipeline)
             console.print(f"[green]{len(result)} findings ->[/green] {e.findings_file}")
             ran = True
 

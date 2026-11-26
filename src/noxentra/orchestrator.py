@@ -1,6 +1,8 @@
 """Sequential, stdin-driven pipeline runner. list-form subprocess only."""
+import contextlib
 import shutil
 import subprocess
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -31,20 +33,47 @@ def _host_of(line: str) -> str:
     return line.split("/")[0].split(":")[0]
 
 
-def run_pipeline(e: Engagement, pipeline_name: str = "recon") -> list[findings_mod.Finding]:
+_progress_tls = threading.local()
+
+
+@contextlib.contextmanager
+def live_progress(fn):
+    """Temporarily route `run_pipeline` step status updates to `fn` on this thread."""
+    prev = getattr(_progress_tls, "fn", None)
+    _progress_tls.fn = fn
+    try:
+        yield
+    finally:
+        _progress_tls.fn = prev
+
+
+def run_pipeline(
+    e: Engagement,
+    pipeline_name: str = "recon",
+    on_progress=None,
+) -> list[findings_mod.Finding]:
     pipeline = load_pipeline(pipeline_name)
     e.raw_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(timezone.utc).isoformat()
     all_findings: list[findings_mod.Finding] = []
     forward: list[str] = list(e.targets)
+    steps = pipeline["steps"]
+    total = len(steps)
+    cb = on_progress or getattr(_progress_tls, "fn", None)
 
-    for step in pipeline["steps"]:
+    def _emit(msg: str) -> None:
+        if cb is not None:
+            cb(msg)
+
+    for idx, step in enumerate(steps, start=1):
         tool = step["tool"]
         if shutil.which(tool) is None:
             e.log(f"skip {tool}: not installed (install it from the menu)")
+            _emit(f"[yellow][{idx}/{total}] skip {tool} (not installed)[/yellow]")
             if not step.get("fallback_to_targets"):
                 forward = []
             continue
+        _emit(f"[cyan][{idx}/{total}] running {tool}…[/cyan]")
         mode = step["input"]
         if mode == "hosts":
             items = [_host_of(t) for t in e.targets]
@@ -88,6 +117,7 @@ def run_pipeline(e: Engagement, pipeline_name: str = "recon") -> list[findings_m
                     kept.append(line)
             forward = kept
         e.log(f"{tool}: {len(parsed)} findings, {len(forward)} forwarded")
+        _emit(f"[green][{idx}/{total}] {tool}: {len(parsed)} finding(s), {len(forward)} forwarded[/green]")
         all_findings.extend(parsed)
 
     findings_mod.save_findings(e.findings_file, all_findings)
