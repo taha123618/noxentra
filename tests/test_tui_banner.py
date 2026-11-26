@@ -2,20 +2,20 @@ import asyncio
 import io
 
 from rich.console import Console
+from textual.app import App
 
 from noxentra import sponsors
 from noxentra.constants import REPO_WEB_URL, VERSION_DISPLAY
 from noxentra.tui import data
-from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.screens.category import CategoryScreen
+from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.widgets.banner import SponsorBanner
 from noxentra.tui.widgets.header import Header
-from textual.app import App
 
 
 def _ansi(text, width=120) -> str:
     buf = io.StringIO()
-    Console(file=buf, force_terminal=True, width=width).print(text)
+    Console(file=buf, force_terminal=True, color_system="truecolor", width=width).print(text)
     return buf.getvalue()
 
 
@@ -94,8 +94,9 @@ def test_main_screen_uses_banner():
 
 
 def test_update_notice_shown_when_newer(monkeypatch):
-    from noxentra.tui.widgets import banner as b
     from textual.widgets import Static
+
+    from noxentra.tui.widgets import banner as b
     monkeypatch.setattr(b.update_check, "latest_if_newer", lambda *a, **k: "9.9.9")
 
     async def run():
@@ -111,8 +112,9 @@ def test_update_notice_shown_when_newer(monkeypatch):
 
 
 def test_no_update_notice_when_current(monkeypatch):
-    from noxentra.tui.widgets import banner as b
     from textual.widgets import Static
+
+    from noxentra.tui.widgets import banner as b
     monkeypatch.setattr(b.update_check, "latest_if_newer", lambda *a, **k: None)
 
     async def run():

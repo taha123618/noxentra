@@ -1,15 +1,12 @@
-import os
 import socket
 import subprocess
 import webbrowser
-import sys
-
-from noxentra.core import Noxentra, NoxentraCollection, console
-from noxentra.core import clear_screen
 
 from rich.panel import Panel
-from rich.text import Text
 from rich.prompt import Prompt
+from rich.text import Text
+
+from noxentra.core import Noxentra, NoxentraCollection, clear_screen, console
 
 
 class NMAP(Noxentra):

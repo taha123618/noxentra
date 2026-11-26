@@ -132,8 +132,9 @@ def test_generated_owners_file_is_current():
     """The committed file must match a fresh generation — it cannot rot."""
     import sys
     sys.path.insert(0, "scripts")
-    import gen_catalog_owners as gen
     from pathlib import Path
+
+    import gen_catalog_owners as gen
     assert gen.render(gen.collect()) == Path(gen.OUT).read_text()
 
 

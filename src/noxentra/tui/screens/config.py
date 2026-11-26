@@ -1,6 +1,6 @@
 """Native settings screen: filter rows, ⏎ cycles choices / edits text, auto-saved via config.set_value."""
-from textual.widgets.option_list import Option
 from textual import work
+from textual.widgets.option_list import Option
 
 from noxentra import config, config_ui
 from noxentra.tui.screens.base import NoxentraScreen

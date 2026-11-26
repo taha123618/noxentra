@@ -1,7 +1,14 @@
 import json
 from pathlib import Path
-import noxentra.findings as findings
-from noxentra.findings import Finding, parse_subfinder, parse_httpx, parse_nuclei, save_findings, load_findings
+
+from noxentra.findings import (
+    Finding,
+    load_findings,
+    parse_httpx,
+    parse_nuclei,
+    parse_subfinder,
+    save_findings,
+)
 
 TS = "2026-07-05T00:00:00+00:00"
 

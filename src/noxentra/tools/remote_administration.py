@@ -1,8 +1,5 @@
-from noxentra.core import Noxentra, NoxentraCollection, console
 
-from rich.panel import Panel
-from rich.prompt import Prompt
-
+from noxentra.core import Noxentra, NoxentraCollection
 
 # Bug 17 fix: Stitch was defined in both payload_creator.py and remote_administration.py.
 # It is kept in payload_creator.py (its correct category) and removed from here.

@@ -2,7 +2,7 @@ import subprocess
 
 from rich.prompt import Prompt
 
-from noxentra.core import Noxentra, NoxentraCollection, console
+from noxentra.core import Noxentra, NoxentraCollection
 
 
 class DDoSTool(Noxentra):

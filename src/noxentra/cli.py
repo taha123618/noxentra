@@ -11,36 +11,41 @@ if sys.version_info < (3, 10):
     sys.exit(1)
 
 import argparse
+import datetime
 import difflib
 import os
 import platform
-import socket
-import datetime
 import random
+import socket
 import webbrowser
 from itertools import zip_longest
 from pathlib import Path
 
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
-from rich.prompt import Confirm
-from rich.align import Align
-from rich.text import Text
 from rich import box
+from rich.panel import Panel
+from rich.prompt import Confirm
 from rich.rule import Rule
-from rich.columns import Columns
+from rich.table import Table
+from rich.text import Text
 
-from noxentra.core import NoxentraCollection, ask, clear_screen, console
-from noxentra.constants import VERSION_DISPLAY, REPO_WEB_URL, USER_CONFIG_DIR
+import noxentra.ai_recommend as ai_recommend
+import noxentra.ai_report as ai_report
+import noxentra.ai_summary as ai_summary
+import noxentra.engagement as engagement
+import noxentra.orchestrator as orchestrator
+import noxentra.report as report
 from noxentra import update_check
 from noxentra.config import get_tools_dir
-import noxentra.ai_recommend as ai_recommend
+from noxentra.constants import REPO_WEB_URL, USER_CONFIG_DIR, VERSION_DISPLAY
+from noxentra.core import NoxentraCollection, ask, clear_screen, console
+from noxentra.tools.active_directory import ActiveDirectoryTools
 from noxentra.tools.anonsurf import AnonSurfTools
+from noxentra.tools.cloud_security import CloudSecurityTools
 from noxentra.tools.ddos import DDOSTools
 from noxentra.tools.exploit_frameworks import ExploitFrameworkTools
 from noxentra.tools.forensics import ForensicTools
 from noxentra.tools.information_gathering import InformationGatheringTools
+from noxentra.tools.mobile_security import MobileSecurityTools
 from noxentra.tools.other_tools import OtherTools
 from noxentra.tools.payload_creator import PayloadCreatorTools
 from noxentra.tools.phishing_attack import PhishingAttackTools
@@ -54,15 +59,6 @@ from noxentra.tools.web_attack import WebAttackTools
 from noxentra.tools.wireless_attack import WirelessAttackTools
 from noxentra.tools.wordlist_generator import WordlistGeneratorTools
 from noxentra.tools.xss_attack import XSSAttackTools
-from noxentra.tools.active_directory import ActiveDirectoryTools
-from noxentra.tools.cloud_security import CloudSecurityTools
-from noxentra.tools.mobile_security import MobileSecurityTools
-
-import noxentra.engagement as engagement
-import noxentra.orchestrator as orchestrator
-import noxentra.report as report
-import noxentra.ai_summary as ai_summary
-import noxentra.ai_report as ai_report
 
 # ── Tool registry ──────────────────────────────────────────────────────────────
 

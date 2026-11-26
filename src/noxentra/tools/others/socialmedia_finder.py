@@ -1,11 +1,8 @@
-import os
 import subprocess
 
-from noxentra.core import Noxentra, NoxentraCollection, console
-
-from rich.panel import Panel
 from rich.prompt import Prompt
-from rich import box
+
+from noxentra.core import Noxentra, NoxentraCollection, console
 
 
 class FacialFind(Noxentra):
@@ -30,8 +27,9 @@ class FacialFind(Noxentra):
     PROJECT_URL = "https://github.com/Greenwolf/social_mapper"
 
     def run(self):
-        from noxentra.config import get_tools_dir
         import subprocess
+
+        from noxentra.config import get_tools_dir
         setup_dir = get_tools_dir() / "social_mapper" / "setup"
         subprocess.run(["python3", "social_mapper.py", "-h"], cwd=str(setup_dir))
         console.print(
@@ -66,7 +64,6 @@ class Sherlock(Noxentra):
 
     def run(self):
         from noxentra.config import get_tools_dir
-        from rich.prompt import Prompt
         name = Prompt.ask("Enter Username")
         # Bug 3 fix: os.chdir() replaced with cwd= parameter
         subprocess.run(

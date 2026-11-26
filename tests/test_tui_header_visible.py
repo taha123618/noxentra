@@ -4,11 +4,11 @@ from textual.app import App
 
 from noxentra.tui import data
 from noxentra.tui.data import ToolRow
-from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.screens.category import CategoryScreen
+from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.screens.tool import ToolScreen
-from noxentra.tui.widgets.header import Header
 from noxentra.tui.widgets.banner import SponsorBanner
+from noxentra.tui.widgets.header import Header
 
 
 class _Fake:

@@ -2,7 +2,7 @@ import asyncio
 
 from textual.app import App, ComposeResult
 
-from noxentra.tui.widgets.command_palette import CommandPalette, COMMANDS
+from noxentra.tui.widgets.command_palette import COMMANDS, CommandPalette
 
 
 class _App(App):

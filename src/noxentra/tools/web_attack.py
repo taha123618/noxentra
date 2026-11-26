@@ -1,8 +1,6 @@
 import subprocess
-from noxentra.core import Noxentra, NoxentraCollection, console
 
-from rich.panel import Panel
-from rich.prompt import Prompt
+from noxentra.core import Noxentra, NoxentraCollection
 
 
 class Web2Attack(Noxentra):

@@ -1,6 +1,5 @@
-import os
 
-from noxentra.core import Noxentra, NoxentraCollection, console
+from noxentra.core import Noxentra, NoxentraCollection
 
 
 class Autophisher(Noxentra):
@@ -228,6 +227,7 @@ class BlackPhish(Noxentra):
 
     def update(self):
         import subprocess
+
         from noxentra.config import get_tools_dir
         subprocess.run(["bash", "update.sh"], cwd=str(get_tools_dir() / "BlackPhish"))
 

@@ -1,11 +1,11 @@
 import asyncio
 
 from textual.app import App
-from textual.widgets import OptionList, Input
+from textual.widgets import Input, OptionList
 
 from noxentra.tui import data
-from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.screens.category import CategoryScreen
+from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.screens.tool import ToolScreen
 from noxentra.tui.widgets import banner
 

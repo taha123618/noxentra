@@ -5,7 +5,10 @@ from pathlib import Path
 from typing import Any
 
 from noxentra.constants import (
-    USER_CONFIG_FILE, USER_TOOLS_DIR, DEFAULT_CONFIG, THEME_CHOICES,
+    DEFAULT_CONFIG,
+    THEME_CHOICES,
+    USER_CONFIG_FILE,
+    USER_TOOLS_DIR,
 )
 
 logger = logging.getLogger(__name__)

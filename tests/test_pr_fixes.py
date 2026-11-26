@@ -93,5 +93,6 @@ def test_write_json_atomic_and_failure_preserving(tmp_path):
 # ── #698 PortScan prompt markup is balanced (Rich would raise otherwise) ───────
 def test_portscan_prompt_markup_renders():
     import io
+
     from rich.console import Console
     Console(file=io.StringIO()).print("[bold magenta]Select a Target IP[/bold magenta]")

@@ -1,12 +1,8 @@
-import contextlib
-import os
 import subprocess
 
-from noxentra.core import Noxentra, NoxentraCollection, console
-
-from rich.panel import Panel
 from rich.prompt import Prompt
-from rich import box
+
+from noxentra.core import Noxentra, NoxentraCollection
 
 
 class InstaBrute(Noxentra):

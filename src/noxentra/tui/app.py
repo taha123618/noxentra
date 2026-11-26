@@ -4,8 +4,8 @@ from pathlib import Path
 from textual.app import App
 from textual.binding import Binding
 
-from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.screens.config import ConfigScreen
+from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.widgets.command_palette import CommandPalette
 
 

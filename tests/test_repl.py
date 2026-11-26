@@ -3,7 +3,6 @@ import types
 
 from noxentra import repl
 
-
 # ── Fakes ────────────────────────────────────────────────────────────────────
 
 def _fake_tool(title):
@@ -34,7 +33,8 @@ def test_completer_commands():
 def test_history_persists_to_file(tmp_path, monkeypatch):
     """↑↓ history is backed by a FileHistory at ~/.noxentra/history."""
     from prompt_toolkit.history import FileHistory
-    from noxentra import prompt, constants
+
+    from noxentra import constants, prompt
     hist = tmp_path / "history"
     monkeypatch.setattr(constants, "USER_HISTORY_FILE", hist)
     prompt._session.cache_clear()
@@ -122,8 +122,8 @@ def test_find_is_completable_and_documented():
 
 
 def test_dispatch_find_routes_to_discover_run(monkeypatch):
-    from noxentra import prompt
     import noxentra.discover as discover
+    from noxentra import prompt
     seen = {}
     monkeypatch.setattr(discover, "run", lambda need, ctx=None: seen.setdefault("need", need))
     ctx = prompt.PromptCtx("home")

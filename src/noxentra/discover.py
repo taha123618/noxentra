@@ -691,8 +691,8 @@ def run(need: str, ctx=None) -> None:
     """
     from rich.markup import escape
 
-    from noxentra.core import console
     from noxentra import skill
+    from noxentra.core import console
 
     res = find(need)
 

@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from noxentra.engagement import Engagement
-from noxentra.findings import load_findings, Finding
+from noxentra.findings import load_findings
 
 _KIND_TITLES = {"subdomain": "Subdomains", "service": "Live Services",
                 "vulnerability": "Vulnerabilities"}

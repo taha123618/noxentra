@@ -1,4 +1,3 @@
-from rich.prompt import Prompt
 
 from noxentra.core import Noxentra, NoxentraCollection, console
 

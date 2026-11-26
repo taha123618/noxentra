@@ -1,10 +1,9 @@
-import os
-
-from noxentra.core import Noxentra, NoxentraCollection, console
 
 from rich.panel import Panel
-from rich.text import Text
 from rich.prompt import Prompt
+from rich.text import Text
+
+from noxentra.core import Noxentra, NoxentraCollection, console
 
 
 class Autopsy(Noxentra):
@@ -44,6 +43,7 @@ class BulkExtractor(Noxentra):
 
     def gui_mode(self):
         import subprocess
+
         from noxentra.config import get_tools_dir
         console.print(Panel(Text(self.TITLE, justify="center"), style="bold magenta"))
         console.print("[bold magenta]Cloning repository and attempting to run GUI...[/]")
@@ -104,9 +104,9 @@ class Volatility3(Noxentra):
     PROJECT_URL = "https://github.com/volatilityfoundation/volatility3"
 
     def run(self):
-        from noxentra.config import get_tools_dir
         import subprocess
-        from rich.prompt import Prompt
+
+        from noxentra.config import get_tools_dir
         dump = Prompt.ask("Enter path to memory dump")
         plugin = Prompt.ask("Enter plugin", default="windows.pslist")
         subprocess.run(

@@ -1,7 +1,8 @@
-import os
 import subprocess
 
-from noxentra.core import Noxentra, NoxentraCollection, console
+from rich.prompt import Prompt
+
+from noxentra.core import Noxentra, NoxentraCollection
 from noxentra.tools.others.android_attack import AndroidAttackTools
 from noxentra.tools.others.email_verifier import EmailVerifyTools
 from noxentra.tools.others.hash_crack import HashCrackingTools
@@ -13,9 +14,6 @@ from noxentra.tools.others.socialmedia_finder import SocialMediaFinderTools
 from noxentra.tools.others.web_crawling import WebCrawlingTools
 from noxentra.tools.others.wifi_jamming import WifiJammingTools
 
-from rich.panel import Panel
-from rich.prompt import Prompt
-
 
 class HatCloud(Noxentra):
     TITLE = "HatCloud(Bypass CloudFlare for IP)"
@@ -26,7 +24,6 @@ class HatCloud(Noxentra):
 
     def run(self):
         from noxentra.config import get_tools_dir
-        from rich.prompt import Prompt
         site = Prompt.ask("Enter Site")
         # Bug 3 fix: os.chdir() replaced with cwd= parameter
         subprocess.run(

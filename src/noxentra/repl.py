@@ -137,6 +137,7 @@ def show_all_tags(tag_index):
     """Print every tag with its tool count — the visibility fix (was `t`-gated)."""
     from rich import box
     from rich.panel import Panel
+
     from noxentra.core import console
 
     if not tag_index:
@@ -156,6 +157,7 @@ def show_all_tags(tag_index):
 def show_skill():
     """Print the operator playbook (human body of OPERATOR.md) + charter version."""
     from rich.markdown import Markdown
+
     from noxentra import skill
     from noxentra.core import console
 
@@ -200,8 +202,8 @@ def run_repl():
     """Launch the inline REPL over the shared input surface (prompt.read_line +
     prompt.dispatch), so home and nested tool menus share ONE line editor,
     history, and grammar. Fallback selection is the caller's job (`_use_repl`)."""
-    from noxentra import prompt
     import noxentra.cli as cli
+    from noxentra import prompt
     from noxentra.core import console
 
     console.print(cli._build_header())

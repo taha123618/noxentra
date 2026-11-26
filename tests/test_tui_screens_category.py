@@ -1,7 +1,7 @@
 import asyncio
 
 from textual.app import App
-from textual.widgets import OptionList, Input
+from textual.widgets import Input, OptionList
 
 from noxentra.tui import data
 from noxentra.tui.screens.category import CategoryScreen

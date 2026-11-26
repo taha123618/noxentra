@@ -26,6 +26,7 @@ def test_tag_index_speaks_one_vocabulary_from_real_tags():
 def test_legacy_overlay_titles_match_real_tools():
     # Overlays apply by exact title — a typo would silently no-op. Guard it.
     import yaml
+
     import noxentra.registry as registry
     f = registry.CATALOG_DIR / "legacy_overlays.yaml"
     entries = (yaml.safe_load(f.read_text()) or {}).get("overlay", [])

@@ -1,10 +1,7 @@
-import os
-import subprocess
 
-from rich.panel import Panel
-from rich.prompt import Prompt
-from rich.table import Table
 from rich import box
+from rich.panel import Panel
+from rich.table import Table
 
 from noxentra.core import Noxentra, NoxentraCollection, console
 

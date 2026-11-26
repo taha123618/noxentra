@@ -309,6 +309,7 @@ def _session():
     from prompt_toolkit.completion import Completer
     from prompt_toolkit.history import FileHistory
     from prompt_toolkit.styles import Style
+
     from noxentra import repl
     from noxentra.constants import THEME_HEX, USER_HISTORY_FILE
 
@@ -379,6 +380,7 @@ def simple(prompt, default=""):
     except ImportError:
         pass
     from rich.text import Text
+
     from noxentra.core import console
 
     # Render rich markup in the prompt label, then read via plain input().

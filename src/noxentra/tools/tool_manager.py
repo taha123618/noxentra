@@ -3,8 +3,8 @@ import subprocess
 
 from rich.prompt import Confirm
 
+from noxentra.constants import REPO_WEB_URL, USER_CONFIG_DIR
 from noxentra.core import Noxentra, NoxentraCollection, console
-from noxentra.constants import USER_CONFIG_DIR, REPO_WEB_URL
 
 
 class UpdateTool(Noxentra):

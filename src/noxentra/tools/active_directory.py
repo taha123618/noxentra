@@ -1,5 +1,4 @@
-from noxentra.core import Noxentra
-from noxentra.core import NoxentraCollection
+from noxentra.core import Noxentra, NoxentraCollection
 
 
 class BloodHound(Noxentra):

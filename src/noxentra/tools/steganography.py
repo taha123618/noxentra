@@ -1,10 +1,6 @@
 import subprocess
 
-from noxentra.core import Noxentra, NoxentraCollection, console
-from noxentra.core import validate_input
-
-from rich.panel import Panel
-from rich.prompt import Prompt
+from noxentra.core import Noxentra, NoxentraCollection, console, validate_input
 
 
 class SteganoHide(Noxentra):

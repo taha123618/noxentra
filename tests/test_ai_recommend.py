@@ -79,6 +79,7 @@ def test_test_connection_reports_missing_key(monkeypatch):
 
 def test_test_connection_surfaces_http_error(monkeypatch):
     import urllib.error
+
     from noxentra import config
     monkeypatch.setattr(config, "ai_provider", lambda: "openai-compat")
     monkeypatch.setattr(config, "ai_base_url", lambda: "https://x/v1")

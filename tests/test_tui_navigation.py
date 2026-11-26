@@ -3,10 +3,9 @@ import asyncio
 
 from textual.widgets import Input, OptionList, Static
 
-from noxentra.tui import data
 from noxentra.tui.app import NoxentraApp
-from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.screens.category import CategoryScreen
+from noxentra.tui.screens.main import MainScreen
 
 
 async def _until(pilot, kind):

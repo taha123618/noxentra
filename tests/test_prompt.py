@@ -2,7 +2,7 @@
 import types
 
 from noxentra import prompt
-from noxentra.prompt import PromptCtx, CONTINUE, QUIT, BACK, Open
+from noxentra.prompt import BACK, CONTINUE, QUIT, Open, PromptCtx
 
 
 def _fake_tool(title):
@@ -133,7 +133,7 @@ class _FakeTool:
 
 
 def test_run_background_when_enabled(monkeypatch):
-    from noxentra import prompt, session, repl
+    from noxentra import prompt, repl, session
     rec = {}
     monkeypatch.setattr(session, "enabled", lambda: True)
 
@@ -150,7 +150,7 @@ def test_run_background_when_enabled(monkeypatch):
 
 
 def test_run_bare_tool_background_no_command(monkeypatch):
-    from noxentra import prompt, session, repl
+    from noxentra import prompt, repl, session
     rec = {}
     monkeypatch.setattr(session, "enabled", lambda: True)
     monkeypatch.setattr(session, "run",
@@ -200,8 +200,8 @@ def test_kill_routes(monkeypatch):
 
 
 def test_config_routes(monkeypatch):
-    from noxentra import prompt
     import noxentra.cli as cli
+    from noxentra import prompt
     got = {}
     monkeypatch.setattr(cli, "config_command", lambda arg="": got.setdefault("arg", arg))
     prompt.dispatch("/config background_runner off", prompt.PromptCtx("home"))

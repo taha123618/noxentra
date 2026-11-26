@@ -1,7 +1,7 @@
 """Category screen: tools in a category with install marks; the bottom prompt filters them."""
 from textual.widgets.option_list import Option
 
-from noxentra.tui import glyphs, data
+from noxentra.tui import data, glyphs
 from noxentra.tui.screens.base import NoxentraScreen
 from noxentra.tui.screens.tool import ToolScreen
 

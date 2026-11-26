@@ -158,7 +158,7 @@ def test_config_ui_cycle():
 
 def test_config_command_no_arg_opens_modal_on_tty(monkeypatch):
     import noxentra.cli as cli
-    from noxentra import prompt, config_ui
+    from noxentra import config_ui, prompt
     opened = {}
     monkeypatch.setattr(prompt, "_use_pt", lambda: True)
     monkeypatch.setattr(config_ui, "open_editor", lambda: opened.setdefault("hit", True))

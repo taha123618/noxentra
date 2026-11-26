@@ -5,7 +5,6 @@ from pathlib import Path
 from noxentra import skill
 from noxentra.findings import Finding
 
-
 # ── charter / version ─────────────────────────────────────────────────────────
 
 def test_charter_carries_safety_and_injection_rule():

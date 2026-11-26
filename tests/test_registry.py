@@ -11,7 +11,6 @@ import pytest
 import noxentra.registry as registry
 import noxentra.tags as tags
 
-
 # --- real catalog (the shipped YAML files) ----------------------------------
 
 @pytest.fixture(scope="module")

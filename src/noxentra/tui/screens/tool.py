@@ -1,8 +1,8 @@
 """Tool detail screen: gated Run/Reinstall/Uninstall drop to a real TTY via App.suspend()."""
+from textual import work
 from textual.app import ComposeResult
 from textual.widgets import OptionList, Static
 from textual.widgets.option_list import Option
-from textual import work
 
 from noxentra.tui import glyphs, working
 from noxentra.tui.data import ToolRow

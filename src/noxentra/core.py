@@ -2,7 +2,6 @@ import logging
 import os
 import shutil
 import subprocess
-import sys
 import webbrowser
 from collections.abc import Callable
 from functools import lru_cache
@@ -17,9 +16,13 @@ from rich.theme import Theme
 from rich.traceback import install
 
 from noxentra.constants import (
-    THEME_PRIMARY, THEME_BORDER, THEME_ACCENT,
-    THEME_SUCCESS, THEME_ERROR, THEME_WARNING,
-    THEME_DIM, THEME_ARCHIVED, THEME_URL,
+    THEME_ARCHIVED,
+    THEME_DIM,
+    THEME_ERROR,
+    THEME_PRIMARY,
+    THEME_SUCCESS,
+    THEME_URL,
+    THEME_WARNING,
 )
 
 # Enable rich tracebacks globally

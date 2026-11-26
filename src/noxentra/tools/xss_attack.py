@@ -1,5 +1,5 @@
-import os
 import subprocess
+
 from rich.panel import Panel
 from rich.prompt import Prompt
 

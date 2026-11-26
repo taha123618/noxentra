@@ -2,6 +2,7 @@ import noxentra.engagement as engagement
 import noxentra.report as report
 from noxentra.findings import Finding, save_findings
 
+
 def _root(tmp_path, monkeypatch):
     monkeypatch.setattr(engagement, "ENGAGEMENTS_ROOT", tmp_path)
 

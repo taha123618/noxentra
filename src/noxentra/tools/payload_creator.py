@@ -1,4 +1,3 @@
-import os
 import subprocess
 
 from noxentra.core import Noxentra, NoxentraCollection, console

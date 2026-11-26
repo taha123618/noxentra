@@ -3,8 +3,8 @@ import asyncio
 from textual.widgets import Input, OptionList
 
 from noxentra.tui.app import NoxentraApp
-from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.screens.category import CategoryScreen
+from noxentra.tui.screens.main import MainScreen
 from noxentra.tui.widgets.command_palette import CommandPalette
 
 
