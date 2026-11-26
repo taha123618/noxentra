@@ -28,14 +28,14 @@ class SteganoHide(Noxentra):
             if not file_hide.strip() or not file_to_be_hide.strip():
                 console.print("[bold red]Both filenames are required[/bold red]")
                 return
-            subprocess.run(["steghide", "embed", "-cf", file_to_be_hide, "-ef", file_hide])
+            subprocess.run(["steghide", "embed", "-cf", file_to_be_hide, "-ef", file_hide], check=False)
 
         elif choice_run == 2:
             from_file = input("Enter Filename to Extract Data From >> ")
             if not from_file.strip():
                 console.print("[bold red]A filename is required[/bold red]")
                 return
-            subprocess.run(["steghide", "extract", "-sf", from_file])
+            subprocess.run(["steghide", "extract", "-sf", from_file], check=False)
 
 
 class SteganographyTools(NoxentraCollection):

@@ -30,9 +30,9 @@ class BulkExtractor(Noxentra):
         console.print("[bold magenta]Cloning repository and attempting to run GUI...[/]")
         tools_dir = get_tools_dir()
         subprocess.run(["git", "clone", "https://github.com/simsong/bulk_extractor.git"],
-                       cwd=str(tools_dir))
+                       cwd=str(tools_dir), check=False)
         be_dir = tools_dir / "bulk_extractor"
-        subprocess.run(["./BEViewer"], cwd=str(be_dir / "java_gui"))
+        subprocess.run(["./BEViewer"], cwd=str(be_dir / "java_gui"), check=False)
         console.print(
             "[magenta]If you get an error after clone go to /java_gui/src/ and compile the .jar file && run ./BEViewer[/]")
         console.print(
@@ -41,9 +41,9 @@ class BulkExtractor(Noxentra):
     def cli_mode(self):
         import subprocess
         console.print(Panel(Text(self.TITLE + " - CLI Mode", justify="center"), style="bold magenta"))
-        subprocess.run(["sudo", "apt", "install", "-y", "bulk-extractor"])
+        subprocess.run(["sudo", "apt", "install", "-y", "bulk-extractor"], check=False)
         console.print("[magenta]bulk_extractor [options] imagefile[/]")
-        subprocess.run(["bulk_extractor", "-h"])
+        subprocess.run(["bulk_extractor", "-h"], check=False)
 
 
 class Volatility3(Noxentra):
@@ -67,6 +67,7 @@ class Volatility3(Noxentra):
         subprocess.run(
             ["python3", "vol.py", "-f", dump, plugin],
             cwd=str(get_tools_dir() / "volatility3"),
+            check=False,
         )
 
 

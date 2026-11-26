@@ -54,7 +54,7 @@ class XSSCon(Noxentra):
         website = Prompt.ask("[bold cyan]Enter Website[/bold cyan]")
         from noxentra.config import get_tools_dir
         subprocess.run(["python3", "xsscon.py", "-u", website],
-                       cwd=str(get_tools_dir() / "XSSCon"))
+                       cwd=str(get_tools_dir() / "XSSCon"), check=False)
 
 
 class XanXSS(Noxentra):
@@ -68,7 +68,7 @@ class XanXSS(Noxentra):
     def run(self):
         from noxentra.config import get_tools_dir
         subprocess.run(["python3", "xanxss.py", "-h"],
-                       cwd=str(get_tools_dir() / "XanXSS"))
+                       cwd=str(get_tools_dir() / "XanXSS"), check=False)
 
 
 class XSSAttackTools(NoxentraCollection):

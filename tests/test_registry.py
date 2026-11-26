@@ -73,7 +73,7 @@ def test_new_category_wiring_is_consistent(reg):
 
 
 def test_known_entries_round_trip(all_catalog_tools):
-    by_title = {t.TITLE: t for t in all_catalog_tools}
+    {t.TITLE: t for t in all_catalog_tools}
     crack = next(t for t in all_catalog_tools if "CrackStation" in t.TITLE)
     assert crack.KIND == "resource" and crack.PROJECT_URL.startswith("https://")
     hashcat = next(t for t in all_catalog_tools if "hashcat" in t.TITLE)

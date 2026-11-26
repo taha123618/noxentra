@@ -48,7 +48,7 @@ def run_pipeline(e: Engagement, pipeline_name: str = "recon") -> list[findings_m
         try:
             proc = subprocess.run([tool, *step["args"]], input=stdin,
                                   capture_output=True, text=True, timeout=STEP_TIMEOUT,
-                                  encoding="utf-8", errors="replace")  # a stray non-UTF8 byte must not abort the run
+                                  encoding="utf-8", errors="replace", check=False)  # a stray non-UTF8 byte must not abort the run
             raw = proc.stdout
             if proc.returncode != 0:
                 tail = (proc.stderr or "").strip().splitlines()[-3:]

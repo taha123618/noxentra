@@ -82,7 +82,7 @@ def test_report_screen_ai_summary_and_draft(tmp_path, monkeypatch):
     from noxentra import ai_report, ai_summary
 
     monkeypatch.setattr(engagement, "ENGAGEMENTS_ROOT", tmp_path)
-    e = engagement.create("acme", targets=["example.com"])
+    engagement.create("acme", targets=["example.com"])
     monkeypatch.setattr(ai_summary, "summarize", lambda _e: "2 open ports found")
     draft = tmp_path / "acme" / "report.draft.md"
     monkeypatch.setattr(ai_report, "draft_report", lambda _e: draft)

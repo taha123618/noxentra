@@ -31,6 +31,7 @@ class DDoSTool(Noxentra):
             ["sudo", "python3", "ddos.py", method, url,
              "socks_type5.4.1", threads, proxylist, multiple, timer],
             cwd=str(get_tools_dir() / "ddos"),
+            check=False,
         )
 
 
@@ -45,7 +46,7 @@ class SlowLoris(Noxentra):
 
     def run(self):
         target_site = Prompt.ask("Enter Target Site")
-        subprocess.run(["slowloris", target_site])
+        subprocess.run(["slowloris", target_site], check=False)
 
 
 class Asyncrone(Noxentra):
@@ -73,6 +74,7 @@ class Asyncrone(Noxentra):
         subprocess.run(
             ["sudo", "./aSYNcrone", str(source_port), str(target_ip), str(target_port), "1000"],
             cwd=str(get_tools_dir() / "aSYNcrone"),
+            check=False,
         )
 
 
@@ -97,7 +99,7 @@ class GoldenEye(Noxentra):
         # Bug 4 fix: removed os.system("cd GoldenEye; ...") — no-op cd subshell
         url = Prompt.ask("Enter target URL")
         subprocess.run(["sudo", "./goldeneye.py", url],
-                       cwd=str(get_tools_dir() / "GoldenEye"))
+                       cwd=str(get_tools_dir() / "GoldenEye"), check=False)
 
 
 class Saphyra(Noxentra):
@@ -119,6 +121,7 @@ class Saphyra(Noxentra):
         subprocess.run(
             ["python3", "saphyra.py", url],
             cwd=str(get_tools_dir() / "Saphyra-DDoS"),
+            check=False,
         )
 
 

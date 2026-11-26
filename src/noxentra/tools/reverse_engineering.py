@@ -15,7 +15,7 @@ class Apk2Gold(Noxentra):
 
     def run(self):
         uinput = input("Enter (.apk) File >> ")
-        subprocess.run(["sudo", "apk2gold", uinput])
+        subprocess.run(["sudo", "apk2gold", uinput], check=False)
 
 
 class ReverseEngineeringTools(NoxentraCollection):

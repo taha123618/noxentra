@@ -102,7 +102,7 @@ def _run_shell(cmd: str) -> int:
     attacker input.
     """
     try:
-        rc = subprocess.run(cmd, shell=True).returncode
+        rc = subprocess.run(cmd, shell=True, check=False).returncode
     except KeyboardInterrupt:
         console.print("\n[warning]⚠ Interrupted.[/warning]")
         rc = 130

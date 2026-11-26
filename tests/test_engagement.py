@@ -32,7 +32,7 @@ def test_scope_defaults_to_targets(tmp_path, monkeypatch):
 
 def test_get_or_create_is_idempotent(tmp_path, monkeypatch):
     _root(tmp_path, monkeypatch)
-    a = engagement.get_or_create("acme", targets=["example.com"])
+    engagement.get_or_create("acme", targets=["example.com"])
     b = engagement.get_or_create("acme")
     assert b.targets == ["example.com"]
 

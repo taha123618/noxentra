@@ -31,7 +31,7 @@ class FacialFind(Noxentra):
 
         from noxentra.config import get_tools_dir
         setup_dir = get_tools_dir() / "social_mapper" / "setup"
-        subprocess.run(["python3", "social_mapper.py", "-h"], cwd=str(setup_dir))
+        subprocess.run(["python3", "social_mapper.py", "-h"], cwd=str(setup_dir), check=False)
         console.print(
             "[bold magenta]Set username and password in social_mapper.py before running.[/]\n"
             "[magenta]Usage: python social_mapper.py -f <folder> -i <path> -m fast <AcName> -fb -tw[/]"
@@ -69,6 +69,7 @@ class Sherlock(Noxentra):
         subprocess.run(
             ["python3", "sherlock", name],
             cwd=str(get_tools_dir() / "sherlock"),
+            check=False,
         )
 
 
@@ -82,7 +83,7 @@ class SocialScan(Noxentra):
     def run(self):
         name = input(
             "Enter Username or Emailid (if both then please space between email & username) >> ")
-        subprocess.run(["sudo", "socialscan", f"{name}"])
+        subprocess.run(["sudo", "socialscan", f"{name}"], check=False)
 
 
 class SocialMediaFinderTools(NoxentraCollection):

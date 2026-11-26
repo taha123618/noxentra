@@ -52,6 +52,7 @@ class Faceshell(Noxentra):
         subprocess.run(
             ["python3", "Brute_Force.py", "-f", name, "-l", wordlist],
             cwd=str(get_tools_dir() / "Brute_Force"),
+            check=False,
         )
 
 

@@ -26,15 +26,15 @@ class TheFatRat(Noxentra):
     def update(self):
         from noxentra.config import get_tools_dir
         cwd = str(get_tools_dir() / "TheFatRat")
-        subprocess.run(["bash", "update"], cwd=cwd)
-        subprocess.run(["chmod", "+x", "setup.sh"], cwd=cwd)
-        subprocess.run(["bash", "setup.sh"], cwd=cwd)
+        subprocess.run(["bash", "update"], cwd=cwd, check=False)
+        subprocess.run(["chmod", "+x", "setup.sh"], cwd=cwd, check=False)
+        subprocess.run(["bash", "setup.sh"], cwd=cwd, check=False)
 
     def troubleshoot(self):
         from noxentra.config import get_tools_dir
         cwd = str(get_tools_dir() / "TheFatRat")
-        subprocess.run(["chmod", "+x", "chk_tools"], cwd=cwd)
-        subprocess.run(["./chk_tools"], cwd=cwd)
+        subprocess.run(["chmod", "+x", "chk_tools"], cwd=cwd, check=False)
+        subprocess.run(["./chk_tools"], cwd=cwd, check=False)
 
 
 class Brutal(Noxentra):

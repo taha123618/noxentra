@@ -29,6 +29,7 @@ class HatCloud(Noxentra):
         subprocess.run(
             ["sudo", "ruby", "hatcloud.rb", "-b", site],
             cwd=str(get_tools_dir() / "HatCloud"),
+            check=False,
         )
 
 

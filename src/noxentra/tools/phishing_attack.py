@@ -69,7 +69,7 @@ class BlackPhish(Noxentra):
         import subprocess
 
         from noxentra.config import get_tools_dir
-        subprocess.run(["bash", "update.sh"], cwd=str(get_tools_dir() / "BlackPhish"))
+        subprocess.run(["bash", "update.sh"], cwd=str(get_tools_dir() / "BlackPhish"), check=False)
 
 
 

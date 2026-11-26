@@ -25,7 +25,7 @@ class AnonymouslySurf(Noxentra):
     def stop(self):
         import subprocess
         console.print("[bold magenta]Stopping Anonsurf...[/bold magenta]")
-        subprocess.run(["sudo", "anonsurf", "stop"])
+        subprocess.run(["sudo", "anonsurf", "stop"], check=False)
 
 
 class AnonSurfTools(NoxentraCollection):

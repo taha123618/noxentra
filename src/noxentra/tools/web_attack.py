@@ -41,7 +41,7 @@ class Dirb(Noxentra):
 
     def run(self):
         uinput = input("Enter Url >> ")
-        subprocess.run(["sudo", "dirb", uinput])
+        subprocess.run(["sudo", "dirb", uinput], check=False)
 
 
 

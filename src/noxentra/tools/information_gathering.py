@@ -23,7 +23,7 @@ class PortScan(Noxentra):
         clear_screen()
         console.print(Panel(Text(self.TITLE, justify="center"), style="bold magenta"))
         target = Prompt.ask("[bold magenta]Select a Target IP[/bold magenta]", default="", show_default=False)
-        subprocess.run(["sudo", "nmap", "-O", "-Pn", target])
+        subprocess.run(["sudo", "nmap", "-O", "-Pn", target], check=False)
 
 
 class Host2IP(Noxentra):
@@ -81,6 +81,7 @@ class Striker(Noxentra):
         subprocess.run(
             ["sudo", "python3", "striker.py", site],
             cwd=str(get_tools_dir() / "Striker"),
+            check=False,
         )
 
 
@@ -104,6 +105,7 @@ class PortScannerRanger(Noxentra):
         subprocess.run(
             ["sudo", "python3", "rang3r.py", "--ip", ip],
             cwd=str(get_tools_dir() / "rang3r"),
+            check=False,
         )
 
 
@@ -120,6 +122,7 @@ class Breacher(Noxentra):
         subprocess.run(
             ["python3", "breacher.py", "-u", domain],
             cwd=str(get_tools_dir() / "Breacher"),
+            check=False,
         )
 
 
