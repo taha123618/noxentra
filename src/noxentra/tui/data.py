@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 @dataclass
 class CatRow:
-    index: int        # position in cli.all_tools
+    index: int        # position in toolbox.all_tools
     title: str
     icon: str
     label: str
@@ -22,8 +22,8 @@ class ToolRow:
 
 
 def _engine():
-    from noxentra import cli
-    return cli.all_tools, cli.tool_definitions
+    from noxentra import toolbox
+    return toolbox.all_tools, toolbox.tool_definitions
 
 
 def categories() -> list[CatRow]:
@@ -41,13 +41,15 @@ def _active_tools(cat_index: int) -> list:
     return coll._active_tools() if hasattr(coll, "_active_tools") else list(coll.TOOLS)
 
 
-def tools_in(cat_index: int) -> list[ToolRow]:
+def tools_in(cat_index: int, probe: bool = True) -> list[ToolRow]:
     rows = []
     for j, t in enumerate(_active_tools(cat_index)):
-        try:
-            installed = bool(t.is_installed())
-        except Exception:
-            installed = False
+        installed = False
+        if probe:
+            try:
+                installed = bool(t.is_installed())
+            except Exception:
+                installed = False
         rows.append(ToolRow(
             index=j,
             title=getattr(t, "TITLE", "?"),
@@ -59,8 +61,31 @@ def tools_in(cat_index: int) -> list[ToolRow]:
     return rows
 
 
+def probe_installed(rows: list[ToolRow]) -> list[bool]:
+    """Check install state for `rows` (safe to call off the UI thread)."""
+    out: list[bool] = []
+    for r in rows:
+        try:
+            out.append(bool(r.obj.is_installed()))
+        except Exception:
+            out.append(False)
+    return out
+
+
 def tool_at(cat_index: int, tool_index: int) -> ToolRow:
-    return tools_in(cat_index)[tool_index]
+    t = _active_tools(cat_index)[tool_index]
+    try:
+        installed = bool(t.is_installed())
+    except Exception:
+        installed = False
+    return ToolRow(
+        index=tool_index,
+        title=getattr(t, "TITLE", "?"),
+        description=getattr(t, "DESCRIPTION", "") or "",
+        url=getattr(t, "PROJECT_URL", "") or "",
+        installed=installed,
+        obj=t,
+    )
 
 
 @dataclass
@@ -99,8 +124,8 @@ class EngagementRow:
 def recommend_tools(intent: str) -> tuple[list[str], list[ToolHit]]:
     """Resolve free-text intent -> (matched_tags, matching ToolHits)."""
     import difflib
-    from noxentra import ai_recommend
-    from noxentra import cli
+
+    from noxentra import ai_recommend, toolbox
 
     q = intent.strip()
     if not q:
@@ -115,9 +140,9 @@ def recommend_tools(intent: str) -> tuple[list[str], list[ToolHit]]:
             all_tags.update(tags)
             tool_rows.append((ToolHit(cat.index, j, getattr(t, "TITLE", "?"), cat.label), tags))
 
-    close = difflib.get_close_matches(q.lower(), cli._RECOMMENDATIONS, n=1, cutoff=0.6)
+    close = difflib.get_close_matches(q.lower(), toolbox.RECOMMENDATIONS, n=1, cutoff=0.6)
     if close:
-        tag_names = list(cli._RECOMMENDATIONS[close[0]])
+        tag_names = list(toolbox.RECOMMENDATIONS[close[0]])
     else:
         tag_names = ai_recommend.resolve(q, sorted(all_tags))
 

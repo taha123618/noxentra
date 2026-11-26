@@ -60,12 +60,12 @@ def _box_bottom(w: int) -> str: return "╰" + "─" * (w - 2) + "╯"
 
 @lru_cache(maxsize=1)
 def _catalog():
-    """(tools_by_title, tag_index), built once from cli. Cached — the catalog is
+    """(tools_by_title, tag_index), built once from toolbox. Cached — the catalog is
     static for a session."""
-    from noxentra import cli
+    from noxentra import toolbox
 
-    tag_index = cli._get_all_tags()
-    tools_by_title = {t.TITLE: t for t, _ in cli._collect_all_tools() if t.TITLE}
+    tag_index = toolbox.get_all_tags()
+    tools_by_title = {t.TITLE: t for t, _ in toolbox.collect_all_tools() if t.TITLE}
     return tools_by_title, tag_index
 
 

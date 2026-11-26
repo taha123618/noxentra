@@ -84,9 +84,9 @@ _CONTRACT = (
 
 def _toolbox() -> list[dict]:
     """Catalog tools as light prompt context: title + category + one example."""
-    from noxentra import cli
+    from noxentra import toolbox
     box = []
-    for tool, cat in cli._collect_all_tools():
+    for tool, cat in toolbox.collect_all_tools():
         if not getattr(tool, "TITLE", ""):
             continue
         usage = getattr(tool, "USAGE", []) or []

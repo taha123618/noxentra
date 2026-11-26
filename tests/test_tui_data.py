@@ -27,3 +27,27 @@ def test_tool_at_round_trips():
             got = data.tool_at(c.index, tools[0].index)
             assert got.title == tools[0].title
             break
+
+
+def test_tools_in_no_probe_skips_is_installed_and_probe_installed_resolves(monkeypatch):
+    calls = 0
+
+    class _FakeTool:
+        TITLE = "FakeTool"
+        DESCRIPTION = "desc"
+        PROJECT_URL = "https://example.com"
+
+        def is_installed(self):
+            nonlocal calls
+            calls += 1
+            return True
+
+    monkeypatch.setattr(data, "_active_tools", lambda _idx: [_FakeTool()])
+    rows = data.tools_in(0, probe=False)
+    assert calls == 0
+    assert len(rows) == 1
+    assert rows[0].installed is False
+
+    states = data.probe_installed(rows)
+    assert calls == 1
+    assert states == [True]

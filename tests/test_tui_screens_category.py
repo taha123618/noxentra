@@ -73,3 +73,31 @@ def test_enter_on_prompt_pushes_tool_screen():
             assert isinstance(pilot.app.screen, ToolScreen)
 
     asyncio.run(run())
+
+
+def test_background_probe_updates_installed_markers(monkeypatch):
+    from noxentra.tui import glyphs
+
+    idx = _cat_with_tools()
+    called = False
+
+    def fake_probe(rows):
+        nonlocal called
+        called = True
+        return [True] * len(rows)
+
+    monkeypatch.setattr(data, "probe_installed", fake_probe)
+
+    async def run():
+        async with _App(idx).run_test() as pilot:
+            await _until_screen(pilot, CategoryScreen)
+            for _ in range(40):
+                await pilot.pause()
+                if called and all(r.installed for r in pilot.app.screen._rows):
+                    break
+            assert called
+            ol = pilot.app.screen.query_one("#cat-tools", OptionList)
+            first_prompt = str(ol.get_option_at_index(0).prompt)
+            assert glyphs.INSTALLED in first_prompt
+
+    asyncio.run(run())

@@ -1,8 +1,7 @@
 import json
 import subprocess
 
-from noxentra import engagement
-from noxentra import orchestrator
+from noxentra import engagement, orchestrator
 
 
 def _root(tmp_path, monkeypatch):
@@ -105,3 +104,54 @@ def test_scope_out_host_not_forwarded(tmp_path, monkeypatch):
     assert "admin.example.com" not in captured["httpx"]
     assert "good.example.com" in captured["httpx"]
     assert "scope-out" in e.log_file.read_text()
+
+
+def test_run_streaming_emits_live_output_lines():
+    import sys
+
+    events: list[str] = []
+    proc = orchestrator._run_streaming(
+        [sys.executable, "-u", "-c", "print('a.example.com'); print('b.example.com')"],
+        "",
+        "subfinder",
+        events.append,
+    )
+    assert proc.returncode == 0
+    assert "a.example.com\nb.example.com\n" == proc.stdout
+    assert any("[subfinder] a.example.com" in ev for ev in events)
+    assert any("[subfinder] b.example.com" in ev for ev in events)
+
+
+def test_run_pipeline_per_target_flag_fans_out(tmp_path, monkeypatch):
+    _root(tmp_path, monkeypatch)
+    e = engagement.create("acme", targets=["a.example.com", "b.example.com"])
+    monkeypatch.setattr(orchestrator.shutil, "which", lambda t: "/usr/bin/" + t if t == "subfinder" else None)
+    monkeypatch.setattr(
+        orchestrator,
+        "load_pipeline",
+        lambda _name: {
+            "name": "fanout",
+            "steps": [
+                {
+                    "tool": "subfinder",
+                    "args": ["-silent"],
+                    "input": "targets",
+                    "output": "raw/subfinder.txt",
+                    "parser": "subfinder",
+                    "per_target_flag": "-d",
+                    "workers": 2,
+                }
+            ],
+        },
+    )
+    seen_cmds: list[list[str]] = []
+
+    def fake_run(cmd, input=None, **kwargs):
+        seen_cmds.append(list(cmd))
+        target = cmd[-1]
+        return subprocess.CompletedProcess(cmd, 0, stdout=f"sub.{target}\n", stderr="")
+
+    monkeypatch.setattr(orchestrator.subprocess, "run", fake_run)
+    findings = orchestrator.run_pipeline(e, "fanout")
+    assert sorted(c[-2:] for c in seen_cmds) == [["-d", "a.example.com"], ["-d", "b.example.com"]]
+    assert sorted(f.target for f in findings) == ["sub.a.example.com", "sub.b.example.com"]
