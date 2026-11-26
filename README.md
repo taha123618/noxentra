@@ -441,3 +441,12 @@ only ever summarize findings that exist.
 | [Tool catalog](docs/TOOLS.md) | every tool, by category, with links and tags |
 | [Operator playbook](src/noxentra/skill/OPERATOR.md) | the charter and grounding rules the AI layer runs under (also `/skill`) |
 | [SECURITY.md](SECURITY.md) | disclosure policy, release verification, threat model |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | how to set up dev, add catalog tools, and run checks |
+
+---
+
+## License & Credits
+
+Released under the [MIT License](LICENSE).
+
+Noxentra builds upon the open-source foundation of [Z4nzu/hackingtool](https://github.com/Z4nzu/hackingtool) (MIT) with an interactive Textual TUI, YAML-first tool catalog, AI-guided workflows, and headless engagement orchestration.
