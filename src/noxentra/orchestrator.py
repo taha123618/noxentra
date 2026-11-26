@@ -42,9 +42,19 @@ def run_pipeline(e: Engagement, pipeline_name: str = "recon") -> list[findings_m
         tool = step["tool"]
         if shutil.which(tool) is None:
             e.log(f"skip {tool}: not installed (install it from the menu)")
-            forward = []
+            if not step.get("fallback_to_targets"):
+                forward = []
             continue
-        stdin = "\n".join(e.targets if step["input"] == "targets" else forward)
+        mode = step["input"]
+        if mode == "hosts":
+            items = [_host_of(t) for t in e.targets]
+        elif mode == "targets":
+            items = list(e.targets)
+        else:
+            items = list(forward)
+            if not items and step.get("fallback_to_targets"):
+                items = list(e.targets)
+        stdin = "\n".join(items)
         try:
             proc = subprocess.run([tool, *step["args"]], input=stdin,
                                   capture_output=True, text=True, timeout=STEP_TIMEOUT,

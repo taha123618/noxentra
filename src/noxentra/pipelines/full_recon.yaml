@@ -1,0 +1,26 @@
+# pipelines/full_recon.yaml
+name: full_recon
+description: Port/service scan (nmap) -> subdomain discovery -> live-host probe -> vuln scan.
+steps:
+  - tool: nmap
+    args: ["-sV", "-T4", "-Pn", "-iL", "-", "-oG", "-"]
+    input: hosts
+    output: raw/nmap.gnmap
+    parser: nmap
+  - tool: subfinder
+    args: ["-silent"]
+    input: hosts
+    output: raw/subfinder.txt
+    parser: subfinder
+  - tool: httpx
+    args: ["-silent", "-json"]
+    input: previous
+    fallback_to_targets: true
+    output: raw/httpx.jsonl
+    parser: httpx
+  - tool: nuclei
+    args: ["-silent", "-jsonl"]
+    input: previous
+    fallback_to_targets: true
+    output: raw/nuclei.jsonl
+    parser: nuclei

@@ -4,7 +4,9 @@ from pathlib import Path
 from noxentra.findings import (
     Finding,
     load_findings,
+    parse_gobuster,
     parse_httpx,
+    parse_nmap,
     parse_nuclei,
     parse_subfinder,
     save_findings,
@@ -56,3 +58,29 @@ def test_save_and_load_roundtrip(tmp_path: Path):
     save_findings(p, fs)
     loaded = load_findings(p)
     assert loaded == fs
+
+
+def test_parse_nmap():
+    raw = (
+        "# Nmap 7.94 scan\n"
+        "Host: 10.0.0.1 (web.example.com)\tPorts: 22/open/tcp//ssh//OpenSSH 8.9/, "
+        "443/open/tcp//https//nginx/\tIgnored State: closed\n"
+    )
+    fs, forward = parse_nmap(raw, TS)
+    assert len(fs) == 2
+    assert fs[0].kind == "service" and fs[0].source_tool == "nmap"
+    assert fs[0].target == "web.example.com"
+    assert "22/tcp" in fs[0].name
+    assert forward == ["https://web.example.com"]
+
+
+def test_parse_gobuster():
+    raw = (
+        "/admin                (Status: 301) [Size: 178] [--> /admin/]\n"
+        "https://example.com/api (Status: 200) [Size: 42]\n"
+    )
+    fs, forward = parse_gobuster(raw, TS)
+    assert len(fs) == 2
+    assert fs[0].source_tool == "gobuster"
+    assert fs[0].details["status_code"] == 301
+    assert forward == ["https://example.com/api"]
