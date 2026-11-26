@@ -88,18 +88,15 @@ def test_hint_line_visible_and_context_aware():
     asyncio.run(run())
 
 
-def test_stub_command_notifies_instead_of_silent():
-    # issue 5: /report is a Phase-2 stub -> must surface feedback, not do nothing
+def test_report_command_opens_report_screen():
     async def run():
         async with NoxentraApp().run_test(size=(100, 30)) as pilot:
             await _until(pilot, MainScreen)
-            seen = {}
-            pilot.app.notify = lambda *a, **k: seen.setdefault("msg", (a, k))
+            from noxentra.tui.screens.report import ReportScreen
             inp = pilot.app.screen.query_one("#nx-prompt", Input)
             inp.value = "/report"
             await pilot.pause()
             await pilot.press("enter")
-            await pilot.pause()
-            assert "msg" in seen
-            assert "/report" in seen["msg"][0][0]
+            await _until(pilot, ReportScreen)
+            assert isinstance(pilot.app.screen, ReportScreen)
     asyncio.run(run())

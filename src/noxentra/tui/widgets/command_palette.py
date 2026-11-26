@@ -2,7 +2,7 @@ from textual.message import Message
 from textual.widgets import OptionList
 from textual.widgets.option_list import Option
 
-# (command, help) — /config/menu/quit act now; /recommend,/report are Phase-2 (notify).
+# (command, help) — all commands are active in NoxentraApp.
 # No /search: just type in the prompt to filter live.
 COMMANDS = [
     ("/config", "edit settings"),
