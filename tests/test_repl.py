@@ -103,7 +103,7 @@ def test_run_command_opens_tool():
 def test_dispatch_free_text_recommends(monkeypatch):
     from noxentra import prompt
     seen = {}
-    import noxentra.cli as cli
+    from noxentra import cli
     monkeypatch.setattr(cli, "recommend_tools", lambda intent=None: seen.setdefault("intent", intent))
     prompt.dispatch("crack a wifi handshake", prompt.PromptCtx("home"))
     assert seen["intent"] == "crack a wifi handshake"
@@ -122,7 +122,7 @@ def test_find_is_completable_and_documented():
 
 
 def test_dispatch_find_routes_to_discover_run(monkeypatch):
-    import noxentra.discover as discover
+    from noxentra import discover
     from noxentra import prompt
     seen = {}
     monkeypatch.setattr(discover, "run", lambda need, ctx=None: seen.setdefault("need", need))

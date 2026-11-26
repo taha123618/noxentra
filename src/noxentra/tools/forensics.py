@@ -3,30 +3,11 @@ from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.text import Text
 
+from rich.panel import Panel
+from rich.prompt import Prompt
+from rich.text import Text
+
 from noxentra.core import Noxentra, NoxentraCollection, console
-
-
-class Autopsy(Noxentra):
-    TITLE = "Autopsy"
-    DESCRIPTION = "Autopsy is a platform that is used by Cyber Investigators.\n" \
-                  "[!] Works in any OS\n" \
-                  "[!] Recover Deleted Files from any OS & Media \n" \
-                  "[!] Extract Image Metadata"
-    RUN_COMMANDS = ["sudo autopsy"]
-
-    def __init__(self):
-        super().__init__(installable=False)
-
-
-class Wireshark(Noxentra):
-    TITLE = "Wireshark"
-    DESCRIPTION = "Wireshark is a network capture and analyzer \n" \
-                  "tool to see what’s happening in your network.\n " \
-                  "And also investigate Network related incident"
-    RUN_COMMANDS = ["sudo wireshark"]
-
-    def __init__(self):
-        super().__init__(installable=False)
 
 
 class BulkExtractor(Noxentra):
@@ -65,32 +46,6 @@ class BulkExtractor(Noxentra):
         subprocess.run(["bulk_extractor", "-h"])
 
 
-class Guymager(Noxentra):
-    TITLE = "Disk Clone and ISO Image Acquire"
-    DESCRIPTION = "Guymager is a free forensic imager for media acquisition."
-    SUPPORTED_OS = ["linux"]
-    INSTALL_COMMANDS = ["sudo apt install guymager"]
-    RUN_COMMANDS = ["sudo guymager"]
-    PROJECT_URL = "https://guymager.sourceforge.io/"
-
-
-
-class Toolsley(Noxentra):
-    TITLE = "Toolsley"
-    DESCRIPTION = "Toolsley got more than ten useful tools for investigation.\n" \
-                  "[+]File signature verifier\n" \
-                  "[+]File identifier \n" \
-                  "[+]Hash & Validate \n" \
-                  "[+]Binary inspector \n " \
-                  "[+]Encode text \n" \
-                  "[+]Data URI generator \n" \
-                  "[+]Password generator"
-    PROJECT_URL = "https://www.toolsley.com/"
-
-    def __init__(self):
-        super().__init__(installable=False, runnable=False)
-
-
 class Volatility3(Noxentra):
     TITLE = "Volatility 3 (Memory Forensics)"
     DESCRIPTION = (
@@ -115,40 +70,11 @@ class Volatility3(Noxentra):
         )
 
 
-class Binwalk(Noxentra):
-    TITLE = "Binwalk (Firmware Analysis)"
-    DESCRIPTION = (
-        "Analyze, reverse engineer, and extract firmware images.\n"
-        "Usage: binwalk -e firmware.bin"
-    )
-    INSTALL_COMMANDS = ["pip install --user binwalk"]
-    RUN_COMMANDS = ["binwalk --help"]
-    PROJECT_URL = "https://github.com/ReFirmLabs/binwalk"
-
-
-class Pspy(Noxentra):
-    TITLE = "pspy (Process Monitor — No Root)"
-    DESCRIPTION = "Monitor Linux processes without root — detects cron jobs, scheduled tasks, other users' commands."
-    INSTALL_COMMANDS = [
-        "curl -sSL https://github.com/DominicBreuker/pspy/releases/latest/download/pspy64 -o pspy",
-        "chmod +x pspy",
-    ]
-    RUN_COMMANDS = ["./pspy --help"]
-    PROJECT_URL = "https://github.com/DominicBreuker/pspy"
-    SUPPORTED_OS = ["linux"]
-
-
 class ForensicTools(NoxentraCollection):
     TITLE = "Forensic tools"
     TOOLS = [
-        Autopsy(),
-        Wireshark(),
         BulkExtractor(),
-        Guymager(),
-        Toolsley(),
         Volatility3(),
-        Binwalk(),
-        Pspy(),
     ]
 
 if __name__ == "__main__":

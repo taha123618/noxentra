@@ -28,12 +28,12 @@ from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 
-import noxentra.ai_recommend as ai_recommend
-import noxentra.ai_report as ai_report
-import noxentra.ai_summary as ai_summary
-import noxentra.engagement as engagement
-import noxentra.orchestrator as orchestrator
-import noxentra.report as report
+from noxentra import ai_recommend
+from noxentra import ai_report
+from noxentra import ai_summary
+from noxentra import engagement
+from noxentra import orchestrator
+from noxentra import report
 from noxentra import update_check
 from noxentra.config import get_tools_dir
 from noxentra.constants import REPO_WEB_URL, USER_CONFIG_DIR, VERSION_DISPLAY

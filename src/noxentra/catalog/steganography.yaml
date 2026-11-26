@@ -24,20 +24,50 @@ overlay:
       the stego file but not the passphrase, hand it to stegseek (below) — it brute
       forces steghide far faster than stegcracker.
 
-  - title: "StegnoCracker"
-    tags: [steganography, bruteforce, password-attack, image]
-    system_pkgs: {which: stegcracker, pip: stegcracker}
-    usage:
-      - ["brute-force a steghide passphrase", "stegcracker stego.jpg rockyou.txt"]
-      - ["use the built-in default wordlist", "stegcracker stego.jpg"]
-      - ["recovered data is written next to it", "cat stego.jpg.out"]
-    lab_safe_notes: >-
-      Fully offline dictionary attack against steghide-embedded files; it shells out
-      to `steghide`, so that must be installed too. rockyou.txt lives at
-      /usr/share/wordlists/rockyou.txt on Kali (gunzip it first). stegcracker is
-      slow and effectively superseded by stegseek — reach for stegseek first.
-
 tools:
+  - title: "Stegseek (fast steganography cracker)"
+    kind: install
+    tags: [steganography, bruteforce, password-attack, image]
+    description: "Stegseek brute-forces and extracts steghide-embedded data extremely fast"
+    system_pkgs: {which: stegseek, apt: stegseek}
+    install: {apt: stegseek}
+    run: ["stegseek --help"]
+    project_url: "https://github.com/RickdeJager/stegseek"
+    usage:
+      - ["crack a steghide file with rockyou", "stegseek stego.jpg /usr/share/wordlists/rockyou.txt"]
+      - ["show help", "stegseek --help"]
+
+  - title: "StegoCracker"
+    kind: install
+    archived: true
+    archived_reason: "Unmaintained — no commits since 2021-09"
+    tags: [steganography, forensics]
+    description: "StegoCracker lets you hide and retrieve data in image or audio files"
+    install:
+      commands:
+        - "git clone https://github.com/W1LDN16H7/StegoCracker.git"
+        - "sudo chmod -R 755 StegoCracker"
+    run:
+      - "cd StegoCracker && python3 -m pip install -r requirements.txt"
+      - "./install.sh"
+    project_url: "https://github.com/W1LDN16H7/StegoCracker"
+    usage:
+      - ["run StegoCracker (archived)", "./install.sh"]
+
+  - title: "Whitespace"
+    kind: install
+    archived: true
+    archived_reason: "Upstream repo deleted (404)"
+    tags: [steganography]
+    description: "Use whitespace and unicode characters for steganography"
+    install:
+      commands:
+        - "git clone https://github.com/beardog108/snow10.git"
+        - "sudo chmod -R 755 snow10"
+    run: ["cd snow10 && ./install.sh"]
+    project_url: "https://github.com/beardog108/snow10"
+    usage:
+      - ["run snow10 (archived)", "./install.sh"]
   - title: "stegseek (fast steghide cracker)"
     kind: install
     tags: [steganography, bruteforce, password-attack, image]

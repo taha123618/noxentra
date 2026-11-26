@@ -64,84 +64,6 @@ class Brutal(Noxentra):
         )
 
 
-class Stitch(Noxentra):
-    TITLE = "Stitch"
-    SUPPORTED_OS = ["linux"]
-    DESCRIPTION = (
-        "Stitch is a Cross Platform Python Remote Administrator Tool.\n"
-        "[!] Refer to the project link for Windows & macOS support."
-    )
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/nathanlopez/Stitch.git",
-        "cd Stitch && pip install --user -r lnx_requirements.txt",
-    ]
-    RUN_COMMANDS = ["cd Stitch && sudo python3 main.py"]
-    PROJECT_URL = "https://nathanlopez.github.io/Stitch"
-
-
-class MSFVenom(Noxentra):
-    ARCHIVED = True
-    ARCHIVED_REASON = "Unmaintained — no commits since 2021-05"
-    TITLE = "MSFvenom Payload Creator"
-    SUPPORTED_OS = ["linux"]
-    DESCRIPTION = (
-        "MSFvenom Payload Creator (MSFPC) is a wrapper to generate multiple "
-        "types of payloads, based on user choice."
-    )
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/g0tmi1k/msfpc.git",
-        "cd msfpc && chmod +x msfpc.sh",
-    ]
-    RUN_COMMANDS = ["cd msfpc && sudo bash msfpc.sh -h -v"]
-    PROJECT_URL = "https://github.com/g0tmi1k/msfpc"
-
-
-class Venom(Noxentra):
-    TITLE = "Venom Shellcode Generator"
-    SUPPORTED_OS = ["linux"]
-    DESCRIPTION = "Venom exploits apache2 webserver to deliver LAN payloads via fake webpages."
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/r00t-3xp10it/venom.git",
-        # Removed "sudo ./venom.sh -u" from install — interactive, runs the tool during install
-        "sudo chmod -R 775 venom*/ && cd venom*/ && cd aux && sudo bash setup.sh",
-    ]
-    RUN_COMMANDS = ["cd venom && sudo ./venom.sh"]
-    PROJECT_URL = "https://github.com/r00t-3xp10it/venom"
-
-
-class Spycam(Noxentra):
-    ARCHIVED = True
-    ARCHIVED_REASON = "Unmaintained — no commits since 2018-12"
-    TITLE = "Spycam"
-    DESCRIPTION = "Generates a Win32 payload that captures webcam images every 1 minute."
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/indexnotfound404/spycam.git",
-        "cd spycam && bash install.sh && chmod +x spycam",
-    ]
-    RUN_COMMANDS = ["cd spycam && ./spycam"]
-    PROJECT_URL = "https://github.com/indexnotfound404/spycam"
-
-
-class MobDroid(Noxentra):
-    TITLE = "Mob-Droid"
-    SUPPORTED_OS = ["linux"]
-    DESCRIPTION = "Generates metasploit payloads easily without typing long commands."
-    INSTALL_COMMANDS = ["git clone https://github.com/kinghacker0/mob-droid.git"]
-    RUN_COMMANDS = ["cd mob-droid && sudo python3 mob-droid.py"]
-    PROJECT_URL = "https://github.com/kinghacker0/Mob-Droid"
-
-
-class Enigma(Noxentra):
-    ARCHIVED = True
-    ARCHIVED_REASON = "Upstream repo archived by author (last commit 2021-08)"
-    TITLE = "Enigma"
-    SUPPORTED_OS = ["linux"]
-    DESCRIPTION = "Enigma is a Multiplatform payload dropper."
-    INSTALL_COMMANDS = ["git clone https://github.com/UndeadSec/Enigma.git"]
-    RUN_COMMANDS = ["cd Enigma && sudo python3 enigma.py"]
-    PROJECT_URL = "https://github.com/UndeadSec/Enigma"
-
-
 class PayloadCreatorTools(NoxentraCollection):
     TITLE = "Payload creation tools"
     # Bug 11 fix: show_options() override was missing `parent` parameter entirely —
@@ -149,12 +71,6 @@ class PayloadCreatorTools(NoxentraCollection):
     TOOLS = [
         TheFatRat(),
         Brutal(),
-        Stitch(),
-        MSFVenom(),
-        Venom(),
-        Spycam(),
-        MobDroid(),
-        Enigma(),
     ]
 
 

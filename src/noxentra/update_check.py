@@ -31,7 +31,7 @@ def _fetch_latest(timeout: float) -> str:
         headers={"Accept": "application/vnd.github+json",
                  "User-Agent": f"{REPO_NAME}/{VERSION}"},
     )
-    with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310 (fixed https URL)
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.load(r).get("tag_name") or ""
 
 

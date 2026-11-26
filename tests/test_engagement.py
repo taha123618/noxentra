@@ -1,4 +1,4 @@
-import noxentra.engagement as engagement
+from noxentra import engagement
 
 
 def _root(tmp_path, monkeypatch):

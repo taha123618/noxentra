@@ -240,7 +240,8 @@ Some individual tools need a language runtime to install/run; the core app doesn
 
 `noxentra` opens an **interactive terminal UI**: browse the categories, **type to
 search every tool** across all of them, `↑↓` to move, `Enter` to open, `←`/`Esc` to go
-back, and `/` for the command palette (`/config`, `/update`, `/menu`, `/quit`). When a
+back, and `/` for the command palette (`/recommend`, `/find`, `/goal`, `/tags`,
+`/skill`, `/report`, `/config`, `/update`, `/menu`, `/quit`). When a
 newer release is out it shows an *update available* line on launch, and `/update`
 detects how you installed noxentra and shows the exact upgrade command to run.
 
@@ -303,11 +304,11 @@ falls back to the classic numbered menu, where `/` or `s` searches, `t` filters 
 
 ## Features
 
-> **Where these live today.** `/find`, `/goal`, plain-English recommendations,
-> `/tags`/`/search` and background panes currently run in the **`--classic`** REPL
-> (`noxentra --classic`). The default TUI browses and type-searches the whole
-> catalog and runs tools; wiring these AI/search features into it is Phase 2. The
-> screenshots below showing a `/` command prompt are the `--classic` REPL.
+> **TUI & `--classic`.** The default TUI supports `/recommend`, `/find`, `/goal`,
+> `/tags`, `/skill`, `/report`, `/config`, `/update`, `/menu`, and `/quit` via the `/`
+> command palette. Background tmux panes and `@tool` / `@tag:` shortcuts also run in
+> **`--classic`** (`noxentra --classic`). The screenshots below showing a `/` prompt
+> are from `--classic`.
 
 ### 🔎 `/find` — a tool for a need you don't have yet
 

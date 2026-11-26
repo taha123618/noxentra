@@ -6,30 +6,6 @@ from rich.prompt import Prompt
 from noxentra.core import Noxentra, NoxentraCollection, console
 
 
-class Dalfox(Noxentra):
-    TITLE = "DalFox (Finder of XSS)"
-    DESCRIPTION = "XSS Scanning and Parameter Analysis tool."
-    INSTALL_COMMANDS = [
-        "sudo apt-get install -y golang",
-        "go install github.com/hahwul/dalfox/v2@latest",
-    ]
-    RUN_COMMANDS = [
-        "~/go/bin/dalfox --help",
-    ]
-    PROJECT_URL = "https://github.com/hahwul/dalfox"
-
-
-class XSSPayloadGenerator(Noxentra):
-    TITLE = "XSS Payload Generator"
-    DESCRIPTION = "XSS PAYLOAD GENERATOR - XSS SCANNER - XSS DORK FINDER"
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/capture0x/XSS-LOADER.git",
-        "cd XSS-LOADER;sudo pip3 install -r requirements.txt"
-    ]
-    RUN_COMMANDS = ["cd XSS-LOADER;sudo python3 payloader.py"]
-    PROJECT_URL = "https://github.com/capture0x/XSS-LOADER.git"
-
-
 class XSSFinder(Noxentra):
     ARCHIVED = True
     ARCHIVED_REASON = "Unmaintained — no commits since 2019-08"
@@ -57,29 +33,6 @@ class XSSFinder(Noxentra):
             title="[ Run Instructions ]",
             border_style="blue"
         ))
-
-
-class XSSFreak(Noxentra):
-    ARCHIVED = True
-    ARCHIVED_REASON = "Upstream repo deleted (404)"
-    TITLE = "XSS-Freak"
-    DESCRIPTION = "An XSS scanner fully written in Python 3 from scratch."
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/PR0PH3CY33/XSS-Freak.git",
-        "cd XSS-Freak;sudo pip3 install -r requirements.txt"
-    ]
-    RUN_COMMANDS = ["cd XSS-Freak;sudo python3 XSS-Freak.py"]
-    PROJECT_URL = "https://github.com/PR0PH3CY33/XSS-Freak"
-
-
-class XSpear(Noxentra):
-    ARCHIVED = True
-    ARCHIVED_REASON = "Upstream repo archived by author (last commit 2026-03)"
-    TITLE = "XSpear"
-    DESCRIPTION = "XSpear is an XSS Scanner built on Ruby Gems."
-    INSTALL_COMMANDS = ["gem install XSpear"]
-    RUN_COMMANDS = ["XSpear -h"]
-    PROJECT_URL = "https://github.com/hahwul/XSpear"
 
 
 class XSSCon(Noxentra):
@@ -118,49 +71,12 @@ class XanXSS(Noxentra):
                        cwd=str(get_tools_dir() / "XanXSS"))
 
 
-class XSSStrike(Noxentra):
-    TITLE = "Advanced XSS Detection Suite"
-    DESCRIPTION = "XSStrike is a Python-based tool designed to detect and exploit XSS vulnerabilities."
-    INSTALL_COMMANDS = [
-        "sudo rm -rf XSStrike",
-        "git clone https://github.com/UltimateHackers/XSStrike.git "
-        "&& cd XSStrike && pip install -r requirements.txt"
-    ]
-    PROJECT_URL = "https://github.com/UltimateHackers/XSStrike"
-
-    def __init__(self):
-        super().__init__(runnable=False)
-
-
-class RVuln(Noxentra):
-    ARCHIVED = True
-    ARCHIVED_REASON = "Unmaintained — no commits since 2020-07"
-    TITLE = "RVuln"
-    SUPPORTED_OS = ["linux"]
-    DESCRIPTION = "Multi-threaded and Automated Web Vulnerability Scanner written in Rust."
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/iinc0gnit0/RVuln.git;"
-        "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh;"
-        "source $HOME/.cargo/env;"
-        "sudo apt install librust-openssl-dev;"
-        "cd RVuln;cargo build --release;mv target/release/RVuln"
-    ]
-    RUN_COMMANDS = ["RVuln"]
-    PROJECT_URL = "https://github.com/iinc0gnit0/RVuln"
-
-
 class XSSAttackTools(NoxentraCollection):
     TITLE = "XSS Attack Tools"
     TOOLS = [
-        Dalfox(),
-        XSSPayloadGenerator(),
         XSSFinder(),
-        XSSFreak(),
-        XSpear(),
         XSSCon(),
         XanXSS(),
-        XSSStrike(),
-        RVuln()
     ]
 
     def show_info(self):

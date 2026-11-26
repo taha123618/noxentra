@@ -27,7 +27,7 @@ def test_legacy_overlay_titles_match_real_tools():
     # Overlays apply by exact title — a typo would silently no-op. Guard it.
     import yaml
 
-    import noxentra.registry as registry
+    from noxentra import registry
     f = registry.CATALOG_DIR / "legacy_overlays.yaml"
     entries = (yaml.safe_load(f.read_text()) or {}).get("overlay", [])
     titles = {t.TITLE for t, _ in noxentra._collect_all_tools()}
@@ -55,7 +55,7 @@ def test_arg_parser_flags():
     assert ns.report is False
 
 def test_pipeline_runs_against_stored_targets(tmp_path, monkeypatch):
-    import noxentra.engagement as engagement
+    from noxentra import engagement
     monkeypatch.setattr(engagement, "ENGAGEMENTS_ROOT", tmp_path)
     engagement.create("acme", targets=["example.com"])  # targets already stored
     called = {}
@@ -75,7 +75,7 @@ def test_load_targets_inline_vs_file(tmp_path):
     assert noxentra._load_targets(str(f)) == ["a.com", "b.com"]
 
 def test_run_headless_dispatches(tmp_path, monkeypatch):
-    import noxentra.engagement as engagement
+    from noxentra import engagement
     monkeypatch.setattr(engagement, "ENGAGEMENTS_ROOT", tmp_path)
     called = {}
 

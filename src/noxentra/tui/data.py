@@ -22,7 +22,7 @@ class ToolRow:
 
 
 def _engine():
-    import noxentra.cli as cli
+    from noxentra import cli
     return cli.all_tools, cli.tool_definitions
 
 
@@ -99,8 +99,8 @@ class EngagementRow:
 def recommend_tools(intent: str) -> tuple[list[str], list[ToolHit]]:
     """Resolve free-text intent -> (matched_tags, matching ToolHits)."""
     import difflib
-    import noxentra.ai_recommend as ai_recommend
-    import noxentra.cli as cli
+    from noxentra import ai_recommend
+    from noxentra import cli
 
     q = intent.strip()
     if not q:

@@ -76,21 +76,6 @@ class Asyncrone(Noxentra):
         )
 
 
-class UFONet(Noxentra):
-    TITLE = "UFOnet"
-    SUPPORTED_OS = ["linux"]
-    DESCRIPTION = (
-        "UFONet is a free software, P2P and cryptographic disruptive toolkit "
-        "that allows performing DoS and DDoS attacks."
-    )
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/epsylon/ufonet.git",
-        "cd ufonet && pip install --user .",
-    ]
-    RUN_COMMANDS = ["python3 ufonet --gui"]
-    PROJECT_URL = "https://github.com/epsylon/ufonet"
-
-
 class GoldenEye(Noxentra):
     ARCHIVED = True
     ARCHIVED_REASON = "Upstream repo archived by author (last commit 2023-11)"
@@ -139,7 +124,7 @@ class Saphyra(Noxentra):
 
 class DDOSTools(NoxentraCollection):
     TITLE = "DDOS Attack Tools"
-    TOOLS = [DDoSTool(), SlowLoris(), Asyncrone(), UFONet(), GoldenEye(), Saphyra()]
+    TOOLS = [DDoSTool(), SlowLoris(), Asyncrone(), GoldenEye(), Saphyra()]
 
 
 if __name__ == "__main__":

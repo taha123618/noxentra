@@ -8,8 +8,8 @@ import textwrap
 
 import pytest
 
-import noxentra.registry as registry
-import noxentra.tags as tags
+from noxentra import registry
+from noxentra import tags
 
 # --- real catalog (the shipped YAML files) ----------------------------------
 

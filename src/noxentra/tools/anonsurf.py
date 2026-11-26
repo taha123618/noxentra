@@ -28,28 +28,10 @@ class AnonymouslySurf(Noxentra):
         subprocess.run(["sudo", "anonsurf", "stop"])
 
 
-class Multitor(Noxentra):
-    TITLE = "Multitor"
-    DESCRIPTION = "How to stay in multi places at the same time."
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/trimstray/multitor.git",
-        "cd multitor && sudo bash setup.sh install",
-    ]
-    RUN_COMMANDS = [
-        "multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy"
-    ]
-    PROJECT_URL = "https://github.com/trimstray/multitor"
-    SUPPORTED_OS = ["linux"]
-
-    def __init__(self):
-        super().__init__(runnable=False)
-
-
 class AnonSurfTools(NoxentraCollection):
     TITLE = "Anonymously Hiding Tools"
     TOOLS = [
         AnonymouslySurf(),
-        Multitor(),
     ]
 
 

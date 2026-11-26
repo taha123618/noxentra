@@ -1,8 +1,8 @@
 import json
 import subprocess
 
-import noxentra.engagement as engagement
-import noxentra.orchestrator as orchestrator
+from noxentra import engagement
+from noxentra import orchestrator
 
 
 def _root(tmp_path, monkeypatch):

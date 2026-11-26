@@ -20,7 +20,7 @@ async def _until(pilot, kind):
 
 
 def test_recommend_screen_resolves_and_opens_tool(monkeypatch):
-    import noxentra.ai_recommend as ai_recommend
+    from noxentra import ai_recommend
     monkeypatch.setattr(ai_recommend, "ask", lambda _prompt: None)
 
     async def run():
@@ -67,9 +67,51 @@ def test_report_screen_exports_engagement_report(tmp_path, monkeypatch):
 
             ol = pilot.app.screen.query_one("#report-engagements", OptionList)
             assert ol.option_count == 1
-            await pilot.press("enter")
+            await pilot.press("enter")  # drill into report actions
+            await pilot.pause()
+            assert ol.option_count == 3
+            await pilot.press("enter")  # Export deterministic report (report.md)
             await pilot.pause()
             assert e.report_file.exists()
             assert "msg" in seen and "Saved" in seen["msg"][0][0]
+
+    asyncio.run(run())
+
+
+def test_report_screen_ai_summary_and_draft(tmp_path, monkeypatch):
+    from noxentra import ai_report, ai_summary
+
+    monkeypatch.setattr(engagement, "ENGAGEMENTS_ROOT", tmp_path)
+    e = engagement.create("acme", targets=["example.com"])
+    monkeypatch.setattr(ai_summary, "summarize", lambda _e: "2 open ports found")
+    draft = tmp_path / "acme" / "report.draft.md"
+    monkeypatch.setattr(ai_report, "draft_report", lambda _e: draft)
+
+    async def run():
+        async with NoxentraApp().run_test(size=(100, 30)) as pilot:
+            await _until(pilot, MainScreen)
+            msgs = []
+            pilot.app.notify = lambda *a, **k: msgs.append((a, k))
+            inp = pilot.app.screen.query_one("#nx-prompt", Input)
+            inp.value = "/report"
+            await pilot.pause()
+            await pilot.press("enter")
+            await _until(pilot, ReportScreen)
+
+            await pilot.press("enter")  # select engagement
+            await pilot.pause()
+            await pilot.press("down", "enter")  # AI Summary
+            for _ in range(40):
+                await pilot.pause()
+                if any("2 open ports found" in m[0][0] for m in msgs):
+                    break
+            assert any("2 open ports found" in m[0][0] for m in msgs)
+
+            await pilot.press("down", "enter")  # AI Report Draft
+            for _ in range(40):
+                await pilot.pause()
+                if any("report.draft.md" in m[0][0] for m in msgs):
+                    break
+            assert any("report.draft.md" in m[0][0] for m in msgs)
 
     asyncio.run(run())

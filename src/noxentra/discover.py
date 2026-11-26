@@ -36,7 +36,7 @@ _TOP = 5
 _DOCS_RE = re.compile(
     r"(^|[-_])awesome([-_]|$)|(^|[-_])(lists?|wordlists?|payloads?|dicts?)([-_]|$)"
     r"|cheat.?sheets?|tutorials?|courses?|roadmaps?|writeups?|(^|[-_])notes?$"
-    r"|learning|100.?days|interview", re.I)
+    r"|learning|100.?days|interview", re.IGNORECASE)
 
 _DOC_LANGS = {None, "", "Markdown", "HTML", "TeX"}
 

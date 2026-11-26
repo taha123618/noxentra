@@ -23,8 +23,18 @@ overlay:
       trusting it. Needs root (iptables). Tor exit traffic is slow and some
       services block Tor; only tunnel activity you are authorized to route.
 
+# --- migrated from tools/anonsurf.py + missing anonymity staples ------------
+tools:
   - title: "Multitor"
+    kind: install
     tags: [anonymity, tunneling, network]
+    description: "How to stay in multi places at the same time."
+    supported_os: [linux]
+    install:
+      commands:
+        - "git clone https://github.com/trimstray/multitor.git"
+        - "cd multitor && sudo bash setup.sh install"
+    project_url: "https://github.com/trimstray/multitor"
     usage:
       - ["spawn N Tor instances behind a load balancer", "multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy"]
       - ["show all options", "multitor --help"]
@@ -35,9 +45,6 @@ overlay:
       authorized scanning/OSINT so no single circuit is hammered. Runs as the
       dedicated tor user (`--user debian-tor`); still slow, and rotating IPs
       does not make out-of-scope targets in-scope.
-
-# --- genuinely-missing anonymity staples ------------------------------------
-tools:
   - title: "Tor + torsocks (SOCKS anonymity proxy)"
     kind: install
     tags: [anonymity, tunneling, network]

@@ -46,7 +46,7 @@ def test_featured_deterministic_and_from_list(monkeypatch):
 
 def test_featured_empty_list(monkeypatch):
     _reset()
-    monkeypatch.setattr(sp, "load", lambda: [])
+    monkeypatch.setattr(sp, "load", list)
     assert sp.featured(1, seed=0) == []
 
 

@@ -248,7 +248,7 @@ class Noxentra:
     def _ai_command(self, goal=None):
         """AI2: turn a free-text goal into a command for this tool (display only).
         ``goal`` may be pre-supplied (bare text typed at the menu → dispatch)."""
-        import noxentra.ai_command as ai_command
+        from noxentra import ai_command
         if goal is None:
             goal = ask("[bold cyan]What do you want to do?[/bold cyan]",
                               default="").strip()
@@ -546,7 +546,7 @@ class Noxentra:
         else:
             console.print("[warning]Tool directory not found.[/warning]")
             if self.PROJECT_URL:
-                console.print(f"[dim]You can clone it manually:[/dim]")
+                console.print("[dim]You can clone it manually:[/dim]")
                 console.print(f"[cyan]  git clone {self.PROJECT_URL}.git[/cyan]")
 
     def before_run(self): pass

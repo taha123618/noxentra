@@ -8,10 +8,10 @@ and something you get back — no prior knowledge of the codebase needed.
 > first, and never invents results.
 
 > **TUI vs `--classic`.** The default `noxentra` is an interactive TUI: browse
-> categories, type to search every tool, `↑↓`/`Enter`/`Esc` to move, `/` for the
-> command palette. The `/…`, `@…` and plain-English **grammar** taught below
-> (sections 2, 4, 5, 8) is the **`--classic`** REPL — launch it with
-> `noxentra --classic`. Bringing these into the default TUI is Phase 2.
+> categories, type to search every tool, `↑↓`/`Enter`/`Esc` to move, and `/` for the
+> command palette (`/recommend`, `/find`, `/goal`, `/tags`, `/skill`, `/report`,
+> `/config`, `/update`, `/menu`, `/quit`). The `@…` shortcuts and background tmux
+> panes (section 8) run in **`noxentra --classic`**.
 
 - [1. First run](#1-first-run)
 - [2. Learn the grammar in 60 seconds](#2-learn-the-grammar-in-60-seconds)

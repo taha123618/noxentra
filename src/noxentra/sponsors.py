@@ -57,7 +57,7 @@ def _sponsors_url() -> str:
 
 def _fetch(url: str, timeout: float) -> list:
     req = urllib.request.Request(url, headers={"User-Agent": f"{REPO_NAME}/{VERSION}"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:  # noqa: S310 (operator-configured URL)
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.load(r).get("sponsors") or []
 
 

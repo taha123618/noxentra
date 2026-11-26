@@ -37,19 +37,6 @@ overlay:
       Run it ONLY against your own lab server. Control the load with -s (sockets)
       and stop with Ctrl-C — a small -s already exhausts an unhardened server.
 
-  - title: "UFOnet"
-    tags: [ddos, web, network]
-    system_pkgs: {which: ufonet, git: "https://github.com/epsylon/ufonet"}
-    usage:
-      - ["launch the web GUI", "ufonet --gui"]
-      - ["show all options", "ufonet --help"]
-    lab_safe_notes: >-
-      UFONet drives a botnet of "zombie" open-redirect/proxy hosts to amplify a
-      DDoS. Only ever aim it at infrastructure you own or are authorized to test.
-      Recruiting or abusing third-party zombie hosts is illegal even if the final
-      target is yours. Kept to the GUI/help launch — exact attack flags vary by
-      version, so read `ufonet --help` in your installed build before firing.
-
   - title: "SaphyraDDoS"
     tags: [ddos, web]
     system_pkgs: {which: git, git: "https://github.com/anonymous24x7/Saphyra-DDoS"}
@@ -60,8 +47,29 @@ overlay:
       It takes just a URL and floods until you Ctrl-C, so there is no built-in
       rate limit — run it on an isolated network and stop it manually.
 
-# --- genuinely-missing, widely-used stress-testing staples -------------------
+# --- migrated from tools/ddos.py + stress-testing staples -------------------
 tools:
+  - title: "UFOnet"
+    kind: install
+    tags: [ddos, web, network]
+    description: "UFONet is a free software, P2P and cryptographic disruptive toolkit for DoS and DDoS testing."
+    supported_os: [linux]
+    system_pkgs: {which: ufonet, git: "https://github.com/epsylon/ufonet"}
+    install:
+      commands:
+        - "git clone https://github.com/epsylon/ufonet.git"
+        - "cd ufonet && pip install --user ."
+    run: ["python3 ufonet --gui"]
+    project_url: "https://github.com/epsylon/ufonet"
+    usage:
+      - ["launch the web GUI", "ufonet --gui"]
+      - ["show all options", "ufonet --help"]
+    lab_safe_notes: >-
+      UFONet drives a botnet of "zombie" open-redirect/proxy hosts to amplify a
+      DDoS. Only ever aim it at infrastructure you own or are authorized to test.
+      Recruiting or abusing third-party zombie hosts is illegal even if the final
+      target is yours. Kept to the GUI/help launch — exact attack flags vary by
+      version, so read `ufonet --help` in your installed build before firing.
   - title: "hping3 (Packet Crafter / Flooder)"
     kind: install
     tags: [ddos, network]

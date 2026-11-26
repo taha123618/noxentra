@@ -62,7 +62,7 @@ def _box_bottom(w: int) -> str: return "╰" + "─" * (w - 2) + "╯"
 def _catalog():
     """(tools_by_title, tag_index), built once from cli. Cached — the catalog is
     static for a session."""
-    import noxentra.cli as cli
+    from noxentra import cli
 
     tag_index = cli._get_all_tags()
     tools_by_title = {t.TITLE: t for t, _ in cli._collect_all_tools() if t.TITLE}
@@ -113,7 +113,7 @@ def _running_count():
 def dispatch(raw, ctx):
     """The ONE grammar. Returns CONTINUE | QUIT | BACK | Open. Never handles
     numbers — the menu owns its own numeric options (see core.show_options)."""
-    import noxentra.cli as cli
+    from noxentra import cli
 
     raw = raw.strip()
     if not raw:
@@ -201,7 +201,7 @@ def _clear(ctx):
     from noxentra.core import clear_screen
     clear_screen()
     if ctx.mode == "home":
-        import noxentra.cli as cli
+        from noxentra import cli
         cli.console.print(cli._build_header())
 
 
@@ -244,7 +244,7 @@ def _print_panes(windows):
 def _run_command(arg, ctx):
     """``/run [tool] [args…] [&]`` — trailing ``&`` backgrounds via tmux (when
     enabled); otherwise opens the tool's foreground menu (unchanged slice 2a)."""
-    import noxentra.cli as cli
+    from noxentra import cli
     from noxentra import session
 
     arg = arg.strip()
@@ -295,7 +295,7 @@ def _use_pt():
     if not (sys.stdin.isatty() and sys.stdout.isatty()):
         return False
     try:
-        import prompt_toolkit  # noqa: F401
+        import prompt_toolkit
     except ImportError:
         return False
     return True
@@ -376,7 +376,7 @@ def simple(prompt, default=""):
     """Plain readline-backed line read (confirmations / Press-Enter). No grammar,
     no completer. EOF or Ctrl-C → SystemExit(0) (matches the old core.ask)."""
     try:
-        import readline  # noqa: F401 (side effect: enables libedit/readline editing)
+        import readline
     except ImportError:
         pass
     from rich.text import Text

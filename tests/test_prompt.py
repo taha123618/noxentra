@@ -71,7 +71,7 @@ def test_dispatch_tag_mention_returns_open():
 
 def test_bare_text_home_calls_ai1(monkeypatch):
     seen = {}
-    import noxentra.cli as cli
+    from noxentra import cli
     monkeypatch.setattr(cli, "recommend_tools", lambda intent=None: seen.setdefault("i", intent))
     assert prompt.dispatch("crack a wifi handshake", PromptCtx("home")) is CONTINUE
     assert seen["i"] == "crack a wifi handshake"
@@ -200,7 +200,7 @@ def test_kill_routes(monkeypatch):
 
 
 def test_config_routes(monkeypatch):
-    import noxentra.cli as cli
+    from noxentra import cli
     from noxentra import prompt
     got = {}
     monkeypatch.setattr(cli, "config_command", lambda arg="": got.setdefault("arg", arg))

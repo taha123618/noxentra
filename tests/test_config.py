@@ -102,14 +102,14 @@ def test_allowed_values():
 
 
 def test_config_command_no_arg_lists(monkeypatch, capsys):
-    import noxentra.cli as cli
+    from noxentra import cli
     cli.config_command("")
     out = capsys.readouterr().out
     assert "background_runner" in out and "version" in out
 
 
 def test_config_command_sets(monkeypatch):
-    import noxentra.cli as cli
+    from noxentra import cli
     from noxentra import config
     seen = {}
     monkeypatch.setattr(config, "set_value",
@@ -119,14 +119,14 @@ def test_config_command_sets(monkeypatch):
 
 
 def test_config_command_show_single(monkeypatch, capsys):
-    import noxentra.cli as cli
+    from noxentra import cli
     cli.config_command("background_runner")
     out = capsys.readouterr().out
     assert "background_runner" in out and "auto" in out
 
 
 def test_config_command_show_unique_prefix(monkeypatch, capsys):
-    import noxentra.cli as cli
+    from noxentra import cli
     cli.config_command("background")
     out = capsys.readouterr().out
     assert "background_runner" in out
@@ -157,7 +157,7 @@ def test_config_ui_cycle():
 
 
 def test_config_command_no_arg_opens_modal_on_tty(monkeypatch):
-    import noxentra.cli as cli
+    from noxentra import cli
     from noxentra import config_ui, prompt
     opened = {}
     monkeypatch.setattr(prompt, "_use_pt", lambda: True)
@@ -207,7 +207,7 @@ def test_check_token_never_leaks_token_on_rejection(monkeypatch):
 
 
 def test_config_command_github_no_token(monkeypatch, capsys):
-    import noxentra.cli as cli
+    from noxentra import cli
     from noxentra import discover
     monkeypatch.setattr(discover, "check_token", lambda: (False, "no token configured"))
     cli.config_command("github")

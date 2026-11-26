@@ -1,5 +1,5 @@
-import noxentra.ai_report as ai_report
-import noxentra.engagement as engagement
+from noxentra import ai_report
+from noxentra import engagement
 from noxentra.findings import Finding, save_findings
 
 
