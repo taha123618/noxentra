@@ -109,6 +109,7 @@ REQUIRED_PACKAGES: dict[str, list[str]] = {
 
 def install_packages(packages: list[str], os_info: OSInfo | None = None) -> bool:
     """Install system packages using the detected package manager."""
+    import shlex
     import subprocess
     if os_info is None:
         os_info = CURRENT_OS
@@ -119,13 +120,12 @@ def install_packages(packages: list[str], os_info: OSInfo | None = None) -> bool
         return False
 
     cmd_template = PACKAGE_INSTALL_CMDS[mgr]
-    pkg_str = " ".join(packages)
-    cmd = cmd_template.format(packages=pkg_str)
+    argv = shlex.split(cmd_template.replace("{packages}", "")) + list(packages)
 
     # Prepend privilege escalation only on Linux (brew on macOS doesn't need sudo)
     if os_info.system == "linux" and not os_info.is_root:
         from noxentra.constants import PRIV_CMD
-        cmd = f"{PRIV_CMD} {cmd}"
+        argv = [PRIV_CMD, *argv]
 
-    result = subprocess.run(cmd, shell=True, check=False)
+    result = subprocess.run(argv, check=False)
     return result.returncode == 0

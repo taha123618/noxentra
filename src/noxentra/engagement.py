@@ -14,6 +14,17 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _validate_name(name: str) -> str:
+    """Reject empty names, path separators, and traversal segments."""
+    if not name or name in (".", "..") or "/" in name or "\\" in name:
+        raise ValueError(f"Invalid engagement name: {name!r}")
+    root = ENGAGEMENTS_ROOT.resolve()
+    target = (root / name).resolve()
+    if not target.is_relative_to(root) or target == root:
+        raise ValueError(f"Invalid engagement name: {name!r}")
+    return name
+
+
 @dataclass
 class Engagement:
     name: str
@@ -22,6 +33,9 @@ class Engagement:
     scope_out: list[str] = field(default_factory=list)
     targets: list[str] = field(default_factory=list)
     runs: list[dict] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        _validate_name(self.name)
 
     @property
     def workspace(self) -> Path:
@@ -71,6 +85,7 @@ class Engagement:
 
 
 def load(name: str) -> Engagement | None:
+    _validate_name(name)
     f = ENGAGEMENTS_ROOT / name / "engagement.json"
     if not f.exists():
         return None

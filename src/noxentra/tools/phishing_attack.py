@@ -189,9 +189,10 @@ class QRLJacking(Noxentra):
     INSTALL_COMMANDS = [
         "git clone https://github.com/OWASP/QRLJacking.git",
         # Bug fix: geckodriver must be fetched as a binary, not cloned from source
+        "GECKO_TMP=$(mktemp -d) && "
         "GECKO_VER=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep tag_name | cut -d '\"' -f4) && "
-        "wget -q https://github.com/mozilla/geckodriver/releases/download/$GECKO_VER/geckodriver-$GECKO_VER-linux64.tar.gz -O /tmp/geckodriver.tar.gz && "
-        "tar -xzf /tmp/geckodriver.tar.gz -C /tmp && sudo mv /tmp/geckodriver /usr/local/bin/",
+        "wget -q https://github.com/mozilla/geckodriver/releases/download/$GECKO_VER/geckodriver-$GECKO_VER-linux64.tar.gz -O \"$GECKO_TMP/geckodriver.tar.gz\" && "
+        "tar -xzf \"$GECKO_TMP/geckodriver.tar.gz\" -C \"$GECKO_TMP\" && sudo mv \"$GECKO_TMP/geckodriver\" /usr/local/bin/ && rm -rf \"$GECKO_TMP\"",
         "cd QRLJacking && pip3 install --user -r QRLJacker/requirements.txt",
     ]
     RUN_COMMANDS = ["cd QRLJacking/QRLJacker && python3 QrlJacker.py"]

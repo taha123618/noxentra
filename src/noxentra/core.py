@@ -43,7 +43,7 @@ console = Console(theme=_theme)
 
 
 def clear_screen():
-    os.system("cls" if system() == "Windows" else "clear")
+    subprocess.run(["cmd", "/c", "cls"] if system() == "Windows" else ["clear"], check=False)
 
 
 def validate_input(ip, val_range: list) -> int | None:
@@ -541,7 +541,8 @@ class Noxentra:
         if tool_dir:
             console.print(f"[success]Opening folder: {tool_dir}[/success]")
             console.print("[dim]Type 'exit' to return to noxentra.[/dim]")
-            os.system(f'cd "{tool_dir}" && $SHELL')
+            shell = os.environ.get("SHELL") or "/bin/sh"
+            subprocess.run([shell], cwd=str(tool_dir), check=False)
         else:
             console.print("[warning]Tool directory not found.[/warning]")
             if self.PROJECT_URL:

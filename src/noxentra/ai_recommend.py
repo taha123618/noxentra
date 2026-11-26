@@ -13,6 +13,7 @@ import difflib
 import json
 import re
 import urllib.error
+import urllib.parse
 import urllib.request
 
 from noxentra import config, skill
@@ -60,6 +61,14 @@ def _ollama(prompt: str) -> str | None:
         return None
 
 
+def _http_url(base: str) -> str | None:
+    """Return a validated http(s) chat-completions URL, or None for disallowed schemes."""
+    parsed = urllib.parse.urlparse(base.strip())
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        return None
+    return base.strip().rstrip("/") + "/chat/completions"
+
+
 def _byo_key(prompt: str) -> str | None:
     """OpenAI-compatible chat completion (OpenAI / Groq / local, etc.). Base URL from
     config; key is env/.env only. Returns None when either is unset."""
@@ -67,7 +76,9 @@ def _byo_key(prompt: str) -> str | None:
     key = config.ai_key()
     if not (base and key):
         return None
-    url = base.rstrip("/") + "/chat/completions"
+    url = _http_url(base)
+    if url is None:
+        return None
     payload = json.dumps({
         "model": config.ai_model(),
         "messages": [{"role": "user", "content": prompt}],
@@ -124,7 +135,9 @@ def _probe_byo() -> tuple[bool, str]:
         return False, "ai_base_url is empty — set it via /config (e.g. https://api.anthropic.com/v1)."
     if not key:
         return False, "NOXENTRA_AI_KEY is not set — add it to ~/.noxentra/.env."
-    url = base.rstrip("/") + "/chat/completions"
+    url = _http_url(base)
+    if url is None:
+        return False, f"ai_base_url must use http:// or https:// (got {base!r})."
     payload = json.dumps({
         "model": model, "max_tokens": 16, "temperature": 0,
         "messages": [{"role": "user", "content": "Reply with the single word: connected"}],

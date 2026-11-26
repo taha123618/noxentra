@@ -15,7 +15,13 @@ STEP_TIMEOUT = 1800  # 30 min per step; ponytail: bump if a step legitimately ru
 
 
 def load_pipeline(name: str) -> dict:
-    return yaml.safe_load((PIPELINES_DIR / f"{name}.yaml").read_text())
+    if not name or name in (".", "..") or "/" in name or "\\" in name:
+        raise ValueError(f"Invalid pipeline name: {name!r}")
+    root = PIPELINES_DIR.resolve()
+    target = (root / f"{name}.yaml").resolve()
+    if not target.is_relative_to(root):
+        raise ValueError(f"Invalid pipeline name: {name!r}")
+    return yaml.safe_load(target.read_text())
 
 
 def _host_of(line: str) -> str:
