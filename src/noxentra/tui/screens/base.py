@@ -106,11 +106,24 @@ class NoxentraScreen(Screen):
             event.stop()
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
+        v = event.value.strip()
         pal = self._palette()
         if pal is not None:
-            if pal.highlighted is not None:
-                self.post_message(CommandPalette.Selected(pal.get_option_at_index(pal.highlighted).id))
+            idx = pal.highlighted if pal.highlighted is not None else (0 if pal.option_count else None)
+            if idx is not None:
+                self.post_message(CommandPalette.Selected(pal.get_option_at_index(idx).id))
             self.query_one("#nx-prompt", Input).value = ""  # clears → removes palette
+            return
+        if v.startswith("/"):
+            from noxentra.tui.widgets.command_palette import COMMANDS
+            needle = v[1:].lower()
+            matches = [
+                cmd for cmd, help_ in COMMANDS
+                if not needle or needle in cmd.lower() or needle in help_.lower()
+            ]
+            if matches:
+                self.post_message(CommandPalette.Selected(matches[0]))
+            self.query_one("#nx-prompt", Input).value = ""
             return
         ol = self._list()
         if ol.highlighted is not None:

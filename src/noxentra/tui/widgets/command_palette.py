@@ -30,6 +30,10 @@ class CommandPalette(OptionList):
         super().__init__(*self._opts(""))
         self.can_focus = False      # prompt keeps focus; ↑↓ are routed here from it
 
+    def on_mount(self) -> None:
+        if self.option_count and self.highlighted is None:
+            self.highlighted = 0
+
     def _opts(self, needle: str) -> list[Option]:
         n = needle.lower()
         return [

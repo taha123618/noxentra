@@ -94,8 +94,12 @@ def test_report_command_opens_report_screen():
             await _until(pilot, MainScreen)
             from noxentra.tui.screens.report import ReportScreen
             inp = pilot.app.screen.query_one("#nx-prompt", Input)
+            inp.focus()
             inp.value = "/report"
-            await pilot.pause()
+            for _ in range(20):
+                await pilot.pause()
+                if pilot.app.screen.query("CommandPalette"):
+                    break
             await pilot.press("enter")
             await _until(pilot, ReportScreen)
             assert isinstance(pilot.app.screen, ReportScreen)

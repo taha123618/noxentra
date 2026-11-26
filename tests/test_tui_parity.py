@@ -21,14 +21,22 @@ async def _until(pilot, kind):
     raise AssertionError(f"never reached {kind.__name__}: on {type(pilot.app.screen).__name__}")
 
 
+async def _run_slash(pilot, cmd: str) -> None:
+    inp = pilot.app.screen.query_one("#nx-prompt", Input)
+    inp.focus()
+    inp.value = cmd
+    for _ in range(20):
+        await pilot.pause()
+        if pilot.app.screen.query("CommandPalette"):
+            break
+    await pilot.press("enter")
+
+
 def test_tags_screen_drills_into_tool():
     async def run():
         async with NoxentraApp().run_test(size=(100, 30)) as pilot:
             await _until(pilot, MainScreen)
-            inp = pilot.app.screen.query_one("#nx-prompt", Input)
-            inp.value = "/tags"
-            await pilot.pause()
-            await pilot.press("enter")
+            await _run_slash(pilot, "/tags")
             await _until(pilot, TagsScreen)
 
             ol = pilot.app.screen.query_one("#tags-list", OptionList)
@@ -47,10 +55,7 @@ def test_skill_screen_renders_playbook():
     async def run():
         async with NoxentraApp().run_test(size=(100, 30)) as pilot:
             await _until(pilot, MainScreen)
-            inp = pilot.app.screen.query_one("#nx-prompt", Input)
-            inp.value = "/skill"
-            await pilot.pause()
-            await pilot.press("enter")
+            await _run_slash(pilot, "/skill")
             await _until(pilot, SkillScreen)
             assert pilot.app.screen.query_one("#skill-body")
 
@@ -85,10 +90,7 @@ def test_find_screen_searches_and_saves_repo(tmp_path, monkeypatch):
     async def run():
         async with NoxentraApp().run_test(size=(100, 30)) as pilot:
             await _until(pilot, MainScreen)
-            inp = pilot.app.screen.query_one("#nx-prompt", Input)
-            inp.value = "/find"
-            await pilot.pause()
-            await pilot.press("enter")
+            await _run_slash(pilot, "/find")
             await _until(pilot, FindScreen)
 
             find_inp = pilot.app.screen.query_one("#nx-prompt", Input)
@@ -116,10 +118,7 @@ def test_goal_screen_drafts_plan(monkeypatch):
     async def run():
         async with NoxentraApp().run_test(size=(100, 30)) as pilot:
             await _until(pilot, MainScreen)
-            inp = pilot.app.screen.query_one("#nx-prompt", Input)
-            inp.value = "/goal"
-            await pilot.pause()
-            await pilot.press("enter")
+            await _run_slash(pilot, "/goal")
             await _until(pilot, GoalScreen)
 
             goal_inp = pilot.app.screen.query_one("#nx-prompt", Input)

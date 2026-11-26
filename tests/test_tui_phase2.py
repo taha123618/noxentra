@@ -19,6 +19,17 @@ async def _until(pilot, kind):
     raise AssertionError(f"never reached {kind.__name__}: on {type(pilot.app.screen).__name__}")
 
 
+async def _run_slash(pilot, cmd: str) -> None:
+    inp = pilot.app.screen.query_one("#nx-prompt", Input)
+    inp.focus()
+    inp.value = cmd
+    for _ in range(20):
+        await pilot.pause()
+        if pilot.app.screen.query("CommandPalette"):
+            break
+    await pilot.press("enter")
+
+
 def test_recommend_screen_resolves_and_opens_tool(monkeypatch):
     from noxentra import ai_recommend
     monkeypatch.setattr(ai_recommend, "ask", lambda _prompt: None)
@@ -26,10 +37,7 @@ def test_recommend_screen_resolves_and_opens_tool(monkeypatch):
     async def run():
         async with NoxentraApp().run_test(size=(100, 30)) as pilot:
             await _until(pilot, MainScreen)
-            inp = pilot.app.screen.query_one("#nx-prompt", Input)
-            inp.value = "/recommend"
-            await pilot.pause()
-            await pilot.press("enter")
+            await _run_slash(pilot, "/recommend")
             await _until(pilot, RecommendScreen)
 
             rec_inp = pilot.app.screen.query_one("#nx-prompt", Input)
@@ -59,10 +67,7 @@ def test_report_screen_exports_engagement_report(tmp_path, monkeypatch):
             await _until(pilot, MainScreen)
             seen = {}
             pilot.app.notify = lambda *a, **k: seen.setdefault("msg", (a, k))
-            inp = pilot.app.screen.query_one("#nx-prompt", Input)
-            inp.value = "/report"
-            await pilot.pause()
-            await pilot.press("enter")
+            await _run_slash(pilot, "/report")
             await _until(pilot, ReportScreen)
 
             ol = pilot.app.screen.query_one("#report-engagements", OptionList)
@@ -92,10 +97,7 @@ def test_report_screen_ai_summary_and_draft(tmp_path, monkeypatch):
             await _until(pilot, MainScreen)
             msgs = []
             pilot.app.notify = lambda *a, **k: msgs.append((a, k))
-            inp = pilot.app.screen.query_one("#nx-prompt", Input)
-            inp.value = "/report"
-            await pilot.pause()
-            await pilot.press("enter")
+            await _run_slash(pilot, "/report")
             await _until(pilot, ReportScreen)
 
             await pilot.press("enter")  # select engagement
