@@ -9,7 +9,7 @@ from noxentra.constants import REPO_WEB_URL, VERSION_DISPLAY
 from noxentra.tui import glyphs
 
 # Big block wordmark (ANSI Shadow, pyfiglet) — "NOXENTRA" on one row of letters.
-# The box is a CSS border (#ht-logo), not chars. Twin of cli._BANNER_ART (which stacks it).
+# The box is a CSS border (#nx-logo), not chars. Twin of cli._BANNER_ART (which stacks it).
 _LOGO = "\n".join([
     "███╗   ██╗ ██████╗ ██╗  ██╗███████╗███╗   ██╗████████╗██████╗  █████╗ ",
     "████╗  ██║██╔═══██╗╚██╗██╔╝██╔════╝████╗  ██║╚══██╔══╝██╔══██╗██╔══██╗",
@@ -25,13 +25,13 @@ class SponsorBanner(Vertical):
 
     def __init__(self, tool_count: int):
         self._count = tool_count
-        super().__init__(id="ht-banner")
+        super().__init__(id="nx-banner")
 
     def compose(self):
-        yield Static(self._logo_text(), id="ht-logo", markup=False)
-        yield Static(self._tagline_text(), id="ht-tagline", markup=False)
-        yield Static(self._sponsor_text(), id="ht-sponsor", markup=False)
-        yield Static("", id="ht-update", markup=False)   # filled iff a newer release exists
+        yield Static(self._logo_text(), id="nx-logo", markup=False)
+        yield Static(self._tagline_text(), id="nx-tagline", markup=False)
+        yield Static(self._sponsor_text(), id="nx-sponsor", markup=False)
+        yield Static("", id="nx-update", markup=False)   # filled iff a newer release exists
 
     def on_mount(self) -> None:
         self._check_update()   # background: never blocks first render on the network
@@ -47,7 +47,7 @@ class SponsorBanner(Vertical):
         t = Text(f" {glyphs.STATUS} update available: v{newer} "
                  f"(you have {VERSION_DISPLAY}) · type /update · ", style="bold yellow")
         t.append(url, style=f"yellow link {url}")
-        self.query_one("#ht-update", Static).update(t)
+        self.query_one("#nx-update", Static).update(t)
 
     def _logo_text(self) -> Text:
         return Text(_LOGO, style="bold bright_green")

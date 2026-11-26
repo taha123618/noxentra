@@ -1,7 +1,7 @@
 /* src/noxentra/tui/app.tcss — single source of visual style (claude-* look) */
 Screen { background: $surface; }
 
-#ht-header {
+#nx-header {
     dock: top;
     height: auto;
     padding: 0 1;
@@ -9,17 +9,17 @@ Screen { background: $surface; }
     border-bottom: solid $panel;
 }
 
-#ht-banner { dock: top; height: auto; padding: 0 1; }
-#ht-logo { border: round $accent; width: auto; height: auto; padding: 0 1; color: $text; text-style: bold; }
+#nx-banner { dock: top; height: auto; padding: 0 1; }
+#nx-logo { border: round $accent; width: auto; height: auto; padding: 0 1; color: $text; text-style: bold; }
 
 OptionList { border: round $panel; padding: 0 1; }
 OptionList > .option-list--option-highlighted { background: $boost; color: $text; }
 
 /* list fills the middle and scrolls within itself; prompt pinned at the bottom */
 #main-cats, #cat-tools { height: 1fr; }
-#ht-prompt { dock: bottom; height: 3; border: round $panel; padding: 0 1; }
+#nx-prompt { dock: bottom; height: 3; border: round $panel; padding: 0 1; }
 
-#ht-hint { color: $text-muted; height: 1; padding: 0 1; }
+#nx-hint { color: $text-muted; height: 1; padding: 0 1; }
 
 UpdateModal { align: center middle; }
 UpdateModal > #update-box {

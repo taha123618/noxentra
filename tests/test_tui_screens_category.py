@@ -52,7 +52,7 @@ def test_filter_narrows_list():
             await _until_screen(pilot, CategoryScreen)
             ol = pilot.app.screen.query_one("#cat-tools", OptionList)
             original = ol.option_count
-            inp = pilot.app.screen.query_one("#ht-prompt", Input)
+            inp = pilot.app.screen.query_one("#nx-prompt", Input)
             inp.value = needle
             await pilot.pause()
             assert ol.option_count == expected

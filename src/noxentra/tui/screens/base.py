@@ -10,8 +10,8 @@ from noxentra.tui.widgets.command_palette import CommandPalette
 from noxentra.tui.widgets.header import Header
 
 
-class HTScreen(Screen):
-    LIST_ID = "ht-list"                       # subclass overrides
+class NoxentraScreen(Screen):
+    LIST_ID = "nx-list"                       # subclass overrides
     PROMPT_PLACEHOLDER = "type to filter…"     # subclass overrides
     SHOW_BACK = True                           # MainScreen (the root) sets False
 
@@ -23,8 +23,8 @@ class HTScreen(Screen):
         ol = OptionList(*self.options(""), id=self.LIST_ID)
         ol.can_focus = False      # keep focus on the prompt so typing always lands there
         yield ol
-        yield Static(self.hint_text(), id="ht-hint")
-        prompt = Input(placeholder=self.PROMPT_PLACEHOLDER, id="ht-prompt")
+        yield Static(self.hint_text(), id="nx-hint")
+        prompt = Input(placeholder=self.PROMPT_PLACEHOLDER, id="nx-prompt")
         prompt.border_title = glyphs.PROMPT
         yield prompt
 
@@ -34,11 +34,11 @@ class HTScreen(Screen):
 
     def on_mount(self) -> None:
         # Highlight the first row and focus the prompt so ↑↓/⏎ and typing work at once.
-        if self.query("#ht-prompt"):
+        if self.query("#nx-prompt"):
             ol = self._list()
             if ol.option_count:
                 ol.highlighted = 0
-            self.query_one("#ht-prompt", Input).focus()
+            self.query_one("#nx-prompt", Input).focus()
 
     # hooks
     def options(self, needle: str) -> list[Option]:
@@ -88,7 +88,7 @@ class HTScreen(Screen):
     def on_key(self, event) -> None:
         if event.key == "escape":
             if self._palette() is not None:
-                self.query_one("#ht-prompt", Input).value = ""  # clears → removes palette
+                self.query_one("#nx-prompt", Input).value = ""  # clears → removes palette
                 event.stop()
             return
         # ← goes back when the prompt is empty; with text it stays cursor-left (Input binds it).
@@ -110,7 +110,7 @@ class HTScreen(Screen):
         if pal is not None:
             if pal.highlighted is not None:
                 self.post_message(CommandPalette.Selected(pal.get_option_at_index(pal.highlighted).id))
-            self.query_one("#ht-prompt", Input).value = ""  # clears → removes palette
+            self.query_one("#nx-prompt", Input).value = ""  # clears → removes palette
             return
         ol = self._list()
         if ol.highlighted is not None:

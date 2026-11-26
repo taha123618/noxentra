@@ -21,7 +21,7 @@ class _Doc:
 # ── Completer ────────────────────────────────────────────────────────────────
 
 def _complete(text, titles, tags):
-    comp = repl.HTCompleter(titles, tags)
+    comp = repl.NoxentraCompleter(titles, tags)
     return [c.text for c in comp.get_completions(_Doc(text), None)]
 
 

@@ -3,11 +3,11 @@ from textual.widgets.option_list import Option
 from textual import work
 
 from noxentra import config, config_ui
-from noxentra.tui.screens.base import HTScreen
+from noxentra.tui.screens.base import NoxentraScreen
 from noxentra.tui.widgets.edit_modal import EditModal
 
 
-class ConfigScreen(HTScreen):
+class ConfigScreen(NoxentraScreen):
     LIST_ID = "config-rows"
     PROMPT_PLACEHOLDER = "search settings…"
 
@@ -60,7 +60,7 @@ class ConfigScreen(HTScreen):
 
     def _refresh(self) -> None:
         ol = self._list()
-        needle = self.query_one("#ht-prompt").value
+        needle = self.query_one("#nx-prompt").value
         idx = ol.highlighted
         ol.clear_options()
         ol.add_options(self.options(needle))

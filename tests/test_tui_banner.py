@@ -87,9 +87,9 @@ def test_main_screen_uses_banner():
         async with _Host(MainScreen()).run_test() as pilot:
             await _until(pilot, MainScreen)
             banner = pilot.app.screen.query_one(SponsorBanner)
-            assert banner.query_one("#ht-logo")
-            assert banner.query_one("#ht-tagline")
-            assert banner.query_one("#ht-sponsor")
+            assert banner.query_one("#nx-logo")
+            assert banner.query_one("#nx-tagline")
+            assert banner.query_one("#nx-sponsor")
     asyncio.run(run())
 
 
@@ -101,7 +101,7 @@ def test_update_notice_shown_when_newer(monkeypatch):
     async def run():
         async with _Host(MainScreen()).run_test() as pilot:
             await _until(pilot, MainScreen)
-            upd = pilot.app.screen.query_one("#ht-update", Static)
+            upd = pilot.app.screen.query_one("#nx-update", Static)
             for _ in range(40):            # wait for the background thread worker
                 await pilot.pause()
                 if str(upd.render()).strip():
@@ -120,7 +120,7 @@ def test_no_update_notice_when_current(monkeypatch):
             await _until(pilot, MainScreen)
             for _ in range(10):
                 await pilot.pause()
-            assert str(pilot.app.screen.query_one("#ht-update", Static).render()).strip() == ""
+            assert str(pilot.app.screen.query_one("#nx-update", Static).render()).strip() == ""
     asyncio.run(run())
 
 

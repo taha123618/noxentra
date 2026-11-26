@@ -20,7 +20,7 @@ class NoxentraApp(App):
         # close the palette + clear the prompt (covers mouse-click, which doesn't submit)
         for pal in self.screen.query(CommandPalette):
             pal.remove()
-        for prompt in self.screen.query("#ht-prompt"):
+        for prompt in self.screen.query("#nx-prompt"):
             prompt.value = ""
         if event.command == "/quit":
             self.exit()

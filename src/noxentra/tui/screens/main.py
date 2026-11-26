@@ -2,13 +2,13 @@
 from textual.widgets.option_list import Option
 
 from noxentra.tui import data, glyphs
-from noxentra.tui.screens.base import HTScreen
+from noxentra.tui.screens.base import NoxentraScreen
 from noxentra.tui.screens.category import CategoryScreen
 from noxentra.tui.screens.tool import ToolScreen
 from noxentra.tui.widgets.banner import SponsorBanner
 
 
-class MainScreen(HTScreen):
+class MainScreen(NoxentraScreen):
     LIST_ID = "main-cats"
     PROMPT_PLACEHOLDER = "type to search all tools…"
     SHOW_BACK = False      # root screen — nothing to go back to

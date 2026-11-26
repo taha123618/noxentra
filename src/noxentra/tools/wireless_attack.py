@@ -116,9 +116,9 @@ class EvilTwin(Noxentra):
         "Fakeap — perform Evil Twin Attack by getting credentials "
         "using a Fake page and Fake Access Point."
     )
-    INSTALL_COMMANDS = ["git clone https://github.com/Z4nzu/fakeap.git"]
+    INSTALL_COMMANDS = ["git clone https://github.com/evil5hadow/fakeap.git"]
     RUN_COMMANDS = ["cd fakeap && sudo bash fakeap.sh"]
-    PROJECT_URL = "https://github.com/Z4nzu/fakeap"
+    PROJECT_URL = "https://github.com/evil5hadow/fakeap"
     SUPPORTED_OS = ["linux"]
     REQUIRES_WIFI = True
 
@@ -132,11 +132,11 @@ class Fastssh(Noxentra):
         "using the most commonly used credentials."
     )
     INSTALL_COMMANDS = [
-        "git clone https://github.com/Z4nzu/fastssh.git && cd fastssh && chmod +x fastssh.sh",
+        "git clone https://github.com/OffXec/fastssh.git && cd fastssh && chmod +x fastssh.sh",
         "sudo apt-get install -y sshpass netcat",
     ]
     RUN_COMMANDS = ["cd fastssh && sudo bash fastssh.sh --scan"]
-    PROJECT_URL = "https://github.com/Z4nzu/fastssh"
+    PROJECT_URL = "https://github.com/OffXec/fastssh"
     SUPPORTED_OS = ["linux"]
 
 

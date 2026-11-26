@@ -14,7 +14,7 @@ class UpdateTool(Noxentra):
     def __init__(self):
         super().__init__([
             ("Update System", self.update_sys),
-            ("Update Noxentra", self.update_ht),
+            ("Update Noxentra", self.update_noxentra),
         ], installable=False, runnable=False)
 
     def update_sys(self):
@@ -28,7 +28,7 @@ class UpdateTool(Noxentra):
         else:
             console.print("[warning]Unknown package manager — update manually.[/warning]")
 
-    def update_ht(self):
+    def update_noxentra(self):
         # noxentra ships as a standard package (pipx/pip/.deb/docker). It can't
         # reliably self-update its own installed package from inside, so show the
         # right command for each channel instead of a broken git-pull.

@@ -37,7 +37,7 @@ def test_filter_narrows_settings():
         async with _App().run_test() as pilot:
             await _until(pilot)
             ol = pilot.app.screen.query_one("#config-rows", OptionList)
-            inp = pilot.app.screen.query_one("#ht-prompt", Input)
+            inp = pilot.app.screen.query_one("#nx-prompt", Input)
             inp.value = "theme"
             await pilot.pause()
             assert ol.option_count == 1
@@ -57,7 +57,7 @@ def test_enter_cycles_choice_and_persists(monkeypatch):
     async def run():
         async with _App().run_test() as pilot:
             await _until(pilot)
-            inp = pilot.app.screen.query_one("#ht-prompt", Input)
+            inp = pilot.app.screen.query_one("#nx-prompt", Input)
             inp.value = "show archived"      # a bool row -> cycles true/false
             await pilot.pause()
             await pilot.press("enter")
@@ -73,7 +73,7 @@ def test_readonly_row_notifies_instead_of_editing():
             scr = pilot.app.screen
             seen = {}
             pilot.app.notify = lambda *a, **k: seen.setdefault("msg", (a, k))
-            inp = scr.query_one("#ht-prompt", Input)
+            inp = scr.query_one("#nx-prompt", Input)
             inp.value = "version"            # read-only
             await pilot.pause()
             await pilot.press("enter")

@@ -6,13 +6,13 @@ from textual import work
 
 from noxentra.tui import glyphs, working
 from noxentra.tui.data import ToolRow
-from noxentra.tui.screens.base import HTScreen
+from noxentra.tui.screens.base import NoxentraScreen
 from noxentra.tui.widgets.permission import PermissionModal
 
 _GATED = ("run", "install", "uninstall")
 
 
-class ToolScreen(HTScreen):
+class ToolScreen(NoxentraScreen):
     BINDINGS = [("escape", "app.pop_screen", "Back"), ("left", "app.pop_screen", "Back")]
 
     def __init__(self, row: ToolRow):
@@ -34,7 +34,7 @@ class ToolScreen(HTScreen):
             Option("← Back", id="back"),
             id="tool-actions",
         )
-        yield Static(f" {glyphs.PROMPT} ↑↓ move · ⏎ select · ← esc back", id="ht-hint")
+        yield Static(f" {glyphs.PROMPT} ↑↓ move · ⏎ select · ← esc back", id="nx-hint")
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         action = event.option.id

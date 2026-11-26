@@ -11,7 +11,7 @@ class Header(Static):
         self._title = title
         self._status = status
         self._count = tool_count
-        super().__init__(id="ht-header")
+        super().__init__(id="nx-header")
 
     def render(self) -> Text:
         t = Text()

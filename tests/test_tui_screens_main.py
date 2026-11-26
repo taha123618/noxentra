@@ -43,7 +43,7 @@ def test_typing_searches_all_tools_globally():
         async with _App().run_test() as pilot:
             await _until_screen(pilot, MainScreen)
             ol = pilot.app.screen.query_one("#main-cats", OptionList)
-            inp = pilot.app.screen.query_one("#ht-prompt", Input)
+            inp = pilot.app.screen.query_one("#nx-prompt", Input)
             inp.value = needle
             await pilot.pause()
             assert expected > 0
@@ -74,7 +74,7 @@ def test_enter_on_global_search_hit_opens_tool():
     async def run():
         async with _App().run_test() as pilot:
             await _until_screen(pilot, MainScreen)
-            inp = pilot.app.screen.query_one("#ht-prompt", Input)
+            inp = pilot.app.screen.query_one("#nx-prompt", Input)
             inp.value = "sql"
             await pilot.pause()
             await pilot.press("enter")
@@ -96,7 +96,7 @@ def test_prompt_docked_bottom_list_fills_middle(monkeypatch):
             await pilot.pause()
             await pilot.pause()
             scr = pilot.app.screen
-            prompt = scr.query_one("#ht-prompt", Input)
+            prompt = scr.query_one("#nx-prompt", Input)
             ol = scr.query_one("#main-cats", OptionList)
             assert not scr.query("#main-filter")  # no top filter box
             assert prompt.region.y > ol.region.y  # prompt below the list

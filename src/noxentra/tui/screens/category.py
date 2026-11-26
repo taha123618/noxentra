@@ -2,11 +2,11 @@
 from textual.widgets.option_list import Option
 
 from noxentra.tui import glyphs, data
-from noxentra.tui.screens.base import HTScreen
+from noxentra.tui.screens.base import NoxentraScreen
 from noxentra.tui.screens.tool import ToolScreen
 
 
-class CategoryScreen(HTScreen):
+class CategoryScreen(NoxentraScreen):
     BINDINGS = [("escape", "app.pop_screen", "Back")]
     LIST_ID = "cat-tools"
     PROMPT_PLACEHOLDER = "type to filter tools…"

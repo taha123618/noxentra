@@ -35,10 +35,10 @@ class WlCreator(Noxentra):
     DESCRIPTION = "WlCreator is a C program that can create all possibilities" \
                   " of passwords,\n and you can choose Length, Lowercase, " \
                   "Capital, Numbers and Special Chars"
-    INSTALL_COMMANDS = ["git clone https://github.com/Z4nzu/wlcreator.git"]
+    INSTALL_COMMANDS = ["git clone https://github.com/Keshav2136/wlcreator.git"]
     RUN_COMMANDS = [
         "cd wlcreator && sudo gcc -o wlcreator wlcreator.c && ./wlcreator 5"]
-    PROJECT_URL = "https://github.com/Z4nzu/wlcreator"
+    PROJECT_URL = "https://github.com/Keshav2136/wlcreator"
 
     def show_info(self):
         panel = Panel(

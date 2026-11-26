@@ -313,11 +313,11 @@ def _session():
     from noxentra.constants import THEME_HEX, USER_HISTORY_FILE
 
     tools_by_title, tag_index = _catalog()
-    _ht = repl.HTCompleter(tools_by_title.keys(), tag_index.keys())
+    _completer = repl.NoxentraCompleter(tools_by_title.keys(), tag_index.keys())
 
     class _PTCompleter(Completer):
         def get_completions(self, document, complete_event):
-            yield from _ht.get_completions(document, complete_event)
+            yield from _completer.get_completions(document, complete_event)
 
     USER_HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
     return PromptSession(

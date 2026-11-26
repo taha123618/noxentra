@@ -29,7 +29,7 @@ def test_clicking_list_keeps_typing_on_prompt():
             assert isinstance(pilot.app.focused, Input)  # focus did NOT move to the list
             await pilot.press("w")
             await pilot.pause()
-            assert pilot.app.screen.query_one("#ht-prompt", Input).value == "w"
+            assert pilot.app.screen.query_one("#nx-prompt", Input).value == "w"
     asyncio.run(run())
 
 
@@ -53,7 +53,7 @@ def test_left_arrow_edits_text_when_prompt_has_value():
             await _until(pilot, MainScreen)
             await pilot.press("enter")
             await _until(pilot, CategoryScreen)
-            inp = pilot.app.screen.query_one("#ht-prompt", Input)
+            inp = pilot.app.screen.query_one("#nx-prompt", Input)
             inp.value = "ab"
             inp.cursor_position = 2
             await pilot.pause()
@@ -79,12 +79,12 @@ def test_hint_line_visible_and_context_aware():
     async def run():
         async with NoxentraApp().run_test(size=(100, 30)) as pilot:
             await _until(pilot, MainScreen)
-            main_hint = pilot.app.screen.query_one("#ht-hint", Static)
+            main_hint = pilot.app.screen.query_one("#nx-hint", Static)
             assert "/ commands" in main_hint.content
             assert "back" not in main_hint.content          # root: no back
             await pilot.press("enter")
             await _until(pilot, CategoryScreen)
-            cat_hint = pilot.app.screen.query_one("#ht-hint", Static)
+            cat_hint = pilot.app.screen.query_one("#nx-hint", Static)
             assert "← esc back" in cat_hint.content          # category: back shown
     asyncio.run(run())
 
@@ -96,7 +96,7 @@ def test_stub_command_notifies_instead_of_silent():
             await _until(pilot, MainScreen)
             seen = {}
             pilot.app.notify = lambda *a, **k: seen.setdefault("msg", (a, k))
-            inp = pilot.app.screen.query_one("#ht-prompt", Input)
+            inp = pilot.app.screen.query_one("#nx-prompt", Input)
             inp.value = "/report"
             await pilot.pause()
             await pilot.press("enter")

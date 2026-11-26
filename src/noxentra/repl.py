@@ -44,7 +44,7 @@ def _last_fragment(text: str) -> str:
     return text[cut + 1:]
 
 
-class HTCompleter:
+class NoxentraCompleter:
     """prompt_toolkit Completer: ``/`` → commands, ``@`` → tools, ``@tag:`` → tags.
 
     A custom Completer (not NestedCompleter) because completion branches on the

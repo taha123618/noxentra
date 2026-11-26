@@ -17,7 +17,7 @@ async def _until_screen(pilot, kind):
 
 
 def _prompt(app) -> Input:
-    return app.screen.query_one("#ht-prompt", Input)
+    return app.screen.query_one("#nx-prompt", Input)
 
 
 async def _type(pilot, text: str) -> None:

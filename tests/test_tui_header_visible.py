@@ -58,7 +58,7 @@ def test_main_screen_header_visible():
         async with _Host(MainScreen()).run_test() as pilot:
             await _until_screen(pilot, MainScreen)
             banner = pilot.app.screen.query_one(SponsorBanner)
-            assert "pentest" in banner.query_one("#ht-tagline").content.plain
+            assert "pentest" in banner.query_one("#nx-tagline").content.plain
 
     asyncio.run(run())
 
