@@ -1,0 +1,10 @@
+---
+description: Conventions for Noxentra Textual TUI screens, widgets, and CSS
+globs: src/noxentra/tui/**/*, tests/test_tui_*.py
+---
+
+# Noxentra TUI Rules
+
+- Keep all visual styling in `src/noxentra/tui/app.tcss` rather than scattering inline styles.
+- Keep `NoxentraApp` (`src/noxentra/tui/app.py`) and screens (`src/noxentra/tui/screens/`) responsive and non-blocking (use `@work(thread=True)` for network/IO checks).
+- Test UI changes with Textual's `NoxentraApp().run_test()` pilot in `tests/test_tui_*.py`.

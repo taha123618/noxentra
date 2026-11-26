@@ -1,0 +1,12 @@
+---
+description: Core Noxentra development conventions, security invariants, and verification gate
+alwaysApply: true
+---
+
+# Noxentra Core Rules
+
+- Follow `AGENTS.md` for architecture and commands.
+- Run Python tools through `uv run --group dev ...` and verify changes with `./scripts/check.sh`.
+- Use list-form `subprocess` calls; avoid `shell=True`, `curl | bash`, or forced `sudo`.
+- Use `constants.USER_CONFIG_DIR` (`~/.noxentra`) instead of hardcoding home paths; store secrets only in `~/.noxentra/.env` (mode `0600`).
+- After modifying any GitHub URL in `src/noxentra/`, regenerate `src/noxentra/catalog_owners.py` with `uv run python scripts/gen_catalog_owners.py`.

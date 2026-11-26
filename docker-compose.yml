@@ -1,0 +1,20 @@
+# docker-compose.yml
+# Run the interactive TUI:  docker compose run --rm noxentra
+# Or pull the published image instead of building:
+#   docker run -it --rm ghcr.io/taha123618/noxentra:latest
+
+services:
+  noxentra:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/taha123618/noxentra:latest
+    container_name: noxentra
+    stdin_open: true
+    tty: true
+    # Persist tools installed at runtime across container restarts.
+    volumes:
+      - noxentra_data:/root/.noxentra
+
+volumes:
+  noxentra_data:

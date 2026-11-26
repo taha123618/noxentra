@@ -1,0 +1,11 @@
+---
+description: Rules for adding or editing Noxentra catalog YAML entries and tool classes
+globs: src/noxentra/catalog/*.yaml, src/noxentra/tools/**/*.py
+---
+
+# Noxentra Catalog & Tool Rules
+
+- Prefer YAML entries in `src/noxentra/catalog/*.yaml` over new Python subclasses in `src/noxentra/tools/` unless custom install/run logic is required.
+- Every tag on a tool must exist in `TAXONOMY` (`src/noxentra/tags.py`).
+- Keep `INSTALL_COMMANDS` and `RUN_COMMANDS` safe (no `curl | bash`, no unpinned remote execution).
+- Run `uv run python scripts/gen_catalog_owners.py` and `uv run --group dev pytest tests/test_registry.py tests/test_discover.py -q` after edits.
