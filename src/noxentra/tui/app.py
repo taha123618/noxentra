@@ -5,7 +5,13 @@ from textual.app import App
 from textual.binding import Binding
 
 from noxentra.tui.screens.config import ConfigScreen
+from noxentra.tui.screens.find import FindScreen
+from noxentra.tui.screens.goal import GoalScreen
 from noxentra.tui.screens.main import MainScreen
+from noxentra.tui.screens.recommend import RecommendScreen
+from noxentra.tui.screens.report import ReportScreen
+from noxentra.tui.screens.skill import SkillScreen
+from noxentra.tui.screens.tags import TagsScreen
 from noxentra.tui.widgets.command_palette import CommandPalette
 
 
@@ -34,9 +40,24 @@ class NoxentraApp(App):
             from noxentra import update_check
             from noxentra.tui.widgets.update_modal import UpdateModal
             self.push_screen(UpdateModal(update_check.latest_if_newer()))
-        else:  # /recommend, /report — Phase 2; tell the user instead of doing nothing
-            self.notify(f"{event.command} is coming in a future release.",
-                        title="Not yet available", severity="warning")
+        elif event.command == "/recommend":
+            if not isinstance(self.screen, RecommendScreen):
+                self.push_screen(RecommendScreen())
+        elif event.command == "/find":
+            if not isinstance(self.screen, FindScreen):
+                self.push_screen(FindScreen())
+        elif event.command == "/goal":
+            if not isinstance(self.screen, GoalScreen):
+                self.push_screen(GoalScreen())
+        elif event.command == "/tags":
+            if not isinstance(self.screen, TagsScreen):
+                self.push_screen(TagsScreen())
+        elif event.command == "/skill":
+            if not isinstance(self.screen, SkillScreen):
+                self.push_screen(SkillScreen())
+        elif event.command == "/report":
+            if not isinstance(self.screen, ReportScreen):
+                self.push_screen(ReportScreen())
 
 
 def run() -> None:

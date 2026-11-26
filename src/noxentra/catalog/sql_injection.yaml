@@ -5,11 +5,20 @@ category:
   title: "SQL Injection (catalog)"
   merge_into: "SQL Injection Tools"
 
-# --- enrich existing Python-defined tools by title --------------------------
-overlay:
+overlay: []
+
+# --- migrated from tools/sql_injection.py + Ghauri --------------------------
+tools:
   - title: "Sqlmap tool"
+    kind: install
     tags: [web, sql-injection, exploitation, scanner]
+    description: "sqlmap is an open source penetration testing tool that automates detecting and exploiting SQL injection flaws."
     system_pkgs: {which: sqlmap, apt: sqlmap}
+    install:
+      commands:
+        - "git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git sqlmap-dev"
+    run: ["cd sqlmap-dev;python3 sqlmap.py --wizard"]
+    project_url: "https://github.com/sqlmapproject/sqlmap"
     usage:
       - ["test a URL (auto-answer prompts)", "sqlmap -u 'http://target/page?id=1' --batch"]
       - ["banner + current user/db", "sqlmap -u 'http://target/?id=1' --batch --banner --current-user --current-db"]
@@ -25,7 +34,15 @@ overlay:
       --dump touch the live DB, so confirm you have permission first.
 
   - title: "NoSqlMap"
+    kind: install
     tags: [web, sql-injection, exploitation]
+    description: "NoSQLMap is an open source Python tool designed to audit and automate injection attacks."
+    install:
+      commands:
+        - "git clone https://github.com/codingo/NoSQLMap.git"
+        - "cd NoSQLMap && pip install --user ."
+    run: ["python3 -m nosqlmap"]
+    project_url: "https://github.com/codingo/NoSQLMap"
     usage:
       - ["launch the interactive tool", "python3 -m nosqlmap"]
     lab_safe_notes: >-
@@ -34,7 +51,11 @@ overlay:
       against authorized instances. Needs a reachable MongoDB to be useful.
 
   - title: "Damn Small SQLi Scanner"
+    kind: install
     tags: [web, sql-injection, scanner]
+    description: "DSSS is a fully functional SQL injection vulnerability scanner also supporting GET and POST parameters."
+    install: {git: "https://github.com/stamparm/DSSS.git"}
+    project_url: "https://github.com/stamparm/DSSS"
     usage:
       - ["scan a URL for SQLi", "python3 dsss.py -u 'http://target/vuln.php?id=1'"]
       - ["pass a session cookie", "python3 dsss.py -u 'http://target/vuln.php?id=1' -c 'PHPSESSID=abc'"]
@@ -44,17 +65,63 @@ overlay:
       injection points but doesn't exploit them, so it's a gentle first pass. Confirm
       any hit with sqlmap. Scope -u to an authorized URL.
 
+  - title: "Explo"
+    kind: install
+    archived: true
+    archived_reason: "Upstream repo archived by author (last commit 2022-09)"
+    tags: [web, vuln-scan, scanner]
+    description: "Explo is a simple tool to describe web security issues in human and machine readable format."
+    install:
+      commands:
+        - "git clone https://github.com/dtag-dev-sec/explo.git"
+        - "cd explo && pip install --user ."
+    project_url: "https://github.com/dtag-dev-sec/explo"
+    usage:
+      - ["run a testcase (archived)", "explo --verbose testcase.yaml"]
+
+  - title: "Blisqy - Exploit Time-based blind-SQL injection"
+    kind: install
+    archived: true
+    archived_reason: "Unmaintained — no commits since 2019-03"
+    tags: [web, sql-injection, exploitation]
+    description: "Blisqy helps web security researchers find time-based blind SQL injections on HTTP headers and exploit them."
+    install: {git: "https://github.com/JohnTroony/Blisqy.git"}
+    project_url: "https://github.com/JohnTroony/Blisqy"
+    usage:
+      - ["show Blisqy help (archived)", "python3 blisqy.py --help"]
+
+  - title: "Leviathan - Wide Range Mass Audit Toolkit"
+    kind: install
+    archived: true
+    archived_reason: "Upstream repo archived by author (last commit 2018-10)"
+    tags: [web, sql-injection, scanner, bruteforce]
+    description: "Leviathan is a mass audit toolkit with service discovery, brute force, SQL injection detection, and custom exploit capabilities."
+    install:
+      commands:
+        - "git clone https://github.com/leviathan-framework/leviathan.git"
+        - "cd leviathan;pip install --user -r requirements.txt"
+    run: ["cd leviathan;python leviathan.py"]
+    project_url: "https://github.com/leviathan-framework/leviathan"
+    usage:
+      - ["launch Leviathan (archived)", "python leviathan.py"]
+
   - title: "SQLScan"
+    kind: install
     tags: [web, sql-injection, scanner]
+    description: "SQLScan is a quick web scanner to find SQL injection points. Not for educational purposes."
+    install:
+      commands:
+        - "sudo apt install php php-bz2 php-curl php-mbstring curl"
+        - "sudo curl https://raw.githubusercontent.com/Cvar1984/sqlscan/dev/build/main.phar --output /usr/local/bin/sqlscan"
+        - "chmod +x /usr/local/bin/sqlscan"
+    run: ["sudo sqlscan"]
+    project_url: "https://github.com/Cvar1984/sqlscan"
     usage:
       - ["launch the interactive scanner", "sudo sqlscan"]
     lab_safe_notes: >-
       A quick crawler that hunts for injectable parameters across a site. It's a
       discovery aid — verify findings with a real exploitation tool. Only point it at
       domains you are authorized to test.
-
-# --- genuinely-missing, widely-used SQLi tools -------------------------------
-tools:
   - title: "Ghauri (Modern SQLi Tool)"
     kind: install
     tags: [web, sql-injection, exploitation, scanner]

@@ -16,7 +16,7 @@ OptionList { border: round $panel; padding: 0 1; }
 OptionList > .option-list--option-highlighted { background: $boost; color: $text; }
 
 /* list fills the middle and scrolls within itself; prompt pinned at the bottom */
-#main-cats, #cat-tools, #recommend-tools, #report-engagements { height: 1fr; }
+#main-cats, #cat-tools, #recommend-tools, #report-engagements, #tags-list, #find-results, #goal-steps, #skill-scroll { height: 1fr; }
 #nx-prompt { dock: bottom; height: 3; border: round $panel; padding: 0 1; }
 
 #nx-hint { color: $text-muted; height: 1; padding: 0 1; }

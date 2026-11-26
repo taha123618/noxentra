@@ -153,3 +153,14 @@ def engagements() -> list[EngagementRow]:
         ))
     rows.sort(key=lambda r: r.created, reverse=True)
     return rows
+
+
+def tags_summary() -> list[tuple[str, list[ToolHit]]]:
+    """Return (tag, [ToolHit, ...]) sorted by descending tool count then tag name."""
+    by_tag: dict[str, list[ToolHit]] = {}
+    for cat in categories():
+        for j, t in enumerate(_active_tools(cat.index)):
+            hit = ToolHit(cat.index, j, getattr(t, "TITLE", "?"), cat.label)
+            for tg in getattr(t, "TAGS", ()) or ():
+                by_tag.setdefault(str(tg).lower(), []).append(hit)
+    return sorted(by_tag.items(), key=lambda kv: (-len(kv[1]), kv[0]))

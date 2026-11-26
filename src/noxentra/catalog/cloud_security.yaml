@@ -6,11 +6,19 @@ category:
   title: "Cloud Security (catalog)"
   merge_into: "Cloud Security Tools"
 
-# --- enrich existing Python-defined tools by title --------------------------
-overlay:
+overlay: []
+
+# --- migrated from tools/cloud_security.py + Checkov ------------------------
+tools:
   - title: "Prowler (Cloud Security Scanner)"
+    kind: install
     tags: [cloud, scanner, vuln-scan]
+    description: "Open-source security tool for AWS, Azure, GCP, and Kubernetes assessments."
+    supported_os: [linux, macos]
     system_pkgs: {which: prowler}
+    install: {pip: prowler}
+    run: ["prowler --help"]
+    project_url: "https://github.com/prowler-cloud/prowler"
     usage:
       - ["assess an AWS account", "prowler aws"]
       - ["assess Azure", "prowler azure"]
@@ -25,8 +33,14 @@ overlay:
       profile/region rather than a whole org.
 
   - title: "ScoutSuite (Multi-Cloud Auditing)"
+    kind: install
     tags: [cloud, scanner, enumeration]
+    description: "Multi-cloud security auditing tool for AWS, Azure, GCP, Alibaba, and Oracle."
+    supported_os: [linux, macos]
     system_pkgs: {which: scout}
+    install: {pip: scoutsuite}
+    run: ["scout --help"]
+    project_url: "https://github.com/nccgroup/ScoutSuite"
     usage:
       - ["audit an AWS account", "scout aws"]
       - ["audit AWS with a named profile", "scout aws --profile myprofile"]
@@ -38,8 +52,14 @@ overlay:
       the environment, but the API calls are logged. Review the report locally.
 
   - title: "Pacu (AWS Exploitation Framework)"
+    kind: install
     tags: [cloud, exploitation, post-exploitation]
+    description: "AWS exploitation framework for offensive security testing of AWS environments."
+    supported_os: [linux, macos]
     system_pkgs: {which: pacu}
+    install: {pip: pacu}
+    run: ["pacu --help"]
+    project_url: "https://github.com/RhinoSecurityLabs/pacu"
     usage:
       - ["launch the interactive framework", "pacu"]
     lab_safe_notes: >-
@@ -50,8 +70,16 @@ overlay:
       leave audit-log evidence.
 
   - title: "Trivy (Container/K8s Scanner)"
+    kind: install
     tags: [scanner, vuln-scan, cloud]
+    description: "Comprehensive vulnerability scanner for containers, Kubernetes, IaC, and code."
+    supported_os: [linux, macos]
     system_pkgs: {which: trivy, brew: trivy}
+    install:
+      commands:
+        - "curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin"
+    run: ["trivy --help"]
+    project_url: "https://github.com/aquasecurity/trivy"
     usage:
       - ["scan a container image", "trivy image nginx:latest"]
       - ["scan a project filesystem", "trivy fs ."]
@@ -62,9 +90,6 @@ overlay:
       Image/filesystem/config scans are fully local and read-only — safe to run anywhere.
       Trivy downloads its vulnerability DB on first run (needs network). Scan only images
       and repos you're authorized to assess.
-
-# --- genuinely-missing, widely-used cloud/IaC tool ---------------------------
-tools:
   - title: "Checkov (IaC Misconfig Scanner)"
     kind: install
     tags: [cloud, scanner, vuln-scan]
