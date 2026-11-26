@@ -1,4 +1,5 @@
 import subprocess
+from typing import ClassVar
 
 from rich.prompt import Prompt
 
@@ -7,12 +8,12 @@ from noxentra.core import Noxentra, NoxentraCollection
 
 class DDoSTool(Noxentra):
     TITLE = "DDoS"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = (
         "Best DDoS Attack Script With 36 Plus Methods. "
         "DDoS attacks for SECURITY TESTING PURPOSES ONLY!"
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/the-deepnet/ddos.git",
         "cd ddos && sudo pip3 install -r requirements.txt",
     ]
@@ -37,12 +38,12 @@ class DDoSTool(Noxentra):
 
 class SlowLoris(Noxentra):
     TITLE = "SlowLoris"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = (
         "Slowloris is basically an HTTP Denial of Service attack. "
         "It sends lots of HTTP requests."
     )
-    INSTALL_COMMANDS = ["sudo pip3 install slowloris"]
+    INSTALL_COMMANDS: ClassVar = ["sudo pip3 install slowloris"]
 
     def run(self):
         target_site = Prompt.ask("Enter Target Site")
@@ -53,12 +54,12 @@ class Asyncrone(Noxentra):
     ARCHIVED = True
     ARCHIVED_REASON = "Upstream repo deleted (404)"
     TITLE = "Asyncrone | Multifunction SYN Flood DDoS Weapon"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = (
         "aSYNcrone is a C language based, multifunction SYN Flood DDoS Weapon.\n"
         "Disable the destination system by sending SYN packets intensively."
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/fatih4842/aSYNcrone.git",
         "cd aSYNcrone && sudo gcc aSYNcrone.c -o aSYNcrone -lpthread",
     ]
@@ -82,13 +83,13 @@ class GoldenEye(Noxentra):
     ARCHIVED = True
     ARCHIVED_REASON = "Upstream repo archived by author (last commit 2023-11)"
     TITLE = "GoldenEye"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = (
         "GoldenEye is a python3 app for SECURITY TESTING PURPOSES ONLY!\n"
         "GoldenEye is a HTTP DoS Test Tool.\n"
         "Usage: ./goldeneye.py <url> [OPTIONS]"
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/jseidl/GoldenEye.git",
         "chmod -R 755 GoldenEye",
     ]
@@ -104,9 +105,9 @@ class GoldenEye(Noxentra):
 
 class Saphyra(Noxentra):
     TITLE = "SaphyraDDoS"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = "A Python DDoS script for SECURITY TESTING PURPOSES ONLY."
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         # Bug 7 fix: removed "sudo su" (first step was dropping into interactive root shell)
         "git clone https://github.com/anonymous24x7/Saphyra-DDoS.git",
         "chmod +x Saphyra-DDoS/saphyra.py",
@@ -127,7 +128,7 @@ class Saphyra(Noxentra):
 
 class DDOSTools(NoxentraCollection):
     TITLE = "DDOS Attack Tools"
-    TOOLS = [DDoSTool(), SlowLoris(), Asyncrone(), GoldenEye(), Saphyra()]
+    TOOLS: ClassVar = [DDoSTool(), SlowLoris(), Asyncrone(), GoldenEye(), Saphyra()]
 
 
 if __name__ == "__main__":

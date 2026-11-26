@@ -1,4 +1,6 @@
 """Tags screen: browse all catalog tags with counts, drill into tools for a tag."""
+from typing import ClassVar
+
 from textual.widgets import Input
 from textual.widgets.option_list import Option
 
@@ -8,7 +10,7 @@ from noxentra.tui.screens.tool import ToolScreen
 
 
 class TagsScreen(NoxentraScreen):
-    BINDINGS = [("escape", "back_or_pop", "Back")]
+    BINDINGS: ClassVar = [("escape", "back_or_pop", "Back")]
     LIST_ID = "tags-list"
     PROMPT_PLACEHOLDER = "filter tags…"
 

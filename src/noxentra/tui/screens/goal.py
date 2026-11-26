@@ -1,5 +1,6 @@
 """Goal screen: AI goal planner (/goal) with live streamed step execution."""
 import threading
+from typing import ClassVar
 
 from textual import work
 from textual.app import ComposeResult
@@ -14,7 +15,7 @@ from noxentra.tui.widgets.permission import PermissionModal
 
 
 class GoalScreen(NoxentraScreen):
-    BINDINGS = [
+    BINDINGS: ClassVar = [
         ("escape", "app.pop_screen", "Back"),
         ("c", "cancel_run", "Cancel"),
     ]

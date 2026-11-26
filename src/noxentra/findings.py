@@ -141,13 +141,171 @@ def parse_gobuster(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     return findings, urls
 
 
+def parse_ffuf(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse ffuf JSON (`-of json`) or JSONL lines into service Findings."""
+    findings: list[Finding] = []
+    urls: list[str] = []
+    text = raw.strip()
+    if not text:
+        return findings, urls
+
+    records: list[tuple[dict, str]] = []
+    try:
+        top = json.loads(text)
+    except json.JSONDecodeError:
+        top = None
+    if isinstance(top, dict) and isinstance(top.get("results"), list):
+        for item in top["results"]:
+            if isinstance(item, dict):
+                records.append((item, json.dumps(item)))
+    else:
+        for ln in text.splitlines():
+            ln = ln.strip()
+            if not ln:
+                continue
+            try:
+                obj = json.loads(ln)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(obj, dict):
+                records.append((obj, ln))
+
+    for obj, raw_ln in records:
+        url = obj.get("url") or ""
+        if not isinstance(url, str) or not url:
+            continue
+        status = obj.get("status")
+        length = obj.get("length")
+        label = f"{url} (HTTP {status})" if status is not None else url
+        details = {"status_code": status, "length": length, "input": obj.get("input")}
+        findings.append(Finding("service", url, label, "info", "ffuf", details, raw_ln, ts))
+        urls.append(url)
+    return findings, urls
+
+
+def parse_feroxbuster(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse feroxbuster JSONL (`--json`) lines into service Findings."""
+    findings: list[Finding] = []
+    urls: list[str] = []
+    for ln in raw.splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            obj = json.loads(ln)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(obj, dict):
+            continue
+        if obj.get("type") not in (None, "response"):
+            continue
+        url = obj.get("url") or ""
+        if not isinstance(url, str) or not url:
+            continue
+        status = obj.get("status")
+        length = obj.get("content_length")
+        label = f"{url} (HTTP {status})" if status is not None else url
+        details = {"status_code": status, "content_length": length}
+        findings.append(Finding("service", url, label, "info", "feroxbuster", details, ln, ts))
+        urls.append(url)
+    return findings, urls
+
+
+def parse_dnsx(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse dnsx JSONL (`-json`) or plain hostname output into subdomain Findings."""
+    findings: list[Finding] = []
+    hosts: list[str] = []
+    for ln in raw.splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            obj = json.loads(ln)
+        except json.JSONDecodeError:
+            findings.append(Finding("subdomain", ln, ln, "info", "dnsx", {}, ln, ts))
+            hosts.append(ln)
+            continue
+        if not isinstance(obj, dict):
+            continue
+        host = obj.get("host") or ""
+        if not isinstance(host, str) or not host:
+            continue
+        details = {
+            k: obj[k]
+            for k in ("a", "aaaa", "cname", "mx", "ns", "txt")
+            if obj.get(k)
+        }
+        findings.append(Finding("subdomain", host, host, "info", "dnsx", details, ln, ts))
+        hosts.append(host)
+    return findings, hosts
+
+
+def parse_whatweb(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse WhatWeb JSON (`--log-json=-`) array or JSONL into service Findings."""
+    findings: list[Finding] = []
+    urls: list[str] = []
+    text = raw.strip()
+    if not text:
+        return findings, urls
+
+    records: list[tuple[dict, str]] = []
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        parsed = None
+    if isinstance(parsed, list):
+        for item in parsed:
+            if isinstance(item, dict):
+                records.append((item, json.dumps(item)))
+    elif isinstance(parsed, dict):
+        records.append((parsed, text))
+    else:
+        for ln in text.splitlines():
+            ln = ln.strip()
+            if not ln:
+                continue
+            try:
+                obj = json.loads(ln)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(obj, dict):
+                records.append((obj, ln))
+
+    for obj, raw_ln in records:
+        target = obj.get("target") or ""
+        if not isinstance(target, str) or not target:
+            continue
+        plugins = obj.get("plugins") if isinstance(obj.get("plugins"), dict) else {}
+        tech = sorted(plugins.keys())
+        status = obj.get("http_status")
+        name = f"{target} [{', '.join(tech[:4])}]" if tech else target
+        details = {"status_code": status, "tech": tech}
+        findings.append(Finding("service", target, name, "info", "whatweb", details, raw_ln, ts))
+        urls.append(target)
+    return findings, urls
+
+
 PARSERS = {
     "subfinder": parse_subfinder,
     "httpx": parse_httpx,
     "nuclei": parse_nuclei,
     "nmap": parse_nmap,
     "gobuster": parse_gobuster,
+    "ffuf": parse_ffuf,
+    "feroxbuster": parse_feroxbuster,
+    "dnsx": parse_dnsx,
+    "whatweb": parse_whatweb,
 }
+
+
+def merge_findings(existing: list[Finding], incoming: list[Finding]) -> list[Finding]:
+    """Combine `existing` and `incoming`, deduplicating by `(kind, target, name, source_tool)`."""
+    merged: dict[tuple[str, str, str, str], Finding] = {}
+    for f in existing:
+        merged[(f.kind, f.target, f.name, f.source_tool)] = f
+    for f in incoming:
+        merged[(f.kind, f.target, f.name, f.source_tool)] = f
+    return list(merged.values())
 
 
 def save_findings(path: Path, findings: list[Finding]) -> None:

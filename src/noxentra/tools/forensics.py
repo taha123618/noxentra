@@ -1,7 +1,4 @@
-
-from rich.panel import Panel
-from rich.prompt import Prompt
-from rich.text import Text
+from typing import ClassVar
 
 from rich.panel import Panel
 from rich.prompt import Prompt
@@ -14,7 +11,7 @@ class BulkExtractor(Noxentra):
     TITLE = "Bulk extractor"
     DESCRIPTION = "Extract useful information without parsing the file system"
     PROJECT_URL = "https://github.com/simsong/bulk_extractor"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
 
     def __init__(self):
         super().__init__([
@@ -52,7 +49,7 @@ class Volatility3(Noxentra):
         "The world's most widely used memory forensics framework.\n"
         "Usage: python3 vol.py -f memory.dmp windows.pslist"
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/volatilityfoundation/volatility3.git",
         "cd volatility3 && pip install --user -r requirements.txt",
     ]
@@ -73,7 +70,7 @@ class Volatility3(Noxentra):
 
 class ForensicTools(NoxentraCollection):
     TITLE = "Forensic tools"
-    TOOLS = [
+    TOOLS: ClassVar = [
         BulkExtractor(),
         Volatility3(),
     ]

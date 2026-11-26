@@ -1,4 +1,5 @@
 import subprocess
+from typing import ClassVar
 
 from rich.panel import Panel
 from rich.prompt import Prompt
@@ -11,7 +12,7 @@ class XSSFinder(Noxentra):
     ARCHIVED_REASON = "Unmaintained — no commits since 2019-08"
     TITLE = "Extended XSS Searcher and Finder"
     DESCRIPTION = "Extended XSS Searcher and Finder"
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/Damian89/extended-xss-search.git"]
     PROJECT_URL = "https://github.com/Damian89/extended-xss-search"
 
@@ -39,7 +40,7 @@ class XSSCon(Noxentra):
     ARCHIVED = True
     ARCHIVED_REASON = "Unmaintained — no commits since 2019-09"
     TITLE = "XSSCon"
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/menkrep1337/XSSCon.git",
         "sudo chmod 755 -R XSSCon"
     ]
@@ -62,7 +63,7 @@ class XanXSS(Noxentra):
     ARCHIVED_REASON = "Unmaintained — no commits since 2018-11"
     TITLE = "XanXSS"
     DESCRIPTION = "Reflected XSS searching tool that creates payloads from templates."
-    INSTALL_COMMANDS = ["git clone https://github.com/Ekultek/XanXSS.git"]
+    INSTALL_COMMANDS: ClassVar = ["git clone https://github.com/Ekultek/XanXSS.git"]
     PROJECT_URL = "https://github.com/Ekultek/XanXSS"
 
     def run(self):
@@ -73,7 +74,7 @@ class XanXSS(Noxentra):
 
 class XSSAttackTools(NoxentraCollection):
     TITLE = "XSS Attack Tools"
-    TOOLS = [
+    TOOLS: ClassVar = [
         XSSFinder(),
         XSSCon(),
         XanXSS(),

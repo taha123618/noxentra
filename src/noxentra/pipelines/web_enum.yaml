@@ -1,0 +1,17 @@
+# pipelines/web_enum.yaml
+name: web_enum
+description: Probe live web URLs (httpx) -> brute-force directories in parallel (gobuster).
+steps:
+  - tool: httpx
+    args: ["-silent", "-json"]
+    input: targets
+    output: raw/httpx.jsonl
+    parser: httpx
+  - tool: gobuster
+    args: ["dir", "-q", "-t", "10", "-b", "404,308", "-w", "{wordlist}"]
+    input: previous
+    fallback_to_targets: true
+    per_target_flag: "-u"
+    workers: 2
+    output: raw/gobuster.txt
+    parser: gobuster

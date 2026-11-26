@@ -1,3 +1,4 @@
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection
 
@@ -7,17 +8,17 @@ class HashBuster(Noxentra):
     DESCRIPTION = "Features: \n " \
                   "Automatic hash type identification \n " \
                   "Supports MD5, SHA1, SHA256, SHA384, SHA512"
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/s0md3v/Hash-Buster.git",
         "cd Hash-Buster;make install"
     ]
-    RUN_COMMANDS = ["buster -h"]
+    RUN_COMMANDS: ClassVar = ["buster -h"]
     PROJECT_URL = "https://github.com/s0md3v/Hash-Buster"
 
 
 class HashCrackingTools(NoxentraCollection):
     TITLE = "Hash cracking tools"
-    TOOLS = [HashBuster()]
+    TOOLS: ClassVar = [HashBuster()]
 
 if __name__ == "__main__":
     tools = HashCrackingTools()

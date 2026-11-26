@@ -5,11 +5,11 @@ tags stay within the taxonomy, resources are well-formed, install exemplars
 carry usage cheatsheets, and the menu wiring stays consistent.
 """
 import textwrap
+from typing import ClassVar
 
 import pytest
 
-from noxentra import registry
-from noxentra import tags
+from noxentra import registry, tags
 
 # --- real catalog (the shipped YAML files) ----------------------------------
 
@@ -109,9 +109,9 @@ def test_overlay_enriches_existing_tool_by_title(tmp_path):
 
     class _Fake:
         TITLE = "Existing Tool"
-        TAGS = ["preexisting"]
-        USAGE = []
-        SYSTEM_PKGS = {}
+        TAGS: ClassVar = ["preexisting"]
+        USAGE: ClassVar = []
+        SYSTEM_PKGS: ClassVar = {}
         LAB_SAFE_NOTES = ""
 
     t = _Fake()

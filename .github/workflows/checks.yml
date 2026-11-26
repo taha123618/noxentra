@@ -1,13 +1,40 @@
 name: checks
 # The gate. Runs the exact same script as the local pre-push hook, so a green
-# push means a green CI. Runs on every branch + PR (not just master).
+# push means a green CI. Runs on every branch + PR across Python 3.10–3.14 on Linux + macOS.
 on:
   push:
   pull_request:
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.10", "3.12", "3.14"]
+    runs-on: ${{ matrix.os }}
+    env:
+      UV_PYTHON: ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
+        with:
+          enable-cache: true
+      - run: uv python install ${{ matrix.python-version }}
       - run: ./scripts/check.sh
+
+  docker:
+    name: Docker build smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          load: true
+          push: false
+          tags: noxentra:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Smoke test container entrypoint
+        run: docker run --rm noxentra:ci --help

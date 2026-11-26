@@ -1,7 +1,6 @@
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection, console
-
-
 
 
 class pixiewps(Noxentra):
@@ -11,14 +10,14 @@ class pixiewps(Noxentra):
         "exploiting the low or non-existing entropy of some Access Points "
         "(pixie dust attack)."
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         # Bug 29 fix: removed wget https://pastebin.com/... (insecure download from pastebin)
         "git clone https://github.com/wiire/pixiewps.git && apt-get -y install build-essential",
         "cd pixiewps && make",
         "cd pixiewps && sudo make install",
     ]
     PROJECT_URL = "https://github.com/wiire/pixiewps"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     REQUIRES_WIFI = True
 
     def run(self):
@@ -55,7 +54,7 @@ class pixiewps(Noxentra):
 
 class WirelessAttackTools(NoxentraCollection):
     TITLE = "Wireless attack tools"
-    TOOLS = [
+    TOOLS: ClassVar = [
         pixiewps(),
     ]
 

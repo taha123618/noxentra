@@ -39,7 +39,7 @@ def _coerce(entry: dict) -> Sponsor | None:
         return Sponsor(str(name), url,
                        str(entry.get("tagline") or ""),
                        tier if tier in _TIERS else "bronze")
-    except Exception:
+    except (AttributeError, TypeError, ValueError):
         return None
 
 
@@ -47,7 +47,7 @@ def _committed() -> list[Sponsor]:
     try:
         raw = (yaml.safe_load(_YAML.read_text()) or {}).get("sponsors") or []
         return [s for s in (_coerce(e) for e in raw) if s]
-    except Exception:
+    except (OSError, yaml.YAMLError, AttributeError, TypeError):
         return []
 
 
@@ -70,17 +70,19 @@ def _cached_remote(url: str, timeout: float) -> list:
             cached = data.get("sponsors") or []
             if time.time() - data.get("ts", 0) < _TTL:
                 return cached
-    except Exception:
+    except (OSError, ValueError, AttributeError, TypeError):
         cached = []
     try:
         sponsors = _fetch(url, timeout)
-    except Exception:
+    except (OSError, ValueError, AttributeError, TypeError):
         return cached
     try:
         _CACHE.parent.mkdir(parents=True, exist_ok=True)
         _CACHE.write_text(json.dumps({"ts": time.time(), "url": url, "sponsors": sponsors}))
-    except Exception:
-        pass
+    except OSError as exc:
+        import logging
+
+        logging.getLogger(__name__).debug("Failed to cache sponsors: %s", exc)
     return sponsors
 
 
@@ -93,7 +95,7 @@ def _remote() -> list[Sponsor]:
         return []
     try:
         raw = _cached_remote(url, 2.0)
-    except Exception:
+    except (OSError, ValueError, TypeError, RuntimeError):
         return []
     return [s for s in (_coerce(e) for e in raw) if s]
 
@@ -104,7 +106,7 @@ def load() -> list[Sponsor]:
     try:
         seen = {s.url for s in committed}
         return committed + [s for s in _remote() if s.url not in seen]
-    except Exception:
+    except (OSError, ValueError, TypeError, RuntimeError):
         return committed
 
 

@@ -4,11 +4,16 @@ from pathlib import Path
 from noxentra.findings import (
     Finding,
     load_findings,
+    merge_findings,
+    parse_dnsx,
+    parse_feroxbuster,
+    parse_ffuf,
     parse_gobuster,
     parse_httpx,
     parse_nmap,
     parse_nuclei,
     parse_subfinder,
+    parse_whatweb,
     save_findings,
 )
 
@@ -84,3 +89,61 @@ def test_parse_gobuster():
     assert fs[0].source_tool == "gobuster"
     assert fs[0].details["status_code"] == 301
     assert forward == ["https://example.com/api"]
+
+
+def test_merge_findings_deduplicates_preserving_newer():
+    old = [
+        Finding("subdomain", "a.example.com", "a.example.com", "info", "subfinder", {}, "a", "t1"),
+        Finding("service", "https://a.example.com", "Old", "info", "httpx", {"status_code": 200}, "x", "t1"),
+    ]
+    new = [
+        Finding("subdomain", "a.example.com", "a.example.com", "info", "subfinder", {}, "a", "t2"),
+        Finding("subdomain", "b.example.com", "b.example.com", "info", "subfinder", {}, "b", "t2"),
+    ]
+    merged = merge_findings(old, new)
+    assert len(merged) == 3
+    by_target = {f.target: f for f in merged}
+    assert by_target["a.example.com"].timestamp == "t2"
+    assert "b.example.com" in by_target
+
+
+def test_parse_ffuf():
+    raw = json.dumps({
+        "results": [
+            {"url": "https://example.com/admin", "status": 301, "length": 162, "input": {"FUZZ": "admin"}}
+        ]
+    })
+    fs, forward = parse_ffuf(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].source_tool == "ffuf"
+    assert fs[0].details["status_code"] == 301
+    assert forward == ["https://example.com/admin"]
+
+
+def test_parse_feroxbuster():
+    raw = (
+        json.dumps({"type": "configuration", "url": "https://example.com"}) + "\n"
+        + json.dumps({"type": "response", "url": "https://example.com/api", "status": 200, "content_length": 44}) + "\n"
+    )
+    fs, forward = parse_feroxbuster(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].source_tool == "feroxbuster"
+    assert forward == ["https://example.com/api"]
+
+
+def test_parse_dnsx():
+    raw = json.dumps({"host": "api.example.com", "a": ["93.184.216.34"]}) + "\n"
+    fs, forward = parse_dnsx(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].kind == "subdomain"
+    assert fs[0].details["a"] == ["93.184.216.34"]
+    assert forward == ["api.example.com"]
+
+
+def test_parse_whatweb():
+    raw = json.dumps([{"target": "https://example.com", "http_status": 200, "plugins": {"nginx": {}, "HTTPServer": {}}}])
+    fs, forward = parse_whatweb(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].source_tool == "whatweb"
+    assert "nginx" in fs[0].details["tech"]
+    assert forward == ["https://example.com"]

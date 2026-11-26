@@ -1,3 +1,4 @@
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection
 
@@ -7,13 +8,13 @@ class WifiJammerNG(Noxentra):
     ARCHIVED_REASON = "Upstream repo deleted (404)"
     TITLE = "WifiJammer-NG"
     DESCRIPTION = "Continuously jam all wifi clients and access points within range."
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     REQUIRES_WIFI = True
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/MisterBianco/wifijammer-ng.git",
         "cd wifijammer-ng;pip install --user -r requirements.txt"
     ]
-    RUN_COMMANDS = [
+    RUN_COMMANDS: ClassVar = [
         "cd wifijammer-ng && sudo python3 wifijammer.py --help",
     ]
     PROJECT_URL = "https://github.com/MisterBianco/wifijammer-ng"
@@ -25,19 +26,19 @@ class KawaiiDeauther(Noxentra):
     TITLE = "KawaiiDeauther"
     DESCRIPTION = "Kawaii Deauther is a pentest toolkit whose goal is to perform \n " \
                   "jam on WiFi clients/routers and spam many fake AP for testing purposes."
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     REQUIRES_WIFI = True
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/aryanrtm/KawaiiDeauther.git",
         "cd KawaiiDeauther;sudo bash install.sh"
     ]
-    RUN_COMMANDS = ["cd KawaiiDeauther;sudo bash KawaiiDeauther.sh"]
+    RUN_COMMANDS: ClassVar = ["cd KawaiiDeauther;sudo bash KawaiiDeauther.sh"]
     PROJECT_URL = "https://github.com/aryanrtm/KawaiiDeauther"
 
 
 class WifiJammingTools(NoxentraCollection):
     TITLE = "Wifi Deauthenticate"
-    TOOLS = [
+    TOOLS: ClassVar = [
         WifiJammerNG(),
         KawaiiDeauther()
     ]

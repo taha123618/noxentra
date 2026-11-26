@@ -155,3 +155,55 @@ def test_run_pipeline_per_target_flag_fans_out(tmp_path, monkeypatch):
     findings = orchestrator.run_pipeline(e, "fanout")
     assert sorted(c[-2:] for c in seen_cmds) == [["-d", "a.example.com"], ["-d", "b.example.com"]]
     assert sorted(f.target for f in findings) == ["sub.a.example.com", "sub.b.example.com"]
+
+
+def test_list_pipelines_includes_web_enum():
+    names = [p["name"] for p in orchestrator.list_pipelines()]
+    assert {"recon", "full_recon", "web_enum", "dns_enum", "web_deep"} <= set(names)
+    expanded = orchestrator._expand_args(["dir", "-w", "{wordlist}"])
+    assert "{wordlist}" not in expanded[2]
+    assert expanded[2].endswith(".txt")
+
+
+def test_run_pipeline_per_target_suffix_wires_ffuf_fuzz_url(tmp_path, monkeypatch):
+    _root(tmp_path, monkeypatch)
+    e = engagement.create("acme", targets=["https://example.com/"])
+    monkeypatch.setattr(orchestrator.shutil, "which", lambda t: "/usr/bin/" + t if t == "ffuf" else None)
+    seen_cmds: list[list[str]] = []
+
+    def fake_run(cmd, input=None, **kwargs):
+        seen_cmds.append(list(cmd))
+        return subprocess.CompletedProcess(
+            cmd,
+            0,
+            stdout=json.dumps({"results": [{"url": "https://example.com/robots.txt", "status": 200, "length": 12}]}),
+            stderr="",
+        )
+
+    monkeypatch.setattr(orchestrator.subprocess, "run", fake_run)
+    findings = orchestrator.run_pipeline(e, "web_deep")
+    assert seen_cmds and seen_cmds[0][-2:] == ["-u", "https://example.com/FUZZ"]
+    assert any(f.source_tool == "ffuf" and f.target == "https://example.com/robots.txt" for f in findings)
+
+
+def test_run_pipeline_stops_when_stop_event_set(tmp_path, monkeypatch):
+    import threading
+
+    _root(tmp_path, monkeypatch)
+    e = engagement.create("acme", targets=["example.com"])
+    monkeypatch.setattr(orchestrator.shutil, "which", lambda t: "/usr/bin/" + t)
+
+    stop = threading.Event()
+    called: list[str] = []
+
+    def fake_run(cmd, input=None, **kwargs):
+        called.append(cmd[0])
+        stop.set()  # cancel after the first step finishes
+        return subprocess.CompletedProcess(cmd, 0, stdout="a.example.com\n", stderr="")
+
+    monkeypatch.setattr(orchestrator.subprocess, "run", fake_run)
+    events: list[str] = []
+    findings = orchestrator.run_pipeline(e, "recon", on_progress=events.append, stop_event=stop)
+    assert called == ["subfinder"]
+    assert len(findings) == 1
+    assert any("cancelled" in ev.lower() for ev in events)

@@ -1,4 +1,6 @@
 """Skill screen: read-only viewer for the operator playbook (OPERATOR.md)."""
+from typing import ClassVar
+
 from textual.app import ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Static
@@ -9,7 +11,7 @@ from noxentra.tui.screens.base import NoxentraScreen
 
 
 class SkillScreen(NoxentraScreen):
-    BINDINGS = [("escape", "app.pop_screen", "Back"), ("left", "app.pop_screen", "Back")]
+    BINDINGS: ClassVar = [("escape", "app.pop_screen", "Back"), ("left", "app.pop_screen", "Back")]
 
     def content(self) -> ComposeResult:
         with VerticalScroll(id="skill-scroll"):

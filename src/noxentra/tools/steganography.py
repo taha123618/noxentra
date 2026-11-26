@@ -1,11 +1,12 @@
 import subprocess
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection, console, validate_input
 
 
 class SteganoHide(Noxentra):
     TITLE = "SteganoHide"
-    INSTALL_COMMANDS = ["sudo apt-get install steghide -y"]
+    INSTALL_COMMANDS: ClassVar = ["sudo apt-get install steghide -y"]
 
     def run(self):
         choice_run = input(
@@ -40,7 +41,7 @@ class SteganoHide(Noxentra):
 
 class SteganographyTools(NoxentraCollection):
     TITLE = "Steganography Tools"
-    TOOLS = [SteganoHide()]
+    TOOLS: ClassVar = [SteganoHide()]
 
 if __name__ == "__main__":
     tools = SteganographyTools()

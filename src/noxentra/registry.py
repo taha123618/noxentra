@@ -220,10 +220,13 @@ def load(catalog_dir: Path = CATALOG_DIR, user_dir: Path | None = None) -> Regis
                 {k: v for k, v in o.items() if k != "title"}
             )
     if user_dir and user_dir.is_dir():
+        import logging
+
         for p in sorted(user_dir.glob("*.yaml")):
             try:
                 category, _file_overlays = _load_file(p, inert=True)
-            except Exception:
+            except (OSError, ValueError, yaml.YAMLError, KeyError, TypeError) as exc:
+                logging.getLogger(__name__).debug("Ignoring broken user catalog %s: %s", p, exc)
                 continue                  # a broken user file must never break the catalog
             if category:
                 cats.append(category)

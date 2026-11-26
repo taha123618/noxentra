@@ -28,6 +28,40 @@ def load_pipeline(name: str) -> dict:
     return yaml.safe_load(target.read_text())
 
 
+def list_pipelines() -> list[dict[str, str]]:
+    """Return available pipelines sorted by name as `{name, description}` dicts."""
+    items: list[dict[str, str]] = []
+    for path in sorted(PIPELINES_DIR.glob("*.yaml")):
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        items.append({
+            "name": str(data.get("name") or path.stem),
+            "description": str(data.get("description") or ""),
+        })
+    return items
+
+
+def _resolve_wordlist() -> str:
+    """Locate a standard system web wordlist, falling back to the bundled minimal list."""
+    candidates = (
+        Path("/usr/share/wordlists/dirb/common.txt"),
+        Path("/usr/share/seclists/Discovery/Web-Content/common.txt"),
+        Path("/opt/homebrew/share/wordlists/dirb/common.txt"),
+        PIPELINES_DIR / "common_paths.txt",
+    )
+    for cand in candidates:
+        if cand.is_file():
+            return str(cand)
+    return str(PIPELINES_DIR / "common_paths.txt")
+
+
+def _expand_args(args: list[str]) -> list[str]:
+    """Expand runtime placeholders such as `{wordlist}` in pipeline step args."""
+    if not any("{wordlist}" in a for a in args):
+        return list(args)
+    wl = _resolve_wordlist()
+    return [a.replace("{wordlist}", wl) for a in args]
+
+
 def _host_of(line: str) -> str:
     """Extract the hostname from a forward line that may be a bare host or a URL."""
     if "://" in line:
@@ -49,8 +83,14 @@ def live_progress(fn):
         _progress_tls.fn = prev
 
 
-def _run_streaming(cmd: list[str], stdin_text: str, tool: str, emit) -> subprocess.CompletedProcess:
-    """Run `cmd` via Popen, streaming stdout lines live while enforcing `STEP_TIMEOUT`."""
+def _run_streaming(
+    cmd: list[str],
+    stdin_text: str,
+    tool: str,
+    emit,
+    stop_event: threading.Event | None = None,
+) -> subprocess.CompletedProcess:
+    """Run `cmd` via Popen, streaming stdout lines live while enforcing `STEP_TIMEOUT` and `stop_event`."""
     proc = subprocess.Popen(
         cmd,
         stdin=subprocess.PIPE if stdin_text else subprocess.DEVNULL,
@@ -86,6 +126,17 @@ def _run_streaming(cmd: list[str], stdin_text: str, tool: str, emit) -> subproce
     timer.daemon = True
     timer.start()
 
+    if stop_event is not None:
+        def _watch_stop():
+            while proc.poll() is None:
+                if stop_event.wait(0.1):
+                    try:
+                        proc.terminate()
+                    except OSError:
+                        pass
+                    break
+        threading.Thread(target=_watch_stop, daemon=True).start()
+
     def _read_err():
         if proc.stderr is not None:
             for line in iter(proc.stderr.readline, ""):
@@ -111,9 +162,16 @@ def _run_streaming(cmd: list[str], stdin_text: str, tool: str, emit) -> subproce
     return subprocess.CompletedProcess(cmd, rc, stdout=stdout, stderr=stderr)
 
 
-def _exec_cmd(cmd: list[str], stdin_text: str, tool: str, emit, stream: bool) -> subprocess.CompletedProcess:
+def _exec_cmd(
+    cmd: list[str],
+    stdin_text: str,
+    tool: str,
+    emit,
+    stream: bool,
+    stop_event: threading.Event | None = None,
+) -> subprocess.CompletedProcess:
     if stream and subprocess.run is _ORIG_SUBPROCESS_RUN:
-        return _run_streaming(cmd, stdin_text, tool, emit)
+        return _run_streaming(cmd, stdin_text, tool, emit, stop_event=stop_event)
     return subprocess.run(
         cmd,
         input=stdin_text,
@@ -130,6 +188,7 @@ def run_pipeline(
     e: Engagement,
     pipeline_name: str = "recon",
     on_progress=None,
+    stop_event: threading.Event | None = None,
 ) -> list[findings_mod.Finding]:
     pipeline = load_pipeline(pipeline_name)
     e.raw_dir.mkdir(parents=True, exist_ok=True)
@@ -145,6 +204,10 @@ def run_pipeline(
             cb(msg)
 
     for idx, step in enumerate(steps, start=1):
+        if stop_event is not None and stop_event.is_set():
+            e.log(f"cancelled pipeline '{pipeline_name}' before step {step['tool']}")
+            _emit("[yellow]■ Pipeline cancelled.[/yellow]")
+            break
         tool = step["tool"]
         if shutil.which(tool) is None:
             e.log(f"skip {tool}: not installed (install it from the menu)")
@@ -162,14 +225,29 @@ def run_pipeline(
             items = list(forward)
             if not items and step.get("fallback_to_targets"):
                 items = list(e.targets)
+        step_args = _expand_args(step["args"])
         per_flag = step.get("per_target_flag")
+        per_suffix = step.get("per_target_suffix", "")
         try:
             if per_flag and items:
                 workers = max(1, min(int(step.get("workers", 4)), len(items)))
                 raw_chunks: list[str] = []
                 with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
                     futs = [
-                        pool.submit(_exec_cmd, [tool, *step["args"], per_flag, item], "", tool, _emit, cb is not None)
+                        pool.submit(
+                            _exec_cmd,
+                            [
+                                tool,
+                                *step_args,
+                                per_flag,
+                                f"{item.rstrip('/')}{per_suffix}" if per_suffix else item,
+                            ],
+                            "",
+                            tool,
+                            _emit,
+                            cb is not None,
+                            stop_event,
+                        )
                         for item in items
                     ]
                     for fut in concurrent.futures.as_completed(futs):
@@ -182,7 +260,7 @@ def run_pipeline(
                 raw = "\n".join(raw_chunks)
             else:
                 stdin = "\n".join(items)
-                proc = _exec_cmd([tool, *step["args"]], stdin, tool, _emit, cb is not None)
+                proc = _exec_cmd([tool, *step_args], stdin, tool, _emit, cb is not None, stop_event)
                 raw = proc.stdout
                 if proc.returncode != 0:
                     tail = (proc.stderr or "").strip().splitlines()[-3:]
@@ -215,6 +293,8 @@ def run_pipeline(
         _emit(f"[green][{idx}/{total}] {tool}: {len(parsed)} finding(s), {len(forward)} forwarded[/green]")
         all_findings.extend(parsed)
 
-    findings_mod.save_findings(e.findings_file, all_findings)
+    existing = findings_mod.load_findings(e.findings_file)
+    merged = findings_mod.merge_findings(existing, all_findings)
+    findings_mod.save_findings(e.findings_file, merged)
     e.add_run({"pipeline": pipeline_name, "at": ts, "findings": len(all_findings)})
-    return all_findings
+    return merged

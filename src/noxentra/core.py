@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import threading
 import webbrowser
+
 try:
     import pty
 except ImportError:  # Windows
@@ -13,6 +14,7 @@ except ImportError:  # Windows
 from collections.abc import Callable
 from functools import lru_cache
 from platform import system
+from typing import ClassVar
 
 from rich import box
 from rich.console import Console
@@ -327,19 +329,19 @@ def _show_inline_help():
 class Noxentra:
     TITLE: str              = ""
     DESCRIPTION: str        = ""
-    INSTALL_COMMANDS: list[str]  = []
-    UNINSTALL_COMMANDS: list[str] = []
-    RUN_COMMANDS: list[str]      = []
+    INSTALL_COMMANDS: ClassVar[list[str]]  = []
+    UNINSTALL_COMMANDS: ClassVar[list[str]] = []
+    RUN_COMMANDS: ClassVar[list[str]]      = []
     # Safe-fetch install (the vetted curl|bash replacement): download INSTALL_URL,
     # require + verify INSTALL_SHA256, then run INSTALL_COMMANDS with {file} → the
     # verified download. See _url_install().
     INSTALL_URL: str        = ""
     INSTALL_SHA256: str     = ""
-    OPTIONS: list[tuple[str, Callable]] = []
+    OPTIONS: ClassVar[list[tuple[str, Callable]]] = []
     PROJECT_URL: str        = ""
 
     # OS / capability metadata
-    SUPPORTED_OS: list[str] = ["linux", "macos"]
+    SUPPORTED_OS: ClassVar[list[str]] = ["linux", "macos"]
     REQUIRES_ROOT: bool     = False
     REQUIRES_WIFI: bool     = False
     REQUIRES_GO: bool       = False
@@ -348,12 +350,12 @@ class Noxentra:
     REQUIRES_DOCKER: bool   = False
 
     # Tags for search/filter (e.g. ["osint", "web", "recon", "scanner"])
-    TAGS: list[str]         = []
+    TAGS: ClassVar[list[str]]         = []
 
     # Guided-operations metadata (set by the YAML catalog loader; see registry.py)
     KIND: str               = "install"        # "install" | "resource"
-    USAGE: list[tuple[str, str]] = []          # [(task, command)] cheatsheet
-    SYSTEM_PKGS: dict       = {}               # {which, apt, brew, ...} reuse-first hints
+    USAGE: ClassVar[list[tuple[str, str]]] = []          # [(task, command)] cheatsheet
+    SYSTEM_PKGS: ClassVar[dict]       = {}               # {which, apt, brew, ...} reuse-first hints
     LAB_SAFE_NOTES: str     = ""               # THM/CTF-safe usage guidance
 
     # Archived tool flags
@@ -394,9 +396,8 @@ class Noxentra:
             if cmd.startswith("sudo "):
                 cmd = cmd[5:].strip()
             binary = cmd.split()[0] if cmd else ""
-            if binary and binary not in (".", "echo", "cd"):
-                if shutil.which(binary):
-                    return True
+            if binary and binary not in (".", "echo", "cd") and shutil.which(binary):
+                return True
         # Check if git clone target dir exists
         if self.INSTALL_COMMANDS:
             for ic in self.INSTALL_COMMANDS:
@@ -532,7 +533,7 @@ class Noxentra:
             elif 1 <= choice <= len(self.OPTIONS):
                 try:
                     self.OPTIONS[choice - 1][1]()
-                except Exception:
+                except Exception:  # noqa: BLE001 - isolate tool menu action failures in CLI
                     console.print_exception(show_locals=True)
                 ask("[dim]Press Enter to continue[/dim]", default="")
             else:
@@ -578,7 +579,7 @@ class Noxentra:
         try:
             with urllib.request.urlopen(self.INSTALL_URL) as resp:
                 data = resp.read()
-        except Exception as e:  # network / HTTP / TLS errors
+        except (urllib.error.URLError, OSError, ValueError) as e:  # network / HTTP / TLS errors
             console.print(f"[error]✘ Download failed: {e}[/error]")
             return
         digest = hashlib.sha256(data).hexdigest()
@@ -639,11 +640,10 @@ class Noxentra:
         return True
 
     def uninstall(self):
-        if self.before_uninstall():
-            if isinstance(self.UNINSTALL_COMMANDS, (list, tuple)):
-                for cmd in self.UNINSTALL_COMMANDS:
-                    console.print(f"[warning]→ {cmd}[/warning]")
-                    _run_shell(cmd)
+        if self.before_uninstall() and isinstance(self.UNINSTALL_COMMANDS, (list, tuple)):
+            for cmd in self.UNINSTALL_COMMANDS:
+                console.print(f"[warning]→ {cmd}[/warning]")
+                _run_shell(cmd)
         self.after_uninstall()
 
     def after_uninstall(self): pass
@@ -774,7 +774,7 @@ class Noxentra:
 class NoxentraCollection:
     TITLE: str       = ""
     DESCRIPTION: str = ""
-    TOOLS: list      = []
+    TOOLS: ClassVar[list]      = []
 
     def __init__(self):
         pass
@@ -908,7 +908,7 @@ class NoxentraCollection:
                     console.print(f"\n[bold cyan]({i}/{len(not_installed)})[/bold cyan] {tool.TITLE}")
                     try:
                         tool.install()
-                    except Exception:
+                    except Exception:  # noqa: BLE001 - continue installing remaining tools
                         console.print(f"[error]✘ Failed: {tool.TITLE}[/error]")
                 ask("\n[dim]Press Enter to continue[/dim]", default="")
             elif choice == 98 and archived:
@@ -916,7 +916,7 @@ class NoxentraCollection:
             elif 1 <= choice <= len(active):
                 try:
                     active[choice - 1].show_options(parent=self)
-                except Exception:
+                except Exception:  # noqa: BLE001 - isolate tool menu failures in CLI
                     console.print_exception(show_locals=True)
                     ask("[dim]Press Enter to continue[/dim]", default="")
             else:

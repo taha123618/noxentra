@@ -132,3 +132,53 @@ def test_goal_screen_drafts_plan(monkeypatch):
             assert ol.option_count == 1
 
     asyncio.run(run())
+
+
+def test_engage_screen_creates_and_runs_pipeline(tmp_path, monkeypatch):
+    from noxentra import engagement, orchestrator
+    from noxentra.findings import Finding
+    from noxentra.tui.screens.engage import EngageScreen
+    from noxentra.tui.widgets.create_engagement_modal import CreateEngagementModal
+    from noxentra.tui.widgets.live_panel import LivePanel
+    from noxentra.tui.widgets.permission import PermissionModal
+
+    monkeypatch.setattr(engagement, "ENGAGEMENTS_ROOT", tmp_path)
+
+    def fake_run_pipeline(e, pipeline_name="recon", on_progress=None, stop_event=None):
+        if on_progress:
+            on_progress(f"[cyan][1/1] running {pipeline_name}…[/cyan]")
+            on_progress("[dim]  [subfinder] api.example.com[/dim]")
+        return [Finding("subdomain", "api.example.com", "api.example.com", "info", "subfinder", {}, "api.example.com", "now")]
+
+    monkeypatch.setattr(orchestrator, "run_pipeline", fake_run_pipeline)
+
+    async def run():
+        async with NoxentraApp().run_test(size=(100, 30)) as pilot:
+            await _until(pilot, MainScreen)
+            await _run_slash(pilot, "/engage")
+            await _until(pilot, EngageScreen)
+
+            # Open CreateEngagementModal from the top option
+            await pilot.press("enter")
+            await _until(pilot, CreateEngagementModal)
+            pilot.app.screen.query_one("#eng-name", Input).value = "acme"
+            pilot.app.screen.query_one("#eng-targets", Input).value = "example.com"
+            await pilot.click("#eng-submit")
+            await _until(pilot, EngageScreen)
+            assert engagement.load("acme") is not None
+
+            # First option in selected engagement is a pipeline -> triggers PermissionModal
+            await pilot.press("enter")
+            await _until(pilot, PermissionModal)
+            await pilot.press("enter")
+            await _until(pilot, EngageScreen)
+
+            panel = pilot.app.screen.query_one(LivePanel)
+            for _ in range(40):
+                await pilot.pause()
+                if not panel.running:
+                    break
+            assert not panel.running
+            assert "Total deduplicated findings" in "\n".join(str(line.text) for line in pilot.app.screen.query_one("#engage-log").lines)
+
+    asyncio.run(run())

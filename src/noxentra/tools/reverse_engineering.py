@@ -1,13 +1,14 @@
 import subprocess
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection
 
 
 class Apk2Gold(Noxentra):
     TITLE = "Apk2Gold"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = "Apk2Gold is a CLI tool for decompiling Android apps to Java"
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/lxdvs/apk2gold.git",
         "cd apk2gold;sudo bash make.sh"
     ]
@@ -20,7 +21,7 @@ class Apk2Gold(Noxentra):
 
 class ReverseEngineeringTools(NoxentraCollection):
     TITLE = "Reverse engineering tools"
-    TOOLS = [
+    TOOLS: ClassVar = [
         Apk2Gold(),
     ]
 

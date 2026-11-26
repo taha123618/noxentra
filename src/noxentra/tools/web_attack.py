@@ -1,4 +1,5 @@
 import subprocess
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection
 
@@ -8,10 +9,10 @@ class Web2Attack(Noxentra):
     ARCHIVED_REASON = "Unmaintained — no commits since 2022-12"
     TITLE = "Web2Attack"
     DESCRIPTION = "Web hacking framework with tools, exploits by python"
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/santatic/web2attack.git"
     ]
-    RUN_COMMANDS = ["cd web2attack && sudo python3 w2aconsole"]
+    RUN_COMMANDS: ClassVar = ["cd web2attack && sudo python3 w2aconsole"]
     PROJECT_URL = "https://github.com/santatic/web2attack"
 
 
@@ -33,7 +34,7 @@ class Dirb(Noxentra):
         "It basically works by launching a dictionary based "
         "attack against \n a web server and analyzing the response."
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://gitlab.com/kalilinux/packages/dirb.git",
         "cd dirb;sudo bash configure;make"
     ]
@@ -73,7 +74,7 @@ class Dirb(Noxentra):
 class WebAttackTools(NoxentraCollection):
     TITLE = "Web Attack tools"
     DESCRIPTION = ""
-    TOOLS = [
+    TOOLS: ClassVar = [
         Web2Attack(),
         Dirb(),
     ]

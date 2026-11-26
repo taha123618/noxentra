@@ -27,14 +27,14 @@ def test_configured_theme_survives_non_object_and_bad_value(tmp_path, monkeypatc
 
 # ── #768 parsers keep going past valid-JSON-but-non-object / wrong-typed lines ──
 def test_parse_httpx_skips_non_object_and_nonstring_url():
-    raw = "\n".join(['null', '[]', '5', '{"url": ["bad"]}', '{"url": "http://a", "title": 7}'])
+    raw = 'null\n[]\n5\n{"url": ["bad"]}\n{"url": "http://a", "title": 7}'
     got, urls = findings.parse_httpx(raw, "t")
     assert urls == ["http://a"]
     assert got[0].name == "http://a"          # non-str title fell back to url, no crash
 
 
 def test_parse_nuclei_skips_bad_records():
-    raw = "\n".join(['null', '{"info": "oops"}', '{"matched-at": "h", "info": {"name": "x", "severity": "high"}}'])
+    raw = 'null\n{"info": "oops"}\n{"matched-at": "h", "info": {"name": "x", "severity": "high"}}'
     got, _ = findings.parse_nuclei(raw, "t")
     assert len(got) == 2                       # the "info as string" line is kept (info→{}), null skipped
     assert got[-1].severity == "high"

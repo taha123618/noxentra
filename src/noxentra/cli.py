@@ -1,15 +1,4 @@
 #!/usr/bin/env python3
-import sys
-
-# ── Python version guard (must be before any other local import) ───────────────
-if sys.version_info < (3, 10):
-    print(
-        f"[ERROR] Python 3.10 or newer is required.\n"
-        f"You are running Python {sys.version_info.major}.{sys.version_info.minor}.\n"
-        f"Upgrade with: sudo apt install python3.10"
-    )
-    sys.exit(1)
-
 import argparse
 import datetime
 import difflib
@@ -17,6 +6,7 @@ import os
 import platform
 import random
 import socket
+import sys
 import webbrowser
 from itertools import zip_longest
 from pathlib import Path
@@ -44,12 +34,8 @@ from noxentra.toolbox import (
     RECOMMENDATIONS as _RECOMMENDATIONS,
 )
 from noxentra.toolbox import (
-    AllTools as AllTools,
-)
-from noxentra.toolbox import (
-    _reg as _reg,
-)
-from noxentra.toolbox import (
+    AllTools,
+    _reg,
     all_tools,
     tool_definitions,
 )
@@ -59,6 +45,16 @@ from noxentra.toolbox import (
 from noxentra.toolbox import (
     get_all_tags as _get_all_tags,
 )
+
+__all__ = [
+    "_RECOMMENDATIONS",
+    "AllTools",
+    "_collect_all_tools",
+    "_get_all_tags",
+    "_reg",
+    "all_tools",
+    "tool_definitions",
+]
 
 # ── Help overlay ───────────────────────────────────────────────────────────────
 
@@ -138,7 +134,7 @@ def _sys_info() -> dict:
     # OS pretty name
     try:
         info["os"] = platform.freedesktop_os_release().get("PRETTY_NAME", "")
-    except Exception:
+    except (OSError, AttributeError):
         info["os"] = ""
     if not info["os"]:
         info["os"] = f"{platform.system()} {platform.release()}"
@@ -148,7 +144,7 @@ def _sys_info() -> dict:
     # Current user
     try:
         info["user"] = os.getlogin()
-    except Exception:
+    except OSError:
         info["user"] = os.environ.get("USER", os.environ.get("LOGNAME", "root"))
 
     info["host"] = socket.gethostname()
@@ -160,7 +156,7 @@ def _sys_info() -> dict:
         s.connect(("10.254.254.254", 1))
         info["ip"] = s.getsockname()[0]
         s.close()
-    except Exception:
+    except OSError:
         info["ip"] = "127.0.0.1"
 
     info["time"] = datetime.datetime.now().strftime("%Y-%m-%d  %H:%M")
@@ -580,7 +576,7 @@ def interact_menu():
                 ))
                 try:
                     all_tools[choice - 1].show_options()
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001 - REPL UI boundary isolates failing tool plugins
                     console.print(Panel(
                         f"[red]Error while opening {title}[/red]\n{e}",
                         border_style="red",

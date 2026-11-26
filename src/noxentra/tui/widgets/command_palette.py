@@ -7,6 +7,7 @@ from textual.widgets.option_list import Option
 COMMANDS = [
     ("/config", "edit settings"),
     ("/update", "check for & how to update noxentra"),
+    ("/engage", "create engagements & run live pipelines"),
     ("/recommend", "AI tool recommendation"),
     ("/find", "discover tools on GitHub"),
     ("/goal", "AI goal planner"),

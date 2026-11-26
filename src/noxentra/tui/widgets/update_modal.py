@@ -1,4 +1,6 @@
 """/update dialog: shows the detected install method's upgrade command (copyable). Never runs it."""
+from typing import ClassVar
+
 from rich.text import Text
 from textual.app import ComposeResult
 from textual.containers import Vertical
@@ -10,7 +12,7 @@ from noxentra.constants import REPO_WEB_URL, VERSION_DISPLAY
 
 
 class UpdateModal(ModalScreen):
-    BINDINGS = [("escape", "close", "Close"), ("enter", "copy", "Copy command")]
+    BINDINGS: ClassVar = [("escape", "close", "Close"), ("enter", "copy", "Copy command")]
 
     def __init__(self, newer: str | None):
         self._newer = newer

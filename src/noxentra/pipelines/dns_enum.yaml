@@ -1,0 +1,21 @@
+# pipelines/dns_enum.yaml
+name: dns_enum
+description: Passive subdomain enum (subfinder) -> DNS resolution/records (dnsx) -> HTTP probe (httpx).
+steps:
+  - tool: subfinder
+    args: ["-silent"]
+    input: hosts
+    output: raw/subfinder.txt
+    parser: subfinder
+  - tool: dnsx
+    args: ["-silent", "-a", "-cname", "-resp", "-json"]
+    input: previous
+    fallback_to_targets: true
+    output: raw/dnsx.jsonl
+    parser: dnsx
+  - tool: httpx
+    args: ["-silent", "-json"]
+    input: previous
+    fallback_to_targets: true
+    output: raw/httpx.jsonl
+    parser: httpx

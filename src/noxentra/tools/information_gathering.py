@@ -1,16 +1,13 @@
 import socket
 import subprocess
 import webbrowser
+from typing import ClassVar
 
 from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.text import Text
 
 from noxentra.core import Noxentra, NoxentraCollection, clear_screen, console
-
-
-
-
 
 
 class PortScan(Noxentra):
@@ -68,7 +65,7 @@ class Striker(Noxentra):
     ARCHIVED_REASON = "Unmaintained — no commits since 2023-06"
     TITLE = "Striker"
     DESCRIPTION = "Recon & Vulnerability Scanning Suite"
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/s0md3v/Striker.git",
         "cd Striker && pip3 install -r requirements.txt"
     ]
@@ -93,9 +90,10 @@ class PortScannerRanger(Noxentra):
     TITLE = "Port Scanner - rang3r"
     DESCRIPTION = "rang3r is a python script which scans in multi thread\n " \
                   "all alive hosts within your range that you specify."
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/floriankunushevci/rang3r.git;"
-        "pip install --user termcolor"]
+    INSTALL_COMMANDS: ClassVar = [
+        ("git clone https://github.com/floriankunushevci/rang3r.git;"
+         "pip install --user termcolor")
+    ]
     PROJECT_URL = "https://github.com/floriankunushevci/rang3r"
 
     def run(self):
@@ -112,7 +110,7 @@ class PortScannerRanger(Noxentra):
 class Breacher(Noxentra):
     TITLE = "Breacher"
     DESCRIPTION = "An advanced multithreaded admin panel finder written in python."
-    INSTALL_COMMANDS = ["git clone https://github.com/s0md3v/Breacher.git"]
+    INSTALL_COMMANDS: ClassVar = ["git clone https://github.com/s0md3v/Breacher.git"]
     PROJECT_URL = "https://github.com/s0md3v/Breacher"
 
     def run(self):
@@ -150,7 +148,7 @@ class Breacher(Noxentra):
 
 class InformationGatheringTools(NoxentraCollection):
     TITLE = "Information gathering tools"
-    TOOLS = [
+    TOOLS: ClassVar = [
         PortScan(),
         Host2IP(),
         IsItDown(),

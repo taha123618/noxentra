@@ -1,4 +1,6 @@
 """Report screen: browse engagements and export deterministic or AI-assisted reports."""
+from typing import ClassVar
+
 from textual import work
 from textual.widgets import Input
 from textual.widgets.option_list import Option
@@ -9,7 +11,7 @@ from noxentra.tui.screens.base import NoxentraScreen
 
 
 class ReportScreen(NoxentraScreen):
-    BINDINGS = [("escape", "back_or_pop", "Back")]
+    BINDINGS: ClassVar = [("escape", "back_or_pop", "Back")]
     LIST_ID = "report-engagements"
     PROMPT_PLACEHOLDER = "filter engagements…"
 
@@ -42,7 +44,7 @@ class ReportScreen(NoxentraScreen):
         if not self._rows:
             return [
                 Option(
-                    "  No engagements yet — run: noxentra --engagement <name> --targets <target>",
+                    "  No engagements yet — open /engage or run: noxentra --engagement <name> --targets <target>",
                     id="__empty__",
                 )
             ]

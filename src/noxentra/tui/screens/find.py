@@ -1,4 +1,6 @@
 """Find screen: GitHub tool discovery (/find) with safe save to ~/.noxentra/found.yaml."""
+from typing import ClassVar
+
 from textual import work
 from textual.widgets import Input
 from textual.widgets.option_list import Option
@@ -9,7 +11,7 @@ from noxentra.tui.screens.base import NoxentraScreen
 
 
 class FindScreen(NoxentraScreen):
-    BINDINGS = [("escape", "app.pop_screen", "Back")]
+    BINDINGS: ClassVar = [("escape", "app.pop_screen", "Back")]
     LIST_ID = "find-results"
     PROMPT_PLACEHOLDER = "what tool are you looking for? press ⏎ to search…"
 

@@ -244,8 +244,7 @@ def _print_panes(windows):
 def _run_command(arg, ctx):
     """``/run [tool] [args…] [&]`` — trailing ``&`` backgrounds via tmux (when
     enabled); otherwise opens the tool's foreground menu (unchanged slice 2a)."""
-    from noxentra import cli
-    from noxentra import session
+    from noxentra import cli, session
 
     arg = arg.strip()
     bg = arg.endswith("&")
@@ -290,15 +289,13 @@ def _message(ctx):
 
 def _use_pt():
     """prompt_toolkit only on an interactive TTY and not forced classic."""
+    import importlib.util
+
     if FORCE_CLASSIC:
         return False
     if not (sys.stdin.isatty() and sys.stdout.isatty()):
         return False
-    try:
-        import prompt_toolkit
-    except ImportError:
-        return False
-    return True
+    return importlib.util.find_spec("prompt_toolkit") is not None
 
 
 @lru_cache(maxsize=1)
@@ -376,7 +373,7 @@ def simple(prompt, default=""):
     """Plain readline-backed line read (confirmations / Press-Enter). No grammar,
     no completer. EOF or Ctrl-C → SystemExit(0) (matches the old core.ask)."""
     try:
-        import readline
+        import readline  # noqa: F401 - importing enables line editing in input()
     except ImportError:
         pass
     from rich.text import Text

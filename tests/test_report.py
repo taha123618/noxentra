@@ -1,5 +1,4 @@
-from noxentra import engagement
-from noxentra import report
+from noxentra import engagement, report
 from noxentra.findings import Finding, save_findings
 
 

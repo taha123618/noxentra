@@ -122,8 +122,7 @@ def test_find_is_completable_and_documented():
 
 
 def test_dispatch_find_routes_to_discover_run(monkeypatch):
-    from noxentra import discover
-    from noxentra import prompt
+    from noxentra import discover, prompt
     seen = {}
     monkeypatch.setattr(discover, "run", lambda need, ctx=None: seen.setdefault("need", need))
     ctx = prompt.PromptCtx("home")

@@ -1,4 +1,6 @@
 """Category screen: tools in a category with async install-mark probing."""
+from typing import ClassVar
+
 from textual import work
 from textual.widgets import Input
 from textual.widgets.option_list import Option
@@ -9,7 +11,7 @@ from noxentra.tui.screens.tool import ToolScreen
 
 
 class CategoryScreen(NoxentraScreen):
-    BINDINGS = [("escape", "app.pop_screen", "Back")]
+    BINDINGS: ClassVar = [("escape", "app.pop_screen", "Back")]
     LIST_ID = "cat-tools"
     PROMPT_PLACEHOLDER = "type to filter tools…"
 
@@ -49,10 +51,10 @@ class CategoryScreen(NoxentraScreen):
         return opts
 
     def open_selected(self, option_id: str) -> None:
+        import contextlib
+
         idx = int(option_id)
         row = self._rows[idx]
-        try:
+        with contextlib.suppress(Exception):
             row.installed = bool(row.obj.is_installed())
-        except Exception:
-            pass
         self.app.push_screen(ToolScreen(row))

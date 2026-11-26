@@ -1,6 +1,7 @@
 import asyncio
 import contextlib
 import sys
+from typing import ClassVar
 
 from textual.app import App
 from textual.widgets import Input, OptionList, ProgressBar, RichLog, Static
@@ -99,7 +100,7 @@ def test_back_pops_screen():
 class _LiveTool(Noxentra):
     TITLE = "Gobuster"
     DESCRIPTION = "Directory brute-forcer"
-    RUN_COMMANDS = [
+    RUN_COMMANDS: ClassVar = [
         f'"{sys.executable}" -c "import time; print(\'found /admin\', flush=True); time.sleep(0.05); print(\'found /api\', flush=True)"'
     ]
 
@@ -107,7 +108,7 @@ class _LiveTool(Noxentra):
 class _SlowTool(Noxentra):
     TITLE = "SlowGobuster"
     DESCRIPTION = "Long-running tool"
-    RUN_COMMANDS = [f'"{sys.executable}" -c "import time; print(\'started\', flush=True); time.sleep(10)"']
+    RUN_COMMANDS: ClassVar = [f'"{sys.executable}" -c "import time; print(\'started\', flush=True); time.sleep(10)"']
 
 
 def test_live_execution_streams_output_and_updates_status():
@@ -203,7 +204,7 @@ def test_run_custom_command_streams_in_tool_screen():
 class _ProgressTool(Noxentra):
     TITLE = "GobusterProgress"
     DESCRIPTION = "Simulated Gobuster progress"
-    RUN_COMMANDS = [
+    RUN_COMMANDS: ClassVar = [
         f'"{sys.executable}" -c "import sys, time; sys.stdout.write(\'Progress: 250 / 1000 (25.0%)\\r\'); sys.stdout.flush(); time.sleep(0.1); print(\'/admin (Status: 301)\', flush=True)"'
     ]
 

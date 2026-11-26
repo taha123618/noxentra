@@ -1,3 +1,4 @@
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection
 
@@ -8,14 +9,14 @@ class EvilURL(Noxentra):
     TITLE = "EvilURL"
     DESCRIPTION = "Generate unicode evil domains for IDN Homograph Attack " \
                   "and detect them."
-    INSTALL_COMMANDS = ["git clone https://github.com/UndeadSec/EvilURL.git"]
-    RUN_COMMANDS = ["cd EvilURL;python3 evilurl.py"]
+    INSTALL_COMMANDS: ClassVar = ["git clone https://github.com/UndeadSec/EvilURL.git"]
+    RUN_COMMANDS: ClassVar = ["cd EvilURL;python3 evilurl.py"]
     PROJECT_URL = "https://github.com/UndeadSec/EvilURL"
 
 
 class IDNHomographAttackTools(NoxentraCollection):
     TITLE = "IDN Homograph Attack"
-    TOOLS = [EvilURL()]
+    TOOLS: ClassVar = [EvilURL()]
 
 if __name__ == "__main__":
     tools = IDNHomographAttackTools()

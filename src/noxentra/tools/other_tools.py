@@ -1,4 +1,5 @@
 import subprocess
+from typing import ClassVar
 
 from rich.prompt import Prompt
 
@@ -19,7 +20,7 @@ class HatCloud(Noxentra):
     TITLE = "HatCloud(Bypass CloudFlare for IP)"
     DESCRIPTION = "HatCloud build in Ruby. It makes bypass in CloudFlare for " \
                   "discover real IP."
-    INSTALL_COMMANDS = ["git clone https://github.com/HatBashBR/HatCloud.git"]
+    INSTALL_COMMANDS: ClassVar = ["git clone https://github.com/HatBashBR/HatCloud.git"]
     PROJECT_URL = "https://github.com/HatBashBR/HatCloud"
 
     def run(self):
@@ -35,7 +36,7 @@ class HatCloud(Noxentra):
 
 class OtherTools(NoxentraCollection):
     TITLE = "Other tools"
-    TOOLS = [
+    TOOLS: ClassVar = [
         SocialMediaBruteforceTools(),
         AndroidAttackTools(),
         HatCloud(),

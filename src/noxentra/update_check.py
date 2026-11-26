@@ -36,23 +36,28 @@ def _fetch_latest(timeout: float) -> str:
 
 
 def _cached_latest(timeout: float) -> str:
+    import logging
+
+    log = logging.getLogger(__name__)
     try:
         data = json.loads(_CACHE.read_text())
         if time.time() - data.get("ts", 0) < _TTL:
             return data.get("latest", "")
-    except Exception:
-        pass
+    except (OSError, ValueError, TypeError, AttributeError) as exc:
+        log.debug("Update cache unreadable: %s", exc)
     latest = _fetch_latest(timeout)
     try:
         _CACHE.parent.mkdir(parents=True, exist_ok=True)
         _CACHE.write_text(json.dumps({"ts": time.time(), "latest": latest}))
-    except Exception:
-        pass
+    except OSError as exc:
+        log.debug("Failed to write update cache: %s", exc)
     return latest
 
 
 def latest_if_newer(timeout: float = 2.0) -> str | None:
     """Latest release tag (without the 'v') if newer than the running one, else None. Never raises."""
+    import logging
+
     global _memo_done, _memo_val
     if _memo_done:
         return _memo_val
@@ -65,14 +70,14 @@ def latest_if_newer(timeout: float = 2.0) -> str | None:
         from . import config
         if not config.load().get("update_check", True):
             return None
-    except Exception:
-        pass
+    except (OSError, ValueError, TypeError, AttributeError) as exc:
+        logging.getLogger(__name__).debug("Config unreadable during update check: %s", exc)
 
     try:
         latest = _cached_latest(timeout)
         if latest and _parse(latest) > _parse(VERSION):
             _memo_val = latest.lstrip("vV")
-    except Exception:
+    except (OSError, ValueError, TypeError, AttributeError):
         _memo_val = None
     return _memo_val
 

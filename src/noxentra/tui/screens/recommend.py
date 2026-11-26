@@ -1,4 +1,6 @@
 """Recommend screen: free-text goal -> AI/offline tag matching -> ToolScreen."""
+from typing import ClassVar
+
 from textual import work
 from textual.widgets import Input
 from textual.widgets.option_list import Option
@@ -9,7 +11,7 @@ from noxentra.tui.screens.tool import ToolScreen
 
 
 class RecommendScreen(NoxentraScreen):
-    BINDINGS = [("escape", "app.pop_screen", "Back")]
+    BINDINGS: ClassVar = [("escape", "app.pop_screen", "Back")]
     LIST_ID = "recommend-tools"
     PROMPT_PLACEHOLDER = "describe your goal (e.g. subdomain enumeration) and press ⏎…"
 

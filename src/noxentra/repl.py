@@ -185,25 +185,21 @@ def _dispatch(raw, tag_index=None, tools_by_title=None):
 
 def _use_repl(force_classic: bool) -> bool:
     """REPL only on an interactive TTY with prompt_toolkit importable."""
+    import importlib.util
     import sys
 
     if force_classic:
         return False
     if not (sys.stdin.isatty() and sys.stdout.isatty()):
         return False
-    try:
-        import prompt_toolkit
-    except ImportError:
-        return False
-    return True
+    return importlib.util.find_spec("prompt_toolkit") is not None
 
 
 def run_repl():
     """Launch the inline REPL over the shared input surface (prompt.read_line +
     prompt.dispatch), so home and nested tool menus share ONE line editor,
     history, and grammar. Fallback selection is the caller's job (`_use_repl`)."""
-    from noxentra import cli
-    from noxentra import prompt
+    from noxentra import cli, prompt
     from noxentra.core import console
 
     console.print(cli._build_header())

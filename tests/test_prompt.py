@@ -1,5 +1,6 @@
 """Tests for the shared input surface (offline — no TTY, no model)."""
 import types
+from typing import ClassVar
 
 from noxentra import prompt
 from noxentra.prompt import BACK, CONTINUE, QUIT, Open, PromptCtx
@@ -127,7 +128,7 @@ def test_simple_eof_exits(monkeypatch):
 
 class _FakeTool:
     TITLE = "Nmap"
-    USAGE = []
+    USAGE: ClassVar = []
     def _get_tool_dir(self):
         return "/tools/nmap"
 
@@ -200,8 +201,7 @@ def test_kill_routes(monkeypatch):
 
 
 def test_config_routes(monkeypatch):
-    from noxentra import cli
-    from noxentra import prompt
+    from noxentra import cli, prompt
     got = {}
     monkeypatch.setattr(cli, "config_command", lambda arg="": got.setdefault("arg", arg))
     prompt.dispatch("/config background_runner off", prompt.PromptCtx("home"))

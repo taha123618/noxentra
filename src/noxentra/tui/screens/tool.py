@@ -1,5 +1,6 @@
 """Tool detail screen: live streamed execution with status, progress bar, and cancel."""
 import threading
+from typing import ClassVar
 
 from textual import work
 from textual.app import ComposeResult
@@ -19,7 +20,7 @@ _GATED = ("run", "install", "uninstall")
 
 
 class ToolScreen(NoxentraScreen):
-    BINDINGS = [
+    BINDINGS: ClassVar = [
         ("escape", "app.pop_screen", "Back"),
         ("left", "app.pop_screen", "Back"),
         ("c", "cancel_run", "Cancel"),
@@ -130,7 +131,7 @@ class ToolScreen(NoxentraScreen):
                     fn()
                 except SystemExit:
                     pass  # a tool quitting itself must not quit the TUI
-                except BaseException:
+                except Exception:  # noqa: BLE001 - isolate crashing tool actions in raw TTY mode
                     self.app.bell()
             self._refresh_install_state()
             return
@@ -161,7 +162,7 @@ class ToolScreen(NoxentraScreen):
                 rc = core.last_exit_code()
         except SystemExit as exc:
             rc = exc.code if isinstance(exc.code, int) else 0
-        except BaseException as exc:
+        except Exception as exc:  # noqa: BLE001 - isolate failing tool plugins from TUI worker
             rc = 1
             err = str(exc)
         self.app.call_from_thread(self._on_finished, rc, err, stop_event.is_set())
@@ -171,8 +172,8 @@ class ToolScreen(NoxentraScreen):
         self._refresh_install_state()
 
     def _refresh_install_state(self) -> None:
-        try:
+        import contextlib
+
+        with contextlib.suppress(Exception):
             self._row.installed = bool(self._row.obj.is_installed())
-        except Exception:
-            pass
         self.query_one("#tool-detail", Static).update(self._detail_text())

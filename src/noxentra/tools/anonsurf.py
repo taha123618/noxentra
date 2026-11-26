@@ -1,3 +1,4 @@
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection, console
 
@@ -11,13 +12,13 @@ class AnonymouslySurf(Noxentra):
     # Bug 28 fix: was "cd kali-anonsurf && ./installer.sh && cd .. && sudo rm -r kali-anonsurf"
     # Deleting the source on install means there is no retry if install fails.
     # Now kept in a separate step so failure does not destroy the source.
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/Und3rf10w/kali-anonsurf.git",
         "cd kali-anonsurf && sudo ./installer.sh",
     ]
-    RUN_COMMANDS = ["sudo anonsurf start"]
+    RUN_COMMANDS: ClassVar = ["sudo anonsurf start"]
     PROJECT_URL = "https://github.com/Und3rf10w/kali-anonsurf"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
 
     def __init__(self):
         super().__init__([("Stop", self.stop)])
@@ -30,7 +31,7 @@ class AnonymouslySurf(Noxentra):
 
 class AnonSurfTools(NoxentraCollection):
     TITLE = "Anonymously Hiding Tools"
-    TOOLS = [
+    TOOLS: ClassVar = [
         AnonymouslySurf(),
     ]
 

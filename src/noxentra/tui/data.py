@@ -48,7 +48,7 @@ def tools_in(cat_index: int, probe: bool = True) -> list[ToolRow]:
         if probe:
             try:
                 installed = bool(t.is_installed())
-            except Exception:
+            except (OSError, RuntimeError, ValueError, AttributeError, TypeError):
                 installed = False
         rows.append(ToolRow(
             index=j,
@@ -67,7 +67,7 @@ def probe_installed(rows: list[ToolRow]) -> list[bool]:
     for r in rows:
         try:
             out.append(bool(r.obj.is_installed()))
-        except Exception:
+        except (OSError, RuntimeError, ValueError, AttributeError, TypeError):
             out.append(False)
     return out
 
@@ -76,7 +76,7 @@ def tool_at(cat_index: int, tool_index: int) -> ToolRow:
     t = _active_tools(cat_index)[tool_index]
     try:
         installed = bool(t.is_installed())
-    except Exception:
+    except (OSError, RuntimeError, ValueError, AttributeError, TypeError):
         installed = False
     return ToolRow(
         index=tool_index,

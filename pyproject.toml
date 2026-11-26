@@ -50,7 +50,7 @@ dev = ["pytest>=8", "ruff>=0.6"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-noxentra = ["catalog/*.yaml", "pipelines/*.yaml", "skill/*.md", "tui/*.tcss", "sponsors.yaml"]
+noxentra = ["catalog/*.yaml", "pipelines/*.yaml", "pipelines/*.txt", "skill/*.md", "tui/*.tcss", "sponsors.yaml"]
 
 [tool.setuptools.dynamic]
 version = { attr = "noxentra.constants.VERSION" }
