@@ -856,3 +856,78 @@ tools:
   - - extract unique hosts from URLs
     - cat urls.txt | unfurl domains | sort -u
   lab_safe_notes: Purely offline URL parser — ideal for post-processing gau/katana output.
+- title: massdns (High-Performance DNS Resolver)
+  kind: install
+  tags:
+  - dns
+  - recon
+  - enumeration
+  description: High-performance DNS stub resolver capable of resolving millions of
+    subdomain candidates per second using a list of public resolvers.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: massdns
+    apt: massdns
+    brew: massdns
+  install:
+    apt: massdns
+  run:
+  - massdns --help
+  project_url: https://github.com/blechschmidt/massdns
+  usage:
+  - - resolve a list of candidate subdomains
+    - massdns -r resolvers.txt -t A -o S subs.txt
+  lab_safe_notes: Queries DNS resolvers rather than the target host directly; keep
+    concurrency reasonable on small networks.
+- title: arp-scan (Layer-2 Host Discovery)
+  kind: install
+  tags:
+  - network
+  - recon
+  - scanner
+  description: Sends ARP packets to discover live hosts and MAC vendors across local
+    Ethernet segments even when ICMP/TCP is firewalled.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: arp-scan
+    apt: arp-scan
+    brew: arp-scan
+  install:
+    apt: arp-scan
+  run:
+  - arp-scan --version
+  project_url: https://github.com/royhills/arp-scan
+  usage:
+  - - scan the local subnet via ARP
+    - sudo arp-scan --localnet
+  lab_safe_notes: Layer-2 broadcast discovery on your local LAN only — requires root
+    privileges to send raw ARP frames.
+- title: fping (Parallel ICMP Sweep)
+  kind: install
+  tags:
+  - network
+  - recon
+  - scanner
+  description: High-speed parallel ping sweep tool for checking host liveness across
+    CIDR ranges and IP lists.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: fping
+    apt: fping
+    brew: fping
+  install:
+    apt: fping
+  run:
+  - fping -v
+  project_url: https://github.com/schweikert/fping
+  usage:
+  - - sweep a /24 subnet for alive hosts
+    - fping -a -g 10.0.0.0/24 2>/dev/null
+  lab_safe_notes: Sends ICMP echo probes across specified IP ranges — scope strictly
+    to authorized subnets.

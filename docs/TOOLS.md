@@ -1,6 +1,6 @@
 # Tool catalog
 
-Every tool noxentra can install, launch, or point you at — **269 active tools
+Every tool noxentra can install, launch, or point you at — **288 active tools
 across 21 categories**, plus 44 archived entries kept out of this list (they are
 unmaintained or dead upstream and are hidden in the app unless you set
 `show_archived true` via `/config`).
@@ -66,6 +66,9 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [Nosey Parker (Secret Scanner)](https://github.com/praetorian-inc/noseyparker) — <sub>scanner, git-secrets, credentials, recon</sub>
 - [anew (Unique Line Appender)](https://github.com/tomnomnom/anew) — <sub>recon, enumeration</sub>
 - [unfurl (URL Component Extractor)](https://github.com/tomnomnom/unfurl) — <sub>recon, web, enumeration</sub>
+- [massdns (High-Performance DNS Resolver)](https://github.com/blechschmidt/massdns) — <sub>dns, recon, enumeration</sub>
+- [arp-scan (Layer-2 Host Discovery)](https://github.com/royhills/arp-scan) — <sub>network, recon, scanner</sub>
+- [fping (Parallel ICMP Sweep)](https://github.com/schweikert/fping) — <sub>network, recon, scanner</sub>
 
 ## 📚 Wordlist Generator
 
@@ -155,6 +158,9 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [Smuggler (HTTP Request Smuggling)](https://github.com/defparam/smuggler) — <sub>web, vuln-scan, scanner</sub>
 - [SSTImap (SSTI Detection & Exploitation)](https://github.com/vladko312/SSTImap) — <sub>web, vuln-scan, exploitation, scanner</sub>
 - [CRLFuzz (CRLF Injection Scanner)](https://github.com/dwisiswant0/crlfuzz) — <sub>web, vuln-scan, scanner</sub>
+- [grpcurl (gRPC CLI Client)](https://github.com/fullstorydev/grpcurl) — <sub>web, api, recon, enumeration</sub>
+- [websocat (WebSocket CLI Client)](https://github.com/vi/websocat) — <sub>web, api, network</sub>
+- [mitmproxy2swagger (Traffic-to-OpenAPI Generator)](https://github.com/alufers/mitmproxy2swagger) — <sub>web, api, enumeration</sub>
 - [PortSwigger Web Security Academy](https://portswigger.net/web-security) — <sub>learning, web, reference</sub>
 - [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) — <sub>cheatsheet, reference, payload, web</sub>
 - [HackTricks](https://book.hacktricks.xyz/) — <sub>cheatsheet, reference, web, privesc</sub>
@@ -207,6 +213,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [Venom Shellcode Generator](https://github.com/r00t-3xp10it/venom) — <sub>payload, reverse-shell, c2</sub>
 - [Mob-Droid](https://github.com/kinghacker0/Mob-Droid) — <sub>payload, mobile, apk, reverse-shell</sub>
 - [msfvenom (Payload Generator)](https://github.com/rapid7/metasploit-framework) — <sub>payload, reverse-shell, c2, apk</sub>
+- [pwntools (CTF & Shellcode Toolkit)](https://github.com/Gallopsled/pwntools) — <sub>payload, exploitation, reversing, binary</sub>
+- [Donut (PE/.NET Shellcode Generator)](https://github.com/TheWover/donut) — <sub>payload, binary, exploitation</sub>
 - [LOLBAS (Living Off The Land Binaries)](https://lolbas-project.github.io/) — <sub>reference, payload, post-exploitation</sub>
 
 ## 🧰 Exploit Framework
@@ -232,6 +240,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [binutils (strings / objdump / readelf)](https://www.gnu.org/software/binutils/) — <sub>reversing, binary</sub>
 - [capa (FLARE Capability Detector)](https://github.com/mandiant/capa) — <sub>reversing, binary, malware-analysis</sub>
 - [Rizin (Reverse Engineering Framework)](https://github.com/rizinorg/rizin) — <sub>reversing, binary, malware-analysis</sub>
+- [checksec (Binary Mitigation Checker)](https://github.com/slimm609/checksec.sh) — <sub>reversing, binary, scanner</sub>
+- [ROPgadget (ROP Chain Gadget Finder)](https://github.com/JonathanSalwan/ROPgadget) — <sub>reversing, binary, exploitation</sub>
 - [crackmes.one (RE Practice)](https://crackmes.one/) — <sub>reference, learning, reversing</sub>
 - [Malware Unicorn RE101 (Workshop)](https://malwareunicorn.org/workshops/re101.html) — <sub>reference, learning, reversing, malware-analysis</sub>
 
@@ -249,6 +259,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 
 - [Villain (Reverse Shell / C2 Manager)](https://github.com/t3l3machus/Villain) — <sub>c2, reverse-shell, post-exploitation, payload</sub>
 - [hoaxshell (HTTP(S) PowerShell Reverse Shell)](https://github.com/t3l3machus/hoaxshell) — <sub>reverse-shell, c2, payload, post-exploitation</sub>
+- [frp (Fast Reverse Proxy)](https://github.com/fatedier/frp) — <sub>tunneling, network</sub>
+- [bore (Modern Rust TCP Tunnel)](https://github.com/ekzhang/bore) — <sub>tunneling, network</sub>
 - [Merlin (cross-platform C2)](https://github.com/Ne0nd0g/merlin) — <sub>c2, post-exploitation, reference</sub>
 - [Covenant (.NET C2)](https://github.com/cobbr/Covenant) — <sub>c2, post-exploitation, reference</sub>
 
@@ -308,6 +320,9 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [Semgrep (Static Code Scanner)](https://github.com/semgrep/semgrep) — <sub>cloud, scanner, vuln-scan</sub>
 - [OSV-Scanner (Dependency Vuln Scanner)](https://github.com/google/osv-scanner) — <sub>cloud, scanner, vuln-scan</sub>
 - [Cosign (Sigstore Artifact Signing)](https://github.com/sigstore/cosign) — <sub>cloud, scanner, enumeration</sub>
+- [Cloudsplaining (AWS IAM Analyzer)](https://github.com/salesforce/cloudsplaining) — <sub>cloud, scanner, enumeration</sub>
+- [kube-hunter (Kubernetes Pentest Scanner)](https://github.com/aquasecurity/kube-hunter) — <sub>cloud, scanner, vuln-scan</sub>
+- [Terrascan (IaC Policy & Misconfig Scanner)](https://github.com/tenable/terrascan) — <sub>cloud, scanner, vuln-scan</sub>
 - [HackTricks Cloud (cloud pentest playbook)](https://cloud.hacktricks.xyz/) — <sub>reference, cloud, learning</sub>
 - [flaws.cloud (AWS Security Challenge)](http://flaws.cloud/) — <sub>learning, cloud, online-service</sub>
 
@@ -338,6 +353,10 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - Mix tools
 - [tshark (CLI Packet Analyzer)](https://www.wireshark.org/docs/man-pages/tshark.html) — <sub>network, sniffing, pcap, forensics</sub>
 - [CyberChef (Cyber Swiss-Army Knife)](https://gchq.github.io/CyberChef/) — <sub>reference, online-service</sub>
+- [D4 (Deep Web Reconnaissance Directory)](https://github.com/sijad/d4) — <sub>recon, enumeration, web</sub>
+- [Crefile (OSINT Credential Hunting)](https://github.com/kathanP19/Crefile) — <sub>osint, recon, credentials</sub>
+- [ScrapedBeast (OSINT Scraping Framework)](https://github.com/skulldivine/ScrapedBeast) — <sub>osint, recon, crawler</sub>
+- [C3 (Cyber Connect Consciousness) AI Recon](https://github.com/KathanP19/C3) — <sub>osint, recon, scanner</sub>
 
 ## 🔓 Hash Cracking
 

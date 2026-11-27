@@ -34,7 +34,7 @@ def collect() -> list[str]:
         if p.suffix in (".yaml", ".py") and p.is_file() and p.name != OUT.name:
             found = _URL.findall(p.read_text(errors="ignore"))
             owners.update(o for o in found if o.lower() not in _NOT_OWNERS)
-    return sorted(owners, key=str.lower)
+    return sorted(owners, key=lambda s: (s.lower(), s))
 
 
 def render(owners: list[str]) -> str:

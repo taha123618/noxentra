@@ -77,6 +77,40 @@ tools:
       channel rides HTTP(S) it is quiet on the wire; that is exactly why you must stay
       strictly within written scope.
 
+  - title: "frp (Fast Reverse Proxy)"
+    kind: install
+    tags: [tunneling, network]
+    description: >-
+      High-performance reverse proxy (`frps` / `frpc`) for exposing local TCP, UDP,
+      HTTP, HTTPS, and SOCKS5 services behind NAT or firewalls.
+    system_pkgs: {which: frpc, brew: frpc}
+    install: {brew: frpc}
+    run: ["frpc --help"]
+    project_url: "https://github.com/fatedier/frp"
+    usage:
+      - ["start frp client with a TOML config", "frpc -c frpc.toml"]
+      - ["start frp relay server", "frps -c frps.toml"]
+    lab_safe_notes: >-
+      Exposes internal ports to your relay server (`frps`); always configure token
+      authentication and TLS, and tunnel only authorized lab hosts.
+
+  - title: "bore (Modern Rust TCP Tunnel)"
+    kind: install
+    tags: [tunneling, network]
+    description: >-
+      Minimalist, fast Rust CLI (`bore-cli`) that exposes local TCP ports to a
+      remote server or self-hosted `bore server` without complex configuration.
+    system_pkgs: {which: bore, brew: bore-cli}
+    install: {commands: ["cargo install bore-cli"]}
+    run: ["bore --help"]
+    project_url: "https://github.com/ekzhang/bore"
+    usage:
+      - ["expose local port 8000 via public relay", "bore local 8000 --to bore.pub"]
+      - ["run a self-hosted authenticated relay", "bore server --secret <token>"]
+    lab_safe_notes: >-
+      Public relays (`bore.pub`) expose the forwarded local port to the internet;
+      prefer a self-hosted `bore server` with `--secret` for sensitive lab services.
+
   # Heavier C2 frameworks kept as REFERENCES — their build/deploy is platform-specific
   # (Go / .NET, Docker) and I won't hardcode an install/run line I can't verify.
   - title: "Merlin (cross-platform C2)"

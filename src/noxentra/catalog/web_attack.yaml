@@ -887,6 +887,81 @@ tools:
     - crlfuzz -l urls.txt -s
   lab_safe_notes: Sends header-injection test payloads — scope strictly to authorized
     URLs.
+- title: grpcurl (gRPC CLI Client)
+  kind: install
+  tags:
+  - web
+  - api
+  - recon
+  - enumeration
+  description: Like curl for gRPC — lets you invoke gRPC methods and inspect protobuf
+    services on reflection-enabled endpoints.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: grpcurl
+    brew: grpcurl
+    go: github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+  install:
+    go: github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+  run:
+  - grpcurl --help
+  project_url: https://github.com/fullstorydev/grpcurl
+  usage:
+  - - list exposed gRPC services via reflection
+    - grpcurl -plaintext target:50051 list
+  - - describe a gRPC service schema
+    - grpcurl -plaintext target:50051 describe package.Service
+  lab_safe_notes: Uses gRPC server reflection to list methods read-only; invoking
+    mutating RPCs should only target authorized endpoints.
+- title: websocat (WebSocket CLI Client)
+  kind: install
+  tags:
+  - web
+  - api
+  - network
+  description: Netcat/curl-style CLI client and proxy for interactive WebSocket
+    testing, framing inspection, and automation.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: websocat
+    brew: websocat
+    apt: websocat
+  install:
+    brew: websocat
+  run:
+  - websocat --version
+  project_url: https://github.com/vi/websocat
+  usage:
+  - - connect to a WebSocket endpoint interactively
+    - websocat wss://target/ws
+  lab_safe_notes: Connects interactively to WebSocket endpoints you are authorized to
+    test.
+- title: mitmproxy2swagger (Traffic-to-OpenAPI Generator)
+  kind: install
+  tags:
+  - web
+  - api
+  - enumeration
+  description: Converts mitmproxy flow captures or HAR files into OpenAPI 3.0
+    (Swagger) specifications automatically for API testing.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: mitmproxy2swagger
+  install:
+    pip: mitmproxy2swagger
+  run:
+  - mitmproxy2swagger --help
+  project_url: https://github.com/alufers/mitmproxy2swagger
+  usage:
+  - - generate an OpenAPI spec from a HAR capture
+    - mitmproxy2swagger -i flows.har -o openapi.yml -p https://api.target.com
+  lab_safe_notes: Purely offline conversion of your own captured traffic logs.
 - title: PortSwigger Web Security Academy
   kind: resource
   tags:

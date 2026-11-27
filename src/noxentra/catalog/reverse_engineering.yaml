@@ -193,6 +193,35 @@ tools:
       Static analysis (`rizin -A`) does not run the binary. Only debug mode (`-d`)
       executes code — run untrusted samples inside an isolated VM.
 
+  - title: "checksec (Binary Mitigation Checker)"
+    kind: install
+    tags: [reversing, binary, scanner]
+    description: "Inspects ELF/PE binaries and running processes for security mitigations (RELRO, Stack Canary, NX, PIE, Fortify, CFI)."
+    system_pkgs: {which: checksec, apt: checksec, brew: checksec}
+    install: {apt: checksec}
+    run: ["checksec --version"]
+    project_url: "https://github.com/slimm609/checksec.sh"
+    usage:
+      - ["check binary exploit mitigations", "checksec --file=./binary"]
+      - ["emit JSON mitigation report", "checksec --output=json --file=./binary"]
+    lab_safe_notes: >-
+      Purely static inspection of ELF headers/sections — never executes the binary.
+
+  - title: "ROPgadget (ROP Chain Gadget Finder)"
+    kind: install
+    tags: [reversing, binary, exploitation]
+    description: "Searches ELF, PE, and Mach-O binaries for Return-Oriented Programming (ROP) gadgets across x86, x64, ARM, and MIPS."
+    system_pkgs: {which: ROPgadget}
+    install: {pip: ROPgadget}
+    run: ["ROPgadget --version"]
+    project_url: "https://github.com/JonathanSalwan/ROPgadget"
+    usage:
+      - ["list ROP gadgets in a binary", "ROPgadget --binary ./vuln"]
+      - ["search for a specific gadget pattern", "ROPgadget --binary ./vuln --only 'pop|ret'"]
+    lab_safe_notes: >-
+      Offline static binary analysis — standard tool for binary exploitation CTFs and
+      vulnerability research.
+
 # --- RE learning references --------------------------------------------------
   - title: "crackmes.one (RE Practice)"
     kind: resource

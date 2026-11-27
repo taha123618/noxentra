@@ -214,6 +214,57 @@ tools:
       Verification is read-only; signing writes signatures/attestations to OCI registries
       or transparency logs you authorize.
 
+  - title: "Cloudsplaining (AWS IAM Analyzer)"
+    kind: install
+    tags: [cloud, scanner, enumeration]
+    description: >-
+      Salesforce's AWS IAM security assessment tool that identifies least-privilege
+      violations, privilege escalation paths, and overly permissive policies.
+    system_pkgs: {which: cloudsplaining}
+    install: {pipx: cloudsplaining}
+    run: ["cloudsplaining --help"]
+    project_url: "https://github.com/salesforce/cloudsplaining"
+    usage:
+      - ["download IAM account authorization details", "cloudsplaining download --profile default"]
+      - ["scan downloaded IAM policy JSON", "cloudsplaining scan --input-file default.json"]
+    lab_safe_notes: >-
+      Policy analysis is local and read-only; `download` calls AWS IAM read APIs
+      (`GetAccountAuthorizationDetails`) against the account you specify.
+
+  - title: "kube-hunter (Kubernetes Pentest Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan]
+    description: >-
+      Aqua Security's Kubernetes penetration testing tool that hunts for security
+      weaknesses and exposed services across Kubernetes clusters.
+    system_pkgs: {which: kube-hunter}
+    install: {pipx: kube-hunter}
+    run: ["kube-hunter --help"]
+    project_url: "https://github.com/aquasecurity/kube-hunter"
+    usage:
+      - ["hunt a remote Kubernetes cluster passively", "kube-hunter --remote <cluster-host>"]
+      - ["scan a CIDR range for exposed K8s services", "kube-hunter --cidr 10.0.0.0/24"]
+    lab_safe_notes: >-
+      Pass `--active` only on authorized test clusters; default passive hunting
+      still probes cluster ports and API endpoints.
+
+  - title: "Terrascan (IaC Policy & Misconfig Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan]
+    description: >-
+      Static code analyzer for Infrastructure-as-Code (Terraform, Kubernetes, Helm,
+      Dockerfile, CloudFormation) with 500+ OPA-backed security policies.
+    system_pkgs: {which: terrascan, brew: terrascan}
+    install: {brew: terrascan}
+    run: ["terrascan --help"]
+    project_url: "https://github.com/tenable/terrascan"
+    usage:
+      - ["scan Terraform files in the current directory", "terrascan scan -i terraform -d ."]
+      - ["scan Kubernetes manifests", "terrascan scan -i k8s -d ./k8s"]
+    lab_safe_notes: >-
+      Runs offline static policy checks against local IaC templates and manifests
+      without touching live cloud resources.
+
 # --- high-value cloud-security references ------------------------------------
   - title: "HackTricks Cloud (cloud pentest playbook)"
     kind: resource

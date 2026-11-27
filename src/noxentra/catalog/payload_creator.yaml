@@ -136,6 +136,40 @@ tools:
       callback with Metasploit's `exploit/multi/handler` (matching PAYLOAD/LHOST/LPORT).
       Encoders (-e) change bytes, not behaviour — they are not reliable AV evasion.
 
+  - title: "pwntools (CTF & Shellcode Toolkit)"
+    kind: install
+    tags: [payload, exploitation, reversing, binary]
+    description: >-
+      Python exploit development and binary exploitation library with `pwn` CLI
+      helpers for shellcode assembly, cyclic patterns, ELF inspection, and ROP.
+    system_pkgs: {which: pwn}
+    install: {pipx: pwntools}
+    run: ["pwn --help"]
+    project_url: "https://github.com/Gallopsled/pwntools"
+    usage:
+      - ["generate amd64 Linux shellcode", "pwn shellcraft amd64.linux.sh"]
+      - ["inspect binary security mitigations", "pwn checksec ./target_bin"]
+    lab_safe_notes: >-
+      Local binary inspection and shellcode assembly are safe offline; target remote
+      services only in authorized labs or CTFs.
+
+  - title: "Donut (PE/.NET Shellcode Generator)"
+    kind: install
+    tags: [payload, binary, exploitation]
+    description: >-
+      Generates position-independent x86/x64 shellcode from PE executables, DLLs,
+      .NET assemblies, and VBScript/JScript payloads for in-memory execution.
+    system_pkgs: {which: donut}
+    install: {pipx: donut-shellcode}
+    run: ["donut --help"]
+    project_url: "https://github.com/TheWover/donut"
+    usage:
+      - ["convert a PE or .NET binary into shellcode", "donut -i payload.exe -o loader.bin"]
+      - ["target x64 architecture explicitly", "donut -a 2 -i payload.exe -o loader64.bin"]
+    lab_safe_notes: >-
+      Generates raw position-independent shellcode; use exclusively for authorized
+      red-team simulations and malware-analysis lab testing.
+
 # --- reference ---------------------------------------------------------------
   - title: "LOLBAS (Living Off The Land Binaries)"
     kind: resource
