@@ -423,10 +423,10 @@ probe fails.
 
 - **`/engage`** opens the interactive engagement workspace: create or select an
   engagement (name, comma-separated targets, optional `scope_in` / `scope_out`
-  exclusions), see pre-flight tool readiness (`X/Y ready`) per pipeline (`recon`,
-  `full_recon`, `web_enum`, `dns_enum`, `web_deep`), and watch live streamed execution
-  inside the TUI (`c` cancels mid-run). Findings from multiple runs on the same
-  engagement are merged, deduplicated, and diffed (`+N new, M total`) in `findings.json`.
+  exclusions), pick a pipeline (`recon`, `full_recon`, `web_enum`, `dns_enum`,
+  `web_deep`), and watch live streamed execution inside the TUI (`c` cancels mid-run).
+  Findings from multiple runs on the same engagement are merged and deduplicated
+  into `findings.json`.
 - **`/report`** exports deterministic Markdown (`report.md`), self-contained HTML with
   severity summary cards and live filtering (`report.html`), or SARIF v2.1.0
   (`report.sarif.json`), and includes **Browse findings** to search findings by
