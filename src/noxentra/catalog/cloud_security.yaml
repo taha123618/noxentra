@@ -108,6 +108,67 @@ tools:
       makes API calls — completely safe and offline. Ideal in CI to catch insecure
       defaults (public buckets, open security groups) before they ship.
 
+  - title: "Grype (Container & SBOM Vuln Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan]
+    description: "Fast vulnerability scanner for container images, filesystems, and CycloneDX/SPDX SBOMs by Anchore."
+    system_pkgs: {which: grype, brew: grype}
+    install: {brew: grype}
+    run: ["grype version"]
+    project_url: "https://github.com/anchore/grype"
+    usage:
+      - ["scan a container image", "grype alpine:latest"]
+      - ["scan an SBOM file", "grype sbom:./sbom.cdx.json"]
+      - ["emit JSON findings", "grype dir:. -o json"]
+    lab_safe_notes: >-
+      Grype inspects image layers, filesystems, or SBOMs offline once its vuln DB is
+      cached — completely non-destructive and safe for local/CI auditing.
+
+  - title: "Syft (SBOM Generator)"
+    kind: install
+    tags: [cloud, scanner, enumeration]
+    description: "Generates CycloneDX and SPDX Software Bills of Materials (SBOMs) from container images and filesystems."
+    system_pkgs: {which: syft, brew: syft}
+    install: {brew: syft}
+    run: ["syft version"]
+    project_url: "https://github.com/anchore/syft"
+    usage:
+      - ["generate CycloneDX JSON SBOM for a repo", "syft dir:. -o cyclonedx-json=sbom.json"]
+      - ["generate SBOM from a container image", "syft alpine:latest -o spdx-json"]
+    lab_safe_notes: >-
+      Read-only inventory of packages and dependencies — feeds directly into Grype for
+      fast, repeatable vulnerability scanning.
+
+  - title: "Kubescape (Kubernetes Security Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan, enumeration]
+    description: "Kubernetes security platform for auditing manifests, Helm charts, RBAC, and live clusters against NSA/CISA and MITRE frameworks."
+    system_pkgs: {which: kubescape, brew: kubescape}
+    install: {brew: kubescape}
+    run: ["kubescape version"]
+    project_url: "https://github.com/kubescape/kubescape"
+    usage:
+      - ["scan local Kubernetes YAML/Helm manifests", "kubescape scan ./k8s/"]
+      - ["audit current kubeconfig cluster", "kubescape scan framework nsa"]
+    lab_safe_notes: >-
+      Scanning local manifests is completely offline. Cluster scans query the Kubernetes
+      API read-only — run only against clusters you are authorized to audit.
+
+  - title: "kube-bench (CIS Kubernetes Benchmark)"
+    kind: install
+    tags: [cloud, scanner, enumeration]
+    description: "Checks whether Kubernetes nodes and control-plane components are deployed securely according to the CIS Kubernetes Benchmark."
+    system_pkgs: {which: kube-bench, brew: kube-bench, go: "github.com/aquasecurity/kube-bench@latest"}
+    install: {go: "github.com/aquasecurity/kube-bench@latest"}
+    run: ["kube-bench version"]
+    project_url: "https://github.com/aquasecurity/kube-bench"
+    usage:
+      - ["run CIS benchmark checks on a node", "kube-bench run"]
+      - ["check only worker node controls", "kube-bench run --targets node"]
+    lab_safe_notes: >-
+      Audits local Kubernetes daemon flags and file permissions read-only — run only on
+      authorized cluster nodes.
+
 # --- high-value cloud-security references ------------------------------------
   - title: "HackTricks Cloud (cloud pentest playbook)"
     kind: resource

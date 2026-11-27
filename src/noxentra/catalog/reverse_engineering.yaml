@@ -162,6 +162,37 @@ tools:
       any sample, including malware. strings is usually the fastest first look for URLs,
       keys and hints in CTF binaries.
 
+  - title: "capa (FLARE Capability Detector)"
+    kind: install
+    tags: [reversing, binary, malware-analysis]
+    description: "Mandiant FLARE tool that identifies capabilities in PE/ELF/.NET binaries (anti-analysis, C2, crypto, persistence) and maps them to MITRE ATT&CK."
+    system_pkgs: {which: capa}
+    install: {pip: flare-capa}
+    run: ["capa --version"]
+    project_url: "https://github.com/mandiant/capa"
+    usage:
+      - ["summarize capabilities in a binary", "capa ./sample.exe"]
+      - ["verbose rule matches + ATT&CK mapping", "capa -v ./sample.elf"]
+      - ["emit JSON output for triage", "capa -j ./sample.exe > capa.json"]
+    lab_safe_notes: >-
+      Purely static analysis — capa never executes the analyzed binary, making it safe
+      for initial malware triage.
+
+  - title: "Rizin (Reverse Engineering Framework)"
+    kind: install
+    tags: [reversing, binary, malware-analysis]
+    description: "Modern, community-maintained fork of radare2 providing a UNIX-friendly CLI disassembler, debugger, and binary analysis toolkit."
+    system_pkgs: {which: rizin, apt: rizin, brew: rizin}
+    install: {apt: rizin}
+    run: ["rizin -v"]
+    project_url: "https://github.com/rizinorg/rizin"
+    usage:
+      - ["open and auto-analyze a binary", "rizin -A ./binary"]
+      - ["list functions in batch mode", "rizin -q -c 'aa;afl' ./binary"]
+    lab_safe_notes: >-
+      Static analysis (`rizin -A`) does not run the binary. Only debug mode (`-d`)
+      executes code — run untrusted samples inside an isolated VM.
+
 # --- RE learning references --------------------------------------------------
   - title: "crackmes.one (RE Practice)"
     kind: resource

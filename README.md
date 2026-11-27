@@ -437,7 +437,7 @@ probe fails.
 
 The same catalog and pipeline orchestrator drive a non-interactive CLI that normalizes
 output from `nmap`, `subfinder`, `dnsx`, `tlsx`, `httpx`, `nuclei`, `gobuster`, `ffuf`,
-`feroxbuster`, `whatweb`, `gau`, and `katana` into `findings.json`:
+`feroxbuster`, `whatweb`, `gau`, `katana`, `trivy`, and `grype` into `findings.json`:
 
 ```bash
 noxentra --list-pipelines

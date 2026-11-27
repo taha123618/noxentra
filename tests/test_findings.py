@@ -11,12 +11,14 @@ from noxentra.findings import (
     parse_ffuf,
     parse_gau,
     parse_gobuster,
+    parse_grype,
     parse_httpx,
     parse_katana,
     parse_nmap,
     parse_nuclei,
     parse_subfinder,
     parse_tlsx,
+    parse_trivy,
     parse_whatweb,
     save_findings,
 )
@@ -189,3 +191,39 @@ def test_parse_katana():
     assert len(fs) == 2
     assert fs[0].name == "POST https://example.com/api/login"
     assert forward == ["https://example.com/api/login", "https://example.com/robots.txt"]
+
+
+def test_parse_trivy():
+    raw = json.dumps({
+        "ArtifactName": "alpine:3.19",
+        "Results": [{
+            "Target": "alpine:3.19 (alpine 3.19.1)",
+            "Vulnerabilities": [{
+                "VulnerabilityID": "CVE-2024-0001",
+                "PkgName": "openssl",
+                "Severity": "HIGH",
+                "Title": "OpenSSL issue",
+            }],
+        }],
+    })
+    fs, targets = parse_trivy(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].severity == "high"
+    assert fs[0].source_tool == "trivy"
+    assert fs[0].details["template_id"] == "CVE-2024-0001"
+    assert targets == ["alpine:3.19 (alpine 3.19.1)"]
+
+
+def test_parse_grype():
+    raw = json.dumps({
+        "source": {"target": {"userInput": "dir:."}},
+        "matches": [{
+            "vulnerability": {"id": "GHSA-1234", "severity": "Critical"},
+            "artifact": {"name": "urllib3", "version": "1.26.0"},
+        }],
+    })
+    fs, targets = parse_grype(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].severity == "critical"
+    assert fs[0].source_tool == "grype"
+    assert targets == ["dir:."]

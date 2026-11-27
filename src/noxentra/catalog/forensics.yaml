@@ -157,6 +157,36 @@ tools:
       not already exist) — non-destructive on the evidence. Handy for recovering deleted
       files in disk-forensics and CTF challenges.
 
+  - title: "YARA (Malware Pattern Matcher)"
+    kind: install
+    tags: [forensics, malware-analysis, binary, scanner]
+    description: "The standard rule-based pattern matching engine for identifying and classifying malware families, IOCs, and suspicious artifacts."
+    system_pkgs: {which: yara, apt: yara, brew: yara}
+    install: {apt: yara}
+    run: ["yara --version"]
+    project_url: "https://github.com/VirusTotal/yara"
+    usage:
+      - ["scan a directory recursively with a rule file", "yara -r rules.yar ./samples/"]
+      - ["print matching strings and offsets", "yara -s rules.yar ./sample.bin"]
+    lab_safe_notes: >-
+      YARA reads files statically against rule signatures and never executes samples —
+      safe for DFIR, malware triage, and threat hunting.
+
+  - title: "Zeek (Network Security Monitor)"
+    kind: install
+    tags: [forensics, pcap, network, scanner]
+    description: "Powerful passive network analysis framework that turns packet captures or live traffic into structured protocol logs (conn, dns, http, ssl)."
+    system_pkgs: {which: zeek, apt: zeek, brew: zeek}
+    install: {apt: zeek}
+    run: ["zeek --version"]
+    project_url: "https://github.com/zeek/zeek"
+    usage:
+      - ["analyze an offline pcap into structured logs", "zeek -r capture.pcap"]
+      - ["analyze pcap with JSON log output", "zeek -r capture.pcap LogAscii::use_json=T"]
+    lab_safe_notes: >-
+      Offline pcap analysis (`zeek -r`) is completely passive and safe on any capture.
+      Live interface capture should only run on networks you are authorized to monitor.
+
 # --- high-value DFIR references ----------------------------------------------
   - title: "Eric Zimmerman's Tools"
     kind: resource

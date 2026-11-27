@@ -368,7 +368,7 @@ Turn backgrounding off entirely with `/config background_runner off`.
 
 The same catalog and orchestrator drive a non-interactive CLI for scripts and CI,
 normalizing output from `nmap`, `subfinder`, `dnsx`, `tlsx`, `httpx`, `nuclei`,
-`gobuster`, `ffuf`, `feroxbuster`, `whatweb`, `gau`, and `katana` into `findings.json`:
+`gobuster`, `ffuf`, `feroxbuster`, `whatweb`, `gau`, `katana`, `trivy`, and `grype` into `findings.json`:
 
 ```bash
 # discover pipelines or existing engagements (no --engagement needed)
