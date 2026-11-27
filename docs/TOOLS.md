@@ -1,12 +1,12 @@
 # Tool catalog
 
-Every tool noxentra can install, launch, or point you at — **219 active tools
+Every tool noxentra can install, launch, or point you at — **262 active tools
 across 21 categories**, plus 44 archived entries kept out of this list (they are
 unmaintained or dead upstream and are hidden in the app unless you set
 `show_archived true` via `/config`).
 
 Tags under each entry come from the fixed taxonomy in `src/noxentra/tags.py`
-(63 tags in use). Inside the app you can filter by any of them with
+(64 tags in use). Inside the app you can filter by any of them with
 `@tag:<name>`, or search names/descriptions/tags with `/search <keyword>`.
 
 Entries marked as a link point at the upstream project; a few are curated
@@ -20,42 +20,52 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 
 ---
 
-## 🛡 Anonymously Hiding Tools
+## 🛡  Anonymously Hiding
 
 - [Anonymously Surf](https://github.com/Und3rf10w/kali-anonsurf) — <sub>anonymity, tunneling, network</sub>
 - [Multitor](https://github.com/trimstray/multitor) — <sub>anonymity, tunneling, network</sub>
 - [Tor + torsocks (SOCKS anonymity proxy)](https://gitlab.torproject.org/tpo/core/torsocks) — <sub>anonymity, tunneling, network</sub>
 - [proxychains-ng (chain traffic through proxies/Tor)](https://github.com/rofl0r/proxychains-ng) — <sub>anonymity, tunneling, network</sub>
+- [sshuttle (Transparent VPN over SSH)](https://github.com/sshuttle/sshuttle) — <sub>anonymity, tunneling, network</sub>
+- [gost (Modern Multi-Protocol Tunnel)](https://github.com/go-gost/gost) — <sub>anonymity, tunneling, network</sub>
 - [Whonix — Anonymity & Tor OpSec (docs)](https://www.whonix.org/wiki/Documentation) — <sub>anonymity, reference, learning</sub>
 
-## 🔍 Information gathering tools
+## 🔍 Information Gathering
 
-- [Network Map (nmap)](https://github.com/nmap/nmap) — <sub>scanner, port-scan, recon, network</sub>
 - Port scanning — <sub>port-scan, scanner, network</sub>
 - Host to IP  — <sub>recon, dns, lookup</sub>
-- [RED HAWK (All In One Scanning)](https://github.com/Tuhinshubhra/RED_HAWK) — <sub>web, recon, scanner, fingerprint</sub>
-- [ReconSpider(For All Scanning)](https://github.com/bhavsec/reconspider) — <sub>osint, recon, crawler</sub>
 - IsItDown (Check Website Down/Up) — <sub>recon, online-service, web</sub>
-- [SecretFinder (like API & etc)](https://github.com/m4ll0k/SecretFinder) — <sub>web, recon, credentials, git-secrets</sub>
 - [Port Scanner - rang3r](https://github.com/floriankunushevci/rang3r) — <sub>port-scan, scanner, network</sub>
 - [Breacher](https://github.com/s0md3v/Breacher) — <sub>web, recon, enumeration</sub>
-- [theHarvester (OSINT)](https://github.com/laramies/theHarvester) — <sub>osint, email, subdomain-enum, recon</sub>
 - [Amass (Attack Surface Mapping)](https://github.com/owasp-amass/amass) — <sub>subdomain-enum, recon, osint, dns</sub>
-- [Masscan (Fast Port Scanner)](https://github.com/robertdavidgraham/masscan) — <sub>port-scan, scanner, network</sub>
-- [RustScan (Modern Port Scanner)](https://github.com/RustScan/RustScan) — <sub>port-scan, scanner, network</sub>
+- [Gitleaks (Git Secret Scanner)](https://github.com/gitleaks/gitleaks) — <sub>git-secrets, credentials, reporting</sub>
 - [Holehe (Email → Social Accounts)](https://github.com/megadose/holehe) — <sub>osint, email, recon, lookup</sub>
-- [Maigret (Username OSINT)](https://github.com/soxoj/maigret) — <sub>osint, recon, lookup</sub>
 - [httpx (HTTP Toolkit)](https://github.com/projectdiscovery/httpx) — <sub>web, recon, scanner, fingerprint</sub>
+- [Maigret (Username OSINT)](https://github.com/soxoj/maigret) — <sub>osint, recon, lookup</sub>
+- [Masscan (Fast Port Scanner)](https://github.com/robertdavidgraham/masscan) — <sub>port-scan, scanner, network</sub>
+- [Network Map (nmap)](https://github.com/nmap/nmap) — <sub>scanner, port-scan, recon, network</sub>
+- [ReconSpider(For All Scanning)](https://github.com/bhavsec/reconspider) — <sub>osint, recon, crawler</sub>
+- [RED HAWK (All In One Scanning)](https://github.com/Tuhinshubhra/RED_HAWK) — <sub>web, recon, scanner, fingerprint</sub>
+- [RustScan (Modern Port Scanner)](https://github.com/RustScan/RustScan) — <sub>port-scan, scanner, network</sub>
+- [SecretFinder (like API & etc)](https://github.com/m4ll0k/SecretFinder) — <sub>web, recon, credentials, git-secrets</sub>
 - [SpiderFoot (OSINT Automation)](https://github.com/smicallef/spiderfoot) — <sub>osint, recon, subdomain-enum</sub>
 - [Subfinder (Subdomain Enumeration)](https://github.com/projectdiscovery/subfinder) — <sub>subdomain-enum, recon, osint, dns</sub>
+- [theHarvester (OSINT)](https://github.com/laramies/theHarvester) — <sub>osint, email, subdomain-enum, recon</sub>
 - [TruffleHog (Secret Scanner)](https://github.com/trufflesecurity/trufflehog) — <sub>git-secrets, credentials, recon</sub>
-- [Gitleaks (Git Secret Scanner)](https://github.com/gitleaks/gitleaks) — <sub>git-secrets, credentials, reporting</sub>
 - [naabu (fast port scanner)](https://github.com/projectdiscovery/naabu) — <sub>port-scan, recon, network</sub>
 - [dnsx (DNS toolkit)](https://github.com/projectdiscovery/dnsx) — <sub>dns, recon, enumeration</sub>
 - [reconFTW (Automated Recon)](https://github.com/six2dez/reconftw) — <sub>recon, osint, subdomain-enum, scanner, dns</sub>
 - [gowitness (Web Screenshots)](https://github.com/sensepost/gowitness) — <sub>web, recon, fingerprint, reporting</sub>
 - [EyeWitness (Web Screenshots + Headers)](https://github.com/RedSiege/EyeWitness) — <sub>web, recon, fingerprint, reporting</sub>
 - [Sn1per (Attack Surface Scanner)](https://github.com/1N3/Sn1per) — <sub>scanner, recon, vuln-scan, enumeration, web</sub>
+- [gau (GetAllUrls)](https://github.com/lc/gau) — <sub>recon, osint, web, enumeration</sub>
+- [waybackurls (Wayback URLs)](https://github.com/tomnomnom/waybackurls) — <sub>recon, osint, web, enumeration</sub>
+- [tlsx (TLS Recon & Cert Prober)](https://github.com/projectdiscovery/tlsx) — <sub>recon, network, web, fingerprint, scanner</sub>
+- [cdncheck (CDN & WAF IP Detector)](https://github.com/projectdiscovery/cdncheck) — <sub>recon, network, fingerprint</sub>
+- [uncover (Multi-Engine Asset Discovery)](https://github.com/projectdiscovery/uncover) — <sub>recon, osint, network</sub>
+- [Nosey Parker (Secret Scanner)](https://github.com/praetorian-inc/noseyparker) — <sub>scanner, git-secrets, credentials, recon</sub>
+- [anew (Unique Line Appender)](https://github.com/tomnomnom/anew) — <sub>recon, enumeration</sub>
+- [unfurl (URL Component Extractor)](https://github.com/tomnomnom/unfurl) — <sub>recon, web, enumeration</sub>
 
 ## 📚 Wordlist Generator
 
@@ -65,22 +75,23 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [haiti (Hash Type Identifier)](https://github.com/noraj/haiti) — <sub>hash-crack, lookup, reference</sub>
 - [crunch (Wordlist Generator)](https://sourceforge.net/projects/crunch-wordlist/) — <sub>wordlist, bruteforce, password-attack</sub>
 - [CeWL (Custom Word List)](https://github.com/digininja/CeWL) — <sub>wordlist, osint, recon, credentials</sub>
+- [alterx (Subdomain Permutation Generator)](https://github.com/projectdiscovery/alterx) — <sub>wordlist, subdomain-enum, recon</sub>
 - [SecLists (Wordlist Collection)](https://github.com/danielmiessler/SecLists) — <sub>wordlist, reference, bruteforce</sub>
 - [Kali wordlists package (rockyou etc.)](https://gitlab.com/kalilinux/packages/wordlists) — <sub>wordlist, reference, password-attack</sub>
 
-## 📡 Wireless attack tools
+## 📶 Wireless Attack
 
-- [WiFi-Pumpkin](https://github.com/P0cL4bs/wifipumpkin3) — <sub>wireless, mitm, phishing, credentials</sub>
 - [pixiewps](https://github.com/wiire/pixiewps) — <sub>wireless, bruteforce, password-attack</sub>
+- [Airgeddon (Wireless Attack Suite)](https://github.com/v1s1t0r1sh3r3/airgeddon) — <sub>wireless, password-attack, mitm, credentials</sub>
+- [Bettercap (Network/WiFi/BLE MITM)](https://github.com/bettercap/bettercap) — <sub>wireless, mitm, sniffing, network</sub>
 - [Bluetooth Honeypot GUI Framework](https://github.com/andrewmichaelsmith/bluepot) — <sub>wireless, sniffing</sub>
 - [Fluxion](https://github.com/FluxionNetwork/fluxion) — <sub>wireless, phishing, social-engineering, credentials</sub>
-- [Wifiphisher](https://github.com/wifiphisher/wifiphisher) — <sub>wireless, phishing, social-engineering, mitm</sub>
-- [Wifite](https://github.com/derv82/wifite2) — <sub>wireless, password-attack, bruteforce, credentials</sub>
-- Howmanypeople — <sub>wireless, sniffing, recon</sub>
-- [Airgeddon (Wireless Attack Suite)](https://github.com/v1s1t0r1sh3r3/airgeddon) — <sub>wireless, password-attack, mitm, credentials</sub>
 - [hcxdumptool (PMKID Capture)](https://github.com/ZerBea/hcxdumptool) — <sub>wireless, sniffing, pcap, credentials</sub>
 - [hcxtools (PMKID/Hash Conversion)](https://github.com/ZerBea/hcxtools) — <sub>wireless, hash-crack, pcap, credentials</sub>
-- [Bettercap (Network/WiFi/BLE MITM)](https://github.com/bettercap/bettercap) — <sub>wireless, mitm, sniffing, network</sub>
+- Howmanypeople — <sub>wireless, sniffing, recon</sub>
+- [WiFi-Pumpkin](https://github.com/P0cL4bs/wifipumpkin3) — <sub>wireless, mitm, phishing, credentials</sub>
+- [Wifiphisher](https://github.com/wifiphisher/wifiphisher) — <sub>wireless, phishing, social-engineering, mitm</sub>
+- [Wifite](https://github.com/derv82/wifite2) — <sub>wireless, password-attack, bruteforce, credentials</sub>
 - [aircrack-ng (WiFi security suite)](https://github.com/aircrack-ng/aircrack-ng) — <sub>wireless, password-attack, bruteforce, sniffing</sub>
 - [Kismet (wireless detector / WIDS)](https://github.com/kismetwireless/kismet) — <sub>wireless, sniffing, recon, network</sub>
 - [Reaver (WPS PIN attack)](https://github.com/t6x/reaver-wps-fork-t6x) — <sub>wireless, bruteforce, password-attack, credentials</sub>
@@ -88,7 +99,7 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [hashcat example hashes (WPA mode 22000)](https://hashcat.net/wiki/doku.php?id=example_hashes) — <sub>wireless, hash-crack, reference</sub>
 - [Aircrack-ng: cracking WPA (tutorial)](https://www.aircrack-ng.org/doku.php?id=cracking_wpa) — <sub>wireless, learning, reference</sub>
 
-## 💉 SQL Injection Tools
+## 🧩 SQL Injection
 
 - [Sqlmap tool](https://github.com/sqlmapproject/sqlmap) — <sub>web, sql-injection, exploitation, scanner</sub>
 - [NoSqlMap](https://github.com/codingo/NoSQLMap) — <sub>web, sql-injection, exploitation</sub>
@@ -98,49 +109,58 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [PortSwigger — SQL Injection Labs](https://portswigger.net/web-security/sql-injection) — <sub>learning, web, sql-injection, reference</sub>
 - [PayloadsAllTheThings — SQL Injection](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/SQL%20Injection) — <sub>cheatsheet, reference, sql-injection, web</sub>
 
-## 🎣 Phishing attack tools
+## 🎣 Phishing Attack
 
+- [QRLJacking](https://github.com/OWASP/QRLJacking) — <sub>phishing, social-engineering, credentials</sub>
 - [AdvPhishing](https://github.com/Ignitetch/AdvPhishing) — <sub>phishing, social-engineering, credentials</sub>
+- [dnstwist](https://github.com/elceef/dnstwist) — <sub>osint, dns, phishing</sub>
+- [Evilginx3](https://github.com/kgretzky/evilginx2) — <sub>phishing, mitm, credentials, web</sub>
+- [HiddenEye](https://github.com/Morsmalleo/HiddenEye) — <sub>phishing, credentials, social-engineering</sub>
+- [Maskphish](https://github.com/jaykali/maskphish) — <sub>phishing, social-engineering</sub>
+- [QR Code Jacking](https://github.com/cryptedwolf/ohmyqr) — <sub>phishing, social-engineering</sub>
+- [SayCheese](https://github.com/hangetzzu/saycheese) — <sub>social-engineering, phishing</sub>
 - [Setoolkit](https://github.com/trustedsec/social-engineer-toolkit) — <sub>social-engineering, phishing, credentials</sub>
 - [SocialFish](https://github.com/UndeadSec/SocialFish) — <sub>phishing, credentials, web</sub>
-- [HiddenEye](https://github.com/Morsmalleo/HiddenEye) — <sub>phishing, credentials, social-engineering</sub>
-- [Evilginx3](https://github.com/kgretzky/evilginx2) — <sub>phishing, mitm, credentials, web</sub>
-- [SayCheese](https://github.com/hangetzzu/saycheese) — <sub>social-engineering, phishing</sub>
-- [QR Code Jacking](https://github.com/cryptedwolf/ohmyqr) — <sub>phishing, social-engineering</sub>
-- [QRLJacking](https://github.com/OWASP/QRLJacking) — <sub>phishing, social-engineering, credentials</sub>
-- [Maskphish](https://github.com/jaykali/maskphish) — <sub>phishing, social-engineering</sub>
-- [dnstwist](https://github.com/elceef/dnstwist) — <sub>osint, dns, phishing</sub>
 - [GoPhish (Phishing Simulation)](https://getgophish.com/) — <sub>phishing, social-engineering, email, credentials, web</sub>
 - [GoPhish Documentation](https://docs.getgophish.com/) — <sub>phishing, reference, learning</sub>
 - [MITRE ATT&CK — Phishing (T1566)](https://attack.mitre.org/techniques/T1566/) — <sub>phishing, social-engineering, reference</sub>
 
-## 🌐 Web Attack tools
+## 🌐 Web Attack
 
+- [Dirb](https://gitlab.com/kalilinux/packages/dirb) — <sub>web, enumeration, bruteforce, wordlist</sub>
+- [Arjun (HTTP Parameter Discovery)](https://github.com/s0md3v/Arjun) — <sub>web, fuzzing, enumeration</sub>
+- [Caido (Web Security Auditing)](https://github.com/caido/caido) — <sub>web, scanner, crawler</sub>
+- [Dirsearch (Web Path Discovery)](https://github.com/maurosoria/dirsearch) — <sub>web, enumeration, bruteforce, wordlist</sub>
+- [Feroxbuster (Directory Brute Force)](https://github.com/epi052/feroxbuster) — <sub>web, enumeration, bruteforce, wordlist</sub>
+- [ffuf (Web Fuzzer)](https://github.com/ffuf/ffuf) — <sub>web, fuzzing, enumeration, wordlist</sub>
+- [Gobuster (Dir/DNS/Vhost Brute Force)](https://github.com/OJ/gobuster) — <sub>web, enumeration, bruteforce, dns, wordlist</sub>
+- [Katana (Web Crawler)](https://github.com/projectdiscovery/katana) — <sub>web, crawler, recon, enumeration</sub>
+- [mitmproxy (Intercepting Proxy)](https://github.com/mitmproxy/mitmproxy) — <sub>web, mitm, sniffing</sub>
+- [Nikto (Web Server Scanner)](https://github.com/sullo/nikto) — <sub>web, vuln-scan, scanner</sub>
+- [Nuclei (Vulnerability Scanner)](https://github.com/projectdiscovery/nuclei) — <sub>web, vuln-scan, scanner</sub>
+- [OWASP ZAP (Web App Scanner)](https://github.com/zaproxy/zaproxy) — <sub>web, vuln-scan, scanner, fuzzing</sub>
 - Skipfish — <sub>web, vuln-scan, scanner, crawler</sub>
 - [SubDomain Finder](https://github.com/aboul3la/Sublist3r) — <sub>subdomain-enum, recon, osint, dns</sub>
 - [Sub-Domain TakeOver](https://github.com/edoardottt/takeover) — <sub>subdomain-enum, web, vuln-scan</sub>
-- [Dirb](https://gitlab.com/kalilinux/packages/dirb) — <sub>web, enumeration, bruteforce, wordlist</sub>
-- [Nuclei (Vulnerability Scanner)](https://github.com/projectdiscovery/nuclei) — <sub>web, vuln-scan, scanner</sub>
-- [ffuf (Web Fuzzer)](https://github.com/ffuf/ffuf) — <sub>web, fuzzing, enumeration, wordlist</sub>
-- [Feroxbuster (Directory Brute Force)](https://github.com/epi052/feroxbuster) — <sub>web, enumeration, bruteforce, wordlist</sub>
-- [Nikto (Web Server Scanner)](https://github.com/sullo/nikto) — <sub>web, vuln-scan, scanner</sub>
-- [wafw00f (WAF Detector)](https://github.com/EnableSecurity/wafw00f) — <sub>web, fingerprint, recon</sub>
-- [Katana (Web Crawler)](https://github.com/projectdiscovery/katana) — <sub>web, crawler, recon, enumeration</sub>
-- [Gobuster (Dir/DNS/Vhost Brute Force)](https://github.com/OJ/gobuster) — <sub>web, enumeration, bruteforce, dns, wordlist</sub>
-- [Dirsearch (Web Path Discovery)](https://github.com/maurosoria/dirsearch) — <sub>web, enumeration, bruteforce, wordlist</sub>
-- [OWASP ZAP (Web App Scanner)](https://github.com/zaproxy/zaproxy) — <sub>web, vuln-scan, scanner, fuzzing</sub>
 - [testssl.sh (TLS/SSL Checker)](https://github.com/drwetter/testssl.sh) — <sub>web, scanner, fingerprint</sub>
-- [Arjun (HTTP Parameter Discovery)](https://github.com/s0md3v/Arjun) — <sub>web, fuzzing, enumeration</sub>
-- [Caido (Web Security Auditing)](https://github.com/caido/caido) — <sub>web, scanner, crawler</sub>
-- [mitmproxy (Intercepting Proxy)](https://github.com/mitmproxy/mitmproxy) — <sub>web, mitm, sniffing</sub>
+- [wafw00f (WAF Detector)](https://github.com/EnableSecurity/wafw00f) — <sub>web, fingerprint, recon</sub>
 - [WhatWeb (Web Fingerprinter)](https://github.com/urbanadventurer/WhatWeb) — <sub>web, fingerprint, recon, scanner</sub>
 - [WPScan (WordPress Scanner)](https://github.com/wpscanteam/wpscan) — <sub>web, vuln-scan, scanner, enumeration</sub>
+- [Kiterunner (API Endpoint Discovery)](https://github.com/assetnote/kiterunner) — <sub>web, api, fuzzing, enumeration</sub>
+- [hakrawler (Fast Web Crawler)](https://github.com/hakluke/hakrawler) — <sub>web, crawler, recon, enumeration</sub>
+- [interactsh-client (OOB Interaction Client)](https://github.com/projectdiscovery/interactsh) — <sub>web, api, vuln-scan, recon</sub>
+- [jwt_tool (JWT Security Auditor)](https://github.com/ticarpi/jwt_tool) — <sub>web, api, vuln-scan, scanner</sub>
+- [clairvoyance (GraphQL Schema Enumerator)](https://github.com/nikitastupin/clairvoyance) — <sub>web, api, enumeration, recon</sub>
+- [graphql-cop (GraphQL Security Auditor)](https://github.com/dolevf/graphql-cop) — <sub>web, api, vuln-scan, scanner</sub>
+- [Smuggler (HTTP Request Smuggling)](https://github.com/defparam/smuggler) — <sub>web, vuln-scan, scanner</sub>
+- [SSTImap (SSTI Detection & Exploitation)](https://github.com/vladko312/SSTImap) — <sub>web, vuln-scan, exploitation, scanner</sub>
+- [CRLFuzz (CRLF Injection Scanner)](https://github.com/dwisiswant0/crlfuzz) — <sub>web, vuln-scan, scanner</sub>
 - [PortSwigger Web Security Academy](https://portswigger.net/web-security) — <sub>learning, web, reference</sub>
 - [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) — <sub>cheatsheet, reference, payload, web</sub>
 - [HackTricks](https://book.hacktricks.xyz/) — <sub>cheatsheet, reference, web, privesc</sub>
 - [revshells.com (Reverse Shell Generator)](https://www.revshells.com/) — <sub>reverse-shell, cheatsheet, online-service, web</sub>
 
-## 🔧 Post exploitation tools
+## 🔧 Post Exploitation
 
 - [pwncat-cs (Reverse Shell Handler)](https://github.com/calebstewart/pwncat) — <sub>post-exploitation, reverse-shell, persistence, privesc</sub>
 - [Sliver (C2 Framework)](https://github.com/BishopFox/sliver) — <sub>c2, post-exploitation, payload</sub>
@@ -158,22 +178,27 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [PayloadsAllTheThings (payload + technique cheatsheets)](https://github.com/swisskyrepo/PayloadsAllTheThings) — <sub>payload, post-exploitation, reference, cheatsheet</sub>
 - [mimikatz (Windows credential dumping — reference)](https://github.com/gentilkiwi/mimikatz) — <sub>credentials, post-exploitation, active-directory, reference</sub>
 
-## 🕵 Forensic tools
+## 🕵  Forensics
 
+- [Bulk extractor](https://github.com/simsong/bulk_extractor) — <sub>forensics, memory-dump, metadata</sub>
+- [Volatility 3 (Memory Forensics)](https://github.com/volatilityfoundation/volatility3) — <sub>forensics, memory-dump, malware-analysis</sub>
 - Autopsy — <sub>forensics, metadata</sub>
 - Wireshark — <sub>network, forensics, sniffing, pcap</sub>
-- [Bulk extractor](https://github.com/simsong/bulk_extractor) — <sub>forensics, memory-dump, metadata</sub>
-- [Disk Clone and ISO Image Acquire](https://guymager.sourceforge.io/) — <sub>forensics, binary</sub>
+- [Disk Clone and ISO Image Acquire](https://guymager.sourceforge.io/) — <sub>forensics, metadata, binary</sub>
 - [Toolsley](https://www.toolsley.com/) — <sub>reference, online-service, forensics</sub>
-- [Volatility 3 (Memory Forensics)](https://github.com/volatilityfoundation/volatility3) — <sub>forensics, memory-dump, malware-analysis</sub>
 - [Binwalk (Firmware Analysis)](https://github.com/ReFirmLabs/binwalk) — <sub>forensics, binary, reversing</sub>
 - [pspy (Process Monitor — No Root)](https://github.com/DominicBreuker/pspy) — <sub>forensics, post-exploitation, enumeration</sub>
 - [ExifTool (Metadata)](https://exiftool.org/) — <sub>forensics, metadata, image, document</sub>
 - [Foremost (File Carving)](http://foremost.sourceforge.net/) — <sub>forensics, binary</sub>
+- [YARA (Malware Pattern Matcher)](https://github.com/VirusTotal/yara) — <sub>forensics, malware-analysis, binary, scanner</sub>
+- [Zeek (Network Security Monitor)](https://github.com/zeek/zeek) — <sub>forensics, pcap, network, scanner</sub>
+- [osquery (SQL Endpoint Visibility)](https://github.com/osquery/osquery) — <sub>forensics, enumeration, scanner</sub>
+- [Chainsaw (EVTX Threat Hunting)](https://github.com/WithSecureLabs/chainsaw) — <sub>forensics, malware-analysis, scanner</sub>
+- [Velociraptor (DFIR Endpoint Visibility)](https://github.com/Velocidex/velociraptor) — <sub>forensics, enumeration, malware-analysis</sub>
 - [Eric Zimmerman's Tools](https://ericzimmerman.github.io/) — <sub>reference, forensics, online-service</sub>
 - [MalwareBazaar (Sample Database)](https://bazaar.abuse.ch/) — <sub>online-service, reference, malware-analysis</sub>
 
-## 📦 Payload creation tools
+## 📦 Payload Creation
 
 - [The FatRat](https://github.com/Screetsec/TheFatRat) — <sub>payload, reverse-shell, apk, c2</sub>
 - [Stitch](https://nathanlopez.github.io/Stitch) — <sub>payload, c2, reverse-shell, persistence</sub>
@@ -182,46 +207,50 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [msfvenom (Payload Generator)](https://github.com/rapid7/metasploit-framework) — <sub>payload, reverse-shell, c2, apk</sub>
 - [LOLBAS (Living Off The Land Binaries)](https://lolbas-project.github.io/) — <sub>reference, payload, post-exploitation</sub>
 
-## 🧰 Exploit framework
+## 🧰 Exploit Framework
 
 - [RouterSploit](https://github.com/threat9/routersploit) — <sub>network, iot, exploitation, scanner</sub>
 - [Commix](https://github.com/commixproject/commix) — <sub>web, exploitation, payload</sub>
 - [Metasploit Framework](https://github.com/rapid7/metasploit-framework) — <sub>exploitation, post-exploitation, payload, c2, scanner</sub>
 - [SearchSploit (Exploit-DB CLI)](https://gitlab.com/exploit-database/exploitdb) — <sub>exploitation, recon, reference</sub>
+- [cvemap (CVE & KEV Explorer)](https://github.com/projectdiscovery/cvemap) — <sub>exploitation, recon, vuln-scan, reference</sub>
+- [SploitScan (CVE, EPSS & PoC Lookup)](https://github.com/xaitax/SploitScan) — <sub>exploitation, recon, vuln-scan, reference</sub>
 - [Exploit-DB (Online Archive)](https://www.exploit-db.com/) — <sub>online-service, reference, exploitation</sub>
 - [Metasploit Unleashed (Free Course)](https://www.offsec.com/metasploit-unleashed/) — <sub>learning, reference, exploitation</sub>
 
-## 🔁 Reverse engineering tools
+## 🔁 Reverse Engineering
 
+- [Apk2Gold](https://github.com/lxdvs/apk2gold ) — <sub>reversing, apk, mobile</sub>
 - [Androguard](https://github.com/androguard/androguard) — <sub>reversing, apk, mobile, malware-analysis</sub>
-- [Apk2Gold](https://github.com/lxdvs/apk2gold) — <sub>reversing, apk, mobile</sub>
 - [JadX](https://github.com/skylot/jadx) — <sub>reversing, apk, mobile</sub>
 - [Ghidra (NSA Reverse Engineering)](https://github.com/NationalSecurityAgency/ghidra) — <sub>reversing, binary, malware-analysis</sub>
 - [Radare2 (RE Framework)](https://github.com/radareorg/radare2) — <sub>reversing, binary</sub>
 - [apktool (APK Decode/Rebuild)](https://apktool.org/) — <sub>reversing, apk, mobile</sub>
 - [GDB (GNU Debugger)](https://www.sourceware.org/gdb/) — <sub>reversing, binary</sub>
 - [binutils (strings / objdump / readelf)](https://www.gnu.org/software/binutils/) — <sub>reversing, binary</sub>
+- [capa (FLARE Capability Detector)](https://github.com/mandiant/capa) — <sub>reversing, binary, malware-analysis</sub>
+- [Rizin (Reverse Engineering Framework)](https://github.com/rizinorg/rizin) — <sub>reversing, binary, malware-analysis</sub>
 - [crackmes.one (RE Practice)](https://crackmes.one/) — <sub>reference, learning, reversing</sub>
 - [Malware Unicorn RE101 (Workshop)](https://malwareunicorn.org/workshops/re101.html) — <sub>reference, learning, reversing, malware-analysis</sub>
 
-## ⚡ DDOS Attack Tools
+## ⚡ DDOS Attack
 
 - [DDoS](https://github.com/the-deepnet/ddos) — <sub>ddos, network, web</sub>
 - SlowLoris — <sub>ddos, web</sub>
-- [UFOnet](https://github.com/epsylon/ufonet) — <sub>ddos, web, network</sub>
 - [SaphyraDDoS](https://github.com/anonymous24x7/Saphyra-DDoS) — <sub>ddos, web</sub>
+- [UFOnet](https://github.com/epsylon/ufonet) — <sub>ddos, web, network</sub>
 - [hping3 (Packet Crafter / Flooder)](https://github.com/antirez/hping) — <sub>ddos, network</sub>
 - [slowhttptest (Slow-HTTP DoS Tester)](https://github.com/shekyan/slowhttptest) — <sub>ddos, web</sub>
 - [OWASP Denial of Service Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html) — <sub>ddos, web, reference</sub>
 
-## 🖥 Remote Administrator Tools (RAT)
+## 🖥  Remote Admin (RAT)
 
 - [Villain (Reverse Shell / C2 Manager)](https://github.com/t3l3machus/Villain) — <sub>c2, reverse-shell, post-exploitation, payload</sub>
 - [hoaxshell (HTTP(S) PowerShell Reverse Shell)](https://github.com/t3l3machus/hoaxshell) — <sub>reverse-shell, c2, payload, post-exploitation</sub>
 - [Merlin (cross-platform C2)](https://github.com/Ne0nd0g/merlin) — <sub>c2, post-exploitation, reference</sub>
 - [Covenant (.NET C2)](https://github.com/cobbr/Covenant) — <sub>c2, post-exploitation, reference</sub>
 
-## 🧪 XSS Attack Tools
+## 💥 XSS Attack
 
 - [DalFox (Finder of XSS)](https://github.com/hahwul/dalfox) — <sub>web, xss, scanner, fuzzing</sub>
 - [XSS Payload Generator](https://github.com/capture0x/XSS-LOADER.git) — <sub>web, xss, payload</sub>
@@ -230,10 +259,10 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [PortSwigger — XSS Labs](https://portswigger.net/web-security/cross-site-scripting) — <sub>learning, web, xss, reference</sub>
 - [PayloadsAllTheThings — XSS Injection](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XSS%20Injection) — <sub>cheatsheet, reference, xss, web</sub>
 
-## 🖼 Steganography Tools
+## 🖼  Steganography
 
 - SteganoHide — <sub>steganography, image, forensics</sub>
-- [Stegseek (fast steganography cracker)](https://github.com/RickdeJager/stegseek) — <sub>steganography, hash-crack, bruteforce</sub>
+- [Stegseek (fast steganography cracker)](https://github.com/RickdeJager/stegseek) — <sub>steganography, bruteforce, password-attack, image, hash-crack</sub>
 - [stegseek (fast steghide cracker)](https://github.com/RickdeJager/stegseek) — <sub>steganography, bruteforce, password-attack, image</sub>
 - [zsteg (PNG/BMP LSB detector)](https://github.com/zed-0xff/zsteg) — <sub>steganography, image, forensics</sub>
 - [outguess (JPEG stego)](https://github.com/resurrecting-open-source-projects/outguess) — <sub>steganography, image, forensics</sub>
@@ -243,7 +272,7 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [Futureboy Stegano decoder](https://futureboy.us/stegano/decinput.html) — <sub>steganography, online-service, reference</sub>
 - [stego-toolkit (Docker kit + checklist)](https://github.com/DominicBreuker/stego-toolkit) — <sub>steganography, reference, cheatsheet</sub>
 
-## 🏢 Active Directory Tools
+## 🏢 Active Directory
 
 - [BloodHound (AD Attack Paths)](https://github.com/BloodHoundAD/BloodHound) — <sub>active-directory, enumeration, lateral-movement, credentials</sub>
 - [NetExec — nxc (Network Pentesting)](https://github.com/Pennyw0rth/NetExec) — <sub>active-directory, network, enumeration, credentials, password-attack</sub>
@@ -254,58 +283,64 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [ldapdomaindump (AD LDAP Dumper)](https://github.com/dirkjanm/ldapdomaindump) — <sub>active-directory, enumeration, credentials</sub>
 - [Coercer (Authentication Coercion)](https://github.com/p0dalirius/Coercer) — <sub>active-directory, relay, privesc, credentials</sub>
 - [PCredz (Credential Extractor)](https://github.com/lgandx/PCredz) — <sub>active-directory, credentials, sniffing, pcap, kerberos</sub>
+- [bloodyAD (AD Privilege Escalation)](https://github.com/CravateRouge/bloodyAD) — <sub>active-directory, privesc, enumeration, kerberos</sub>
+- [ligolo-ng (TUN-based Network Pivoting)](https://github.com/nicocha30/ligolo-ng) — <sub>active-directory, tunneling, lateral-movement, network</sub>
+- [krbrelayx (Kerberos Relaying Toolkit)](https://github.com/dirkjanm/krbrelayx) — <sub>active-directory, kerberos, relay, credentials</sub>
 - [The Hacker Recipes (AD)](https://www.thehacker.recipes/) — <sub>reference, active-directory, learning</sub>
 
-## ☁ Cloud Security Tools
+## ☁  Cloud Security
 
 - [Prowler (Cloud Security Scanner)](https://github.com/prowler-cloud/prowler) — <sub>cloud, scanner, vuln-scan</sub>
 - [ScoutSuite (Multi-Cloud Auditing)](https://github.com/nccgroup/ScoutSuite) — <sub>cloud, scanner, enumeration</sub>
 - [Pacu (AWS Exploitation Framework)](https://github.com/RhinoSecurityLabs/pacu) — <sub>cloud, exploitation, post-exploitation</sub>
 - [Trivy (Container/K8s Scanner)](https://github.com/aquasecurity/trivy) — <sub>scanner, vuln-scan, cloud</sub>
 - [Checkov (IaC Misconfig Scanner)](https://github.com/bridgecrewio/checkov) — <sub>cloud, scanner, vuln-scan</sub>
+- [Grype (Container & SBOM Vuln Scanner)](https://github.com/anchore/grype) — <sub>cloud, scanner, vuln-scan</sub>
+- [Syft (SBOM Generator)](https://github.com/anchore/syft) — <sub>cloud, scanner, enumeration</sub>
+- [Kubescape (Kubernetes Security Scanner)](https://github.com/kubescape/kubescape) — <sub>cloud, scanner, vuln-scan, enumeration</sub>
+- [kube-bench (CIS Kubernetes Benchmark)](https://github.com/aquasecurity/kube-bench) — <sub>cloud, scanner, enumeration</sub>
+- [Semgrep (Static Code Scanner)](https://github.com/semgrep/semgrep) — <sub>cloud, scanner, vuln-scan</sub>
+- [OSV-Scanner (Dependency Vuln Scanner)](https://github.com/google/osv-scanner) — <sub>cloud, scanner, vuln-scan</sub>
+- [Cosign (Sigstore Artifact Signing)](https://github.com/sigstore/cosign) — <sub>cloud, scanner, enumeration</sub>
 - [HackTricks Cloud (cloud pentest playbook)](https://cloud.hacktricks.xyz/) — <sub>reference, cloud, learning</sub>
 - [flaws.cloud (AWS Security Challenge)](http://flaws.cloud/) — <sub>learning, cloud, online-service</sub>
 
-## 📱 Mobile Security Tools
+## 📱 Mobile Security
 
 - [MobSF (Mobile Security Framework)](https://github.com/MobSF/Mobile-Security-Framework-MobSF) — <sub>mobile, apk, vuln-scan, scanner, malware-analysis</sub>
 - [Frida (Dynamic Instrumentation)](https://github.com/frida/frida) — <sub>mobile, reversing, malware-analysis</sub>
 - [Objection (Mobile Runtime Exploration)](https://github.com/sensepost/objection) — <sub>mobile, reversing</sub>
 - [adb (Android Debug Bridge)](https://developer.android.com/tools/adb) — <sub>mobile, apk</sub>
+- [apkleaks (APK URI & Secret Scanner)](https://github.com/dwisiswant0/apkleaks) — <sub>mobile, apk, scanner, credentials</sub>
+- [mobsfscan (Mobile Static Code Analyzer)](https://github.com/MobSF/mobsfscan) — <sub>mobile, scanner, vuln-scan</sub>
+- [reFlutter (Flutter RE & SSL Bypass)](https://github.com/ptswarm/reFlutter) — <sub>mobile, reversing, apk</sub>
 - [OWASP MAS (Mobile App Security)](https://mas.owasp.org/) — <sub>mobile, reference, learning</sub>
 - [Frida CodeShare](https://codeshare.frida.re/) — <sub>mobile, reversing, online-service, reference</sub>
 
-## ✨ Other tools
+## ✨ Other Tools
 
-- [MySMS](https://github.com/papusingh2sms/mysms) — <sub>payload, mobile, apk</sub>
+- SocialMedia Bruteforce
+- Android Hacking tools
 - [HatCloud(Bypass CloudFlare for IP)](https://github.com/HatBashBR/HatCloud) — <sub>recon, network, dns</sub>
-- [Hash Buster](https://github.com/s0md3v/Hash-Buster) — <sub>hash-crack, lookup, online-service, credentials</sub>
-- [Sherlock](https://github.com/sherlock-project/sherlock) — <sub>osint, recon, enumeration</sub>
-- [SocialScan | Username or Email](https://github.com/iojw/socialscan) — <sub>osint, recon, email, enumeration</sub>
-- [Pixload](https://github.com/chinarulezzz/pixload) — <sub>payload, steganography, image</sub>
-- [Gospider](https://github.com/jaeles-project/gospider) — <sub>web, crawler, recon</sub>
-- Terminal Multiplexer — <sub>cheatsheet, reference</sub>
-- [Crivo](https://github.com/GMDSantana/crivo) — <sub>network, recon</sub>
+- IDN Homograph Attack
+- Email Verify tools
+- Hash cracking tools
+- Wifi Deauthenticate
+- SocialMedia Finder
+- Payload Injector
+- Web crawling
+- Mix tools
 - [CyberChef (Cyber Swiss-Army Knife)](https://gchq.github.io/CyberChef/) — <sub>reference, online-service</sub>
 
-## 🔑 Password / Hash Cracking
+## 🔓 Hash Cracking
 
 - [hashcat (GPU hash cracker)](https://github.com/hashcat/hashcat) — <sub>hash-crack, password-attack, bruteforce</sub>
 - [John the Ripper (jumbo)](https://github.com/openwall/john) — <sub>hash-crack, password-attack</sub>
 - [hydra (Network Login Cracker)](https://github.com/vanhauser-thc/thc-hydra) — <sub>bruteforce, password-attack, credentials, network</sub>
+- [haiti (Hash Type Identifier)](https://github.com/noraj/haiti) — <sub>hash-crack, enumeration, lookup, reference</sub>
+- [Name-That-Hash (nth)](https://github.com/HashPals/Name-That-Hash) — <sub>hash-crack, enumeration</sub>
+- [Medusa (Parallel Login Brute-Forcer)](https://github.com/jmk-foofus/medusa) — <sub>password-attack, credentials, bruteforce, network</sub>
 - [CrackStation (online lookup)](https://crackstation.net/) — <sub>hash-crack, online-service, lookup</sub>
 - [hashes.com (hash identifier + lookup)](https://hashes.com/en/tools/hash_identifier) — <sub>hash-crack, online-service, lookup</sub>
 - [CyberChef (the cyber swiss-army knife)](https://gchq.github.io/CyberChef/) — <sub>online-service, reference</sub>
 - [GTFOBins (unix binary abuse)](https://gtfobins.github.io/) — <sub>privesc, reference, cheatsheet</sub>
-
----
-
-## Adding a tool
-
-Most tools are **one YAML entry** in `src/noxentra/catalog/` — no Python. See
-[CONTRIBUTING.md](../CONTRIBUTING.md) for the entry format, the tag taxonomy, and
-the checks your PR has to pass (`make check`).
-
-Can't find what you need? Ask the console: `/find <what you're trying to do>`
-searches the catalog first, then GitHub, and shows real maintained repos with the
-reason each was ranked. See [HOW-TO-USE.md](HOW-TO-USE.md#4-find-a-tool-that-isnt-in-the-catalog-find).

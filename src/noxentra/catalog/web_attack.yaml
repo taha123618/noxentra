@@ -833,6 +833,60 @@ tools:
     - python3 smuggler.py -u https://target
   lab_safe_notes: Sends crafted HTTP desync probes — test only against authorized
     staging or scoped targets.
+- title: SSTImap (SSTI Detection & Exploitation)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - exploitation
+  - scanner
+  description: Interactive Server-Side Template Injection (SSTI) scanner supporting
+    Jinja2, Twig, Freemarker, Velocity, Mako, and ERB templates.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: sstimap.py
+  install:
+    commands:
+    - git clone https://github.com/vladko312/SSTImap.git
+    - cd SSTImap && python3 -m pip install --user -r requirements.txt
+  run:
+  - python3 sstimap.py --help
+  project_url: https://github.com/vladko312/SSTImap
+  usage:
+  - - detect SSTI in a URL parameter
+    - python3 sstimap.py -u 'https://target/page?name=test'
+  - - crawl and test forms automatically
+    - python3 sstimap.py -u https://target -c 2 -f
+  lab_safe_notes: Sends template evaluation probes — run only against authorized targets
+    and avoid `--os-shell` outside explicit exploitation scope.
+- title: CRLFuzz (CRLF Injection Scanner)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - scanner
+  description: Fast Go scanner for detecting CRLF (Carriage Return Line Feed) injection
+    and HTTP response splitting across URL lists.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: crlfuzz
+    go: github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest
+  install:
+    go: github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest
+  run:
+  - crlfuzz -h
+  project_url: https://github.com/dwisiswant0/crlfuzz
+  usage:
+  - - scan a single URL for CRLF injection
+    - crlfuzz -u https://target
+  - - scan a list of URLs silently
+    - crlfuzz -l urls.txt -s
+  lab_safe_notes: Sends header-injection test payloads — scope strictly to authorized
+    URLs.
 - title: PortSwigger Web Security Academy
   kind: resource
   tags:

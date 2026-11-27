@@ -4,7 +4,7 @@
 
 ### Noxentra — AI-Guided Reconnaissance & Security Assessment Platform
 
-**219 curated tools across 21 categories** — recon, OSINT, web, wireless, phishing,
+**262 curated tools across 21 categories** — recon, OSINT, web, wireless, phishing,
 forensics, post-exploitation and more — with an **AI layer that turns plain English
 into the right tool and the exact command**.
 
@@ -15,7 +15,7 @@ students — all working **legally, on systems they own or are authorised to tes
 <br/>
 
 
-![](https://img.shields.io/badge/21_Categories-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/219_Tools-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/63_Tags-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/AI--Guided-7B61FF?style=for-the-badge&labelColor=0D1117&logo=openai&logoColor=white) &nbsp;![](https://img.shields.io/badge/Linux_%7C_Kali_%7C_Parrot_%7C_macOS-7B61FF?style=for-the-badge&labelColor=0D1117&logo=linux&logoColor=white)
+![](https://img.shields.io/badge/21_Categories-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/262_Tools-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/64_Tags-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/AI--Guided-7B61FF?style=for-the-badge&labelColor=0D1117&logo=openai&logoColor=white) &nbsp;![](https://img.shields.io/badge/Linux_%7C_Kali_%7C_Parrot_%7C_macOS-7B61FF?style=for-the-badge&labelColor=0D1117&logo=linux&logoColor=white)
 
 <br/>
 
@@ -56,9 +56,9 @@ students — all working **legally, on systems they own or are authorised to tes
   plans an objective step by step, then summarizes findings and drafts an engagement
   report. Bring your own key or run a local model — nothing auto-executes and nothing
   is fabricated.
-- **🗂 219 curated tools, one interactive console** — type to search every tool, then
+- **🗂 262 curated tools, one interactive console** — type to search every tool, then
   install and run across 21 categories without hunting down Git repos; a fixed tag
-  taxonomy (63 tags in use) makes every tool discoverable.
+  taxonomy (64 tags in use) makes every tool discoverable.
 - **🔎 It knows what it doesn't have** — `/find` searches your catalog first, then the
   GitHub API, and shows real maintained projects with the reason each was ranked.
 - **🛡 Safe by default** — standard installs, **no `curl | bash`**, downloads pinned +
@@ -77,30 +77,30 @@ students — all working **legally, on systems they own or are authorised to tes
 
 ## Tool Categories
 
-**219 tools across 21 categories** — the full list, with links and tags, is in
+**262 tools across 21 categories** — the full list, with links and tags, is in
 **[docs/TOOLS.md](docs/TOOLS.md)**.
 
 <div align="center">
 
 | # | Category | Tools | | # | Category | Tools |
 |:---:|---|:---:|---|:---:|---|:---:|
-| 1 | 🛡 [Anonymously Hiding Tools](docs/TOOLS.md#-anonymously-hiding-tools) | 5 | | 12 | 🔁 [Reverse engineering tools](docs/TOOLS.md#-reverse-engineering-tools) | 10 |
-| 2 | 🔍 [Information gathering tools](docs/TOOLS.md#-information-gathering-tools) | 26 | | 13 | ⚡ [DDOS Attack Tools](docs/TOOLS.md#-ddos-attack-tools) | 7 |
-| 3 | 📚 [Wordlist Generator](docs/TOOLS.md#-wordlist-generator) | 8 | | 14 | 🖥 [Remote Administrator Tools (RAT)](docs/TOOLS.md#-remote-administrator-tools-rat) | 4 |
-| 4 | 📡 [Wireless attack tools](docs/TOOLS.md#-wireless-attack-tools) | 17 | | 15 | 🧪 [XSS Attack Tools](docs/TOOLS.md#-xss-attack-tools) | 6 |
-| 5 | 💉 [SQL Injection Tools](docs/TOOLS.md#-sql-injection-tools) | 7 | | 16 | 🖼 [Steganography Tools](docs/TOOLS.md#-steganography-tools) | 10 |
-| 6 | 🎣 [Phishing attack tools](docs/TOOLS.md#-phishing-attack-tools) | 13 | | 17 | 🏢 [Active Directory Tools](docs/TOOLS.md#-active-directory-tools) | 10 |
-| 7 | 🌐 [Web Attack tools](docs/TOOLS.md#-web-attack-tools) | 23 | | 18 | ☁ [Cloud Security Tools](docs/TOOLS.md#-cloud-security-tools) | 7 |
-| 8 | 🔧 [Post exploitation tools](docs/TOOLS.md#-post-exploitation-tools) | 15 | | 19 | 📱 [Mobile Security Tools](docs/TOOLS.md#-mobile-security-tools) | 6 |
-| 9 | 🕵 [Forensic tools](docs/TOOLS.md#-forensic-tools) | 12 | | 20 | ✨ [Other tools](docs/TOOLS.md#-other-tools) | 10 |
-| 10 | 📦 [Payload creation tools](docs/TOOLS.md#-payload-creation-tools) | 6 | | 21 | 🔑 [Password / Hash Cracking](docs/TOOLS.md#-password--hash-cracking) | 7 |
-| 11 | 🧰 [Exploit framework](docs/TOOLS.md#-exploit-framework) | 6 | | | | |
+| 1 | 🛡 [Anonymously Hiding Tools](docs/TOOLS.md#-anonymously-hiding) | 7 | | 12 | 🔁 [Reverse engineering tools](docs/TOOLS.md#-reverse-engineering) | 12 |
+| 2 | 🔍 [Information gathering tools](docs/TOOLS.md#-information-gathering) | 34 | | 13 | ⚡ [DDOS Attack Tools](docs/TOOLS.md#-ddos-attack) | 7 |
+| 3 | 📚 [Wordlist Generator](docs/TOOLS.md#-wordlist-generator) | 9 | | 14 | 🖥 [Remote Administrator Tools (RAT)](docs/TOOLS.md#-remote-admin-rat) | 4 |
+| 4 | 📡 [Wireless attack tools](docs/TOOLS.md#-wireless-attack) | 17 | | 15 | 🧪 [XSS Attack Tools](docs/TOOLS.md#-xss-attack) | 6 |
+| 5 | 💉 [SQL Injection Tools](docs/TOOLS.md#-sql-injection) | 7 | | 16 | 🖼 [Steganography Tools](docs/TOOLS.md#-steganography) | 10 |
+| 6 | 🎣 [Phishing attack tools](docs/TOOLS.md#-phishing-attack) | 13 | | 17 | 🏢 [Active Directory Tools](docs/TOOLS.md#-active-directory) | 13 |
+| 7 | 🌐 [Web Attack tools](docs/TOOLS.md#-web-attack) | 32 | | 18 | ☁ [Cloud Security Tools](docs/TOOLS.md#-cloud-security) | 14 |
+| 8 | 🔧 [Post exploitation tools](docs/TOOLS.md#-post-exploitation) | 15 | | 19 | 📱 [Mobile Security Tools](docs/TOOLS.md#-mobile-security) | 9 |
+| 9 | 🕵 [Forensic tools](docs/TOOLS.md#-forensics) | 17 | | 20 | ✨ [Other tools](docs/TOOLS.md#-other-tools) | 12 |
+| 10 | 📦 [Payload creation tools](docs/TOOLS.md#-payload-creation) | 6 | | 21 | 🔑 [Password / Hash Cracking](docs/TOOLS.md#-hash-cracking) | 10 |
+| 11 | 🧰 [Exploit framework](docs/TOOLS.md#-exploit-framework) | 8 | | | | |
 
 </div>
 
 <sub>44 further entries are archived (unmaintained or dead upstream) and hidden unless
 you set `show_archived true` via `/config`. The in-app header counts 22 categories /
-219 tools because it also counts the built-in Update / Uninstall menu.</sub>
+264 tools because it also counts the built-in Update / Uninstall menu.</sub>
 
 ---
 
@@ -315,7 +315,7 @@ falls back to the classic numbered menu, where `/` or `s` searches, `t` filters 
 
 ### 🔎 `/find` — a tool for a need you don't have yet
 
-Searches the 219 curated tools first, then the GitHub search API, and ranks the
+Searches the 262 curated tools first, then the GitHub search API, and ranks the
 results explainably. **Suggest-only** — it never clones, installs or runs anything —
 and it makes **zero model calls**.
 
@@ -387,7 +387,7 @@ tools carrying it; `/search <keyword>` matches names, descriptions and tags.
 <div align="center">
 <img src="images/screenshots/2.png" alt="noxentra /tags — every tag with its tool count" width="900">
 <br/>
-<sub><code>/tags</code> — 63 tags in use, with the number of tools behind each.</sub>
+<sub><code>/tags</code> — 64 tags in use, with the number of tools behind each.</sub>
 </div>
 
 ### ▶ Background panes (tmux)

@@ -54,9 +54,9 @@ and something you get back — no prior knowledge of the codebase needed.
    | `~/.noxentra/history` | your `↑`/`↓` command history |
 
 4. You land on the banner + prompt. The header line tells you what you have:
-   OS, IP, and `22 categories · 219 active · 44 archived` (that count includes
+   OS, IP, and `22 categories · 264 active · 44 archived` (that count includes
    the built-in Update/Uninstall menu; the tool catalog itself is
-   [21 categories / 219 tools](TOOLS.md)).
+   [21 categories / 262 tools](TOOLS.md)).
 
 5. Type `/help` for the command card, and `q` (or `/quit`, `Ctrl-D`) to leave.
 
@@ -78,7 +78,7 @@ There are exactly three things you can type:
 
 Try these in order:
 
-1. `/tags` — prints every tag with its tool count (63 tags in use).
+1. `/tags` — prints every tag with its tool count (64 tags in use).
 2. `@tag:osint` — lists the tools carrying that tag, then lets you pick one by
    number.
 3. `@nmap` — opens a tool straight away (matching is case-insensitive with a
@@ -116,7 +116,7 @@ metapackages), noxentra reuses that binary instead of re-cloning it.
 
 ## 4. Find a tool that isn't in the catalog (`/find`)
 
-`/find` answers "what should I use for X?" — first from the 219 curated tools,
+`/find` answers "what should I use for X?" — first from the 262 curated tools,
 then from the GitHub search API, ranked with a reason for each hit. It is
 **suggest-only**: it never clones, installs or runs anything, and it makes **zero
 model calls**.

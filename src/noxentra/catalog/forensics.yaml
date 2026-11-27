@@ -187,6 +187,50 @@ tools:
       Offline pcap analysis (`zeek -r`) is completely passive and safe on any capture.
       Live interface capture should only run on networks you are authorized to monitor.
 
+  - title: "osquery (SQL Endpoint Visibility)"
+    kind: install
+    tags: [forensics, enumeration, scanner]
+    description: "Exposes an operating system as a relational database so DFIR analysts can query processes, sockets, users, and persistence via SQL."
+    system_pkgs: {which: osqueryi, apt: osquery, brew: osquery}
+    install: {apt: osquery}
+    run: ["osqueryi --version"]
+    project_url: "https://github.com/osquery/osquery"
+    usage:
+      - ["open an interactive SQL shell", "osqueryi"]
+      - ["query listening ports and processes", "osqueryi 'SELECT pid, port, address FROM listening_ports;'"]
+    lab_safe_notes: >-
+      Read-only host telemetry queries — safe for incident response and live forensics on
+      systems you own or are authorized to inspect.
+
+  - title: "Chainsaw (EVTX Threat Hunting)"
+    kind: install
+    tags: [forensics, malware-analysis, scanner]
+    description: "Fast Rust DFIR tool for hunting Windows Event Logs (EVTX) and MFT/SRUM artifacts using Sigma rules and built-in detections."
+    system_pkgs: {which: chainsaw, brew: chainsaw}
+    install: {brew: chainsaw}
+    run: ["chainsaw --version"]
+    project_url: "https://github.com/WithSecureLabs/chainsaw"
+    usage:
+      - ["hunt EVTX logs with built-in detections", "chainsaw hunt ./evtx/ --local"]
+      - ["hunt EVTX logs using Sigma rules", "chainsaw hunt ./evtx/ -s ./sigma/ --mapping mappings/sigma-event-logs-all.yml"]
+    lab_safe_notes: >-
+      Offline artifact analysis over collected EVTX files — completely non-destructive.
+
+  - title: "Velociraptor (DFIR Endpoint Visibility)"
+    kind: install
+    tags: [forensics, enumeration, malware-analysis]
+    description: "Advanced open-source endpoint monitoring, digital forensics, and cyber response platform powered by VQL queries."
+    system_pkgs: {which: velociraptor, brew: velociraptor}
+    install: {brew: velociraptor}
+    run: ["velociraptor version"]
+    project_url: "https://github.com/Velocidex/velociraptor"
+    usage:
+      - ["run a local VQL query interactively", "velociraptor query 'SELECT * FROM pslist()'"]
+      - ["start standalone local GUI", "velociraptor gui"]
+    lab_safe_notes: >-
+      Local VQL triage is read-only; deploy agents only on endpoints you own or are
+      authorized to investigate.
+
 # --- high-value DFIR references ----------------------------------------------
   - title: "Eric Zimmerman's Tools"
     kind: resource
