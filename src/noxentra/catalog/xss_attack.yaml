@@ -128,6 +128,47 @@ tools:
       XSS, but it does send requests to the target, so feed it only authorized URLs.
       Its stdout (URLs with unfiltered chars) chains straight into dalfox pipe.
 
+  - title: "gxss (XSS Reflection Scanner)"
+    kind: install
+    tags: [web, xss, scanner, recon]
+    description: "Fast Go tool that injects probe strings into query parameters and reports reflected parameters in HTTP responses."
+    system_pkgs: {which: gxss, go: "github.com/KathanP19/Gxss@latest"}
+    install: {go: "github.com/KathanP19/Gxss@latest"}
+    run: ["gxss -h"]
+    project_url: "https://github.com/KathanP19/Gxss"
+    usage:
+      - ["check URLs on stdin for parameter reflection", "cat urls.txt | gxss -p KhXSS"]
+    lab_safe_notes: >-
+      Sends benign reflection probes to target URLs — feed only authorized scope URLs.
+
+  - title: "qsreplace (Query String Payload Replacer)"
+    kind: install
+    tags: [web, xss, fuzzing, recon]
+    description: "Accepts URLs on stdin, replaces all query string values with a user-supplied value, and prints unique URLs — staple for XSS/SQLi pipelines."
+    system_pkgs: {which: qsreplace, go: "github.com/tomnomnom/qsreplace@latest"}
+    install: {go: "github.com/tomnomnom/qsreplace@latest"}
+    run: ["qsreplace -h"]
+    project_url: "https://github.com/tomnomnom/qsreplace"
+    usage:
+      - ["replace query parameter values with an XSS probe", "cat urls.txt | qsreplace '\"><script>alert(1)</script>'"]
+      - ["append a value to existing parameters", "cat urls.txt | qsreplace -a 'test'"]
+    lab_safe_notes: >-
+      Purely offline text transformation on stdin — responsible use applies when piping
+      into active scanners like dalfox or httpx.
+
+  - title: "airixss (XSS Vulnerability Checker)"
+    kind: install
+    tags: [web, xss, scanner]
+    description: "Lightweight Go XSS confirmation tool that reads candidate URLs from stdin and verifies unencoded payload reflection."
+    system_pkgs: {which: airixss, go: "github.com/ferreiraklet/airixss@latest"}
+    install: {go: "github.com/ferreiraklet/airixss@latest"}
+    run: ["airixss -h"]
+    project_url: "https://github.com/ferreiraklet/airixss"
+    usage:
+      - ["verify reflected XSS payloads from stdin", "cat urls.txt | qsreplace '\"><svg/onload=alert(1)>' | airixss -payload 'alert(1)'"]
+    lab_safe_notes: >-
+      Sends HTTP GET requests with supplied payloads — run only against authorized targets.
+
 # --- high-value XSS references -----------------------------------------------
   - title: "PortSwigger — XSS Labs"
     kind: resource

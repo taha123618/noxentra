@@ -214,3 +214,27 @@ def test_status_shows_running(monkeypatch):
     monkeypatch.setattr(session, "count", lambda: 3)
     prompt._RUNNING_CACHE["at"] = 0.0     # bust the TTL cache
     assert "▶ 3 running" in prompt.status(prompt.PromptCtx("home"))
+
+
+def test_engage_and_report_dispatch_in_classic_repl(tmp_path, monkeypatch):
+    from noxentra import engagement, orchestrator, prompt
+
+    monkeypatch.setattr(engagement, "ENGAGEMENTS_ROOT", tmp_path)
+    monkeypatch.setattr(orchestrator.shutil, "which", lambda t: "/usr/bin/" + t)
+    called = {}
+
+    def fake_run(e, pipeline="recon", on_progress=None):
+        called["pipeline"] = pipeline
+        called["targets"] = list(e.targets)
+        return []
+
+    monkeypatch.setattr(orchestrator, "run_pipeline", fake_run)
+    monkeypatch.setattr(prompt, "simple", lambda *_a, **_kw: "y")
+
+    prompt.dispatch("/engage acme recon example.com,10.0.0.1", prompt.PromptCtx("home"))
+    assert called == {"pipeline": "recon", "targets": ["example.com", "10.0.0.1"]}
+
+    prompt.dispatch("/report acme all", prompt.PromptCtx("home"))
+    assert (tmp_path / "acme" / "report.md").exists()
+    assert (tmp_path / "acme" / "report.html").exists()
+    assert (tmp_path / "acme" / "report.sarif.json").exists()

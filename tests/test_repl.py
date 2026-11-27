@@ -119,6 +119,8 @@ def test_dispatch_tags_lists(monkeypatch):
 
 def test_find_is_completable_and_documented():
     assert "/find" in repl._COMMANDS
+    assert "/engage" in repl._COMMANDS
+    assert "/report" in repl._COMMANDS
 
 
 def test_dispatch_find_routes_to_discover_run(monkeypatch):

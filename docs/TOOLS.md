@@ -1,6 +1,6 @@
 # Tool catalog
 
-Every tool noxentra can install, launch, or point you at — **262 active tools
+Every tool noxentra can install, launch, or point you at — **269 active tools
 across 21 categories**, plus 44 archived entries kept out of this list (they are
 unmaintained or dead upstream and are hidden in the app unless you set
 `show_archived true` via `/config`).
@@ -172,6 +172,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [pspy (unprivileged process snooping)](https://github.com/DominicBreuker/pspy) — <sub>post-exploitation, privesc, enumeration</sub>
 - [linux-smart-enumeration (lse.sh)](https://github.com/diego-treitos/linux-smart-enumeration) — <sub>privesc, post-exploitation, enumeration</sub>
 - [LaZagne (Local Credential Recovery)](https://github.com/AlessandroZ/LaZagne) — <sub>credentials, post-exploitation, password-attack</sub>
+- [socat (Multipurpose Network Relay)](http://www.dest-unreach.org/socat/) — <sub>network, tunneling, post-exploitation, reverse-shell</sub>
+- [rustcat (Modern Reverse Shell Listener)](https://github.com/robiot/rustcat) — <sub>reverse-shell, post-exploitation, network</sub>
 - [HackTricks (post-ex / privesc playbook)](https://book.hacktricks.xyz/) — <sub>post-exploitation, privesc, reference, cheatsheet</sub>
 - [LOLBAS (Windows living-off-the-land binaries)](https://lolbas-project.github.io/) — <sub>privesc, post-exploitation, reference, cheatsheet</sub>
 - [revshells.com (reverse shell generator)](https://www.revshells.com/) — <sub>reverse-shell, post-exploitation, online-service, reference</sub>
@@ -256,6 +258,9 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [XSS Payload Generator](https://github.com/capture0x/XSS-LOADER.git) — <sub>web, xss, payload</sub>
 - [Advanced XSS Detection Suite](https://github.com/UltimateHackers/XSStrike) — <sub>web, xss, scanner, fuzzing</sub>
 - [kxss (Reflection Finder)](https://github.com/Emoe/kxss) — <sub>web, xss, scanner, recon</sub>
+- [gxss (XSS Reflection Scanner)](https://github.com/KathanP19/Gxss) — <sub>web, xss, scanner, recon</sub>
+- [qsreplace (Query String Payload Replacer)](https://github.com/tomnomnom/qsreplace) — <sub>web, xss, fuzzing, recon</sub>
+- [airixss (XSS Vulnerability Checker)](https://github.com/ferreiraklet/airixss) — <sub>web, xss, scanner</sub>
 - [PortSwigger — XSS Labs](https://portswigger.net/web-security/cross-site-scripting) — <sub>learning, web, xss, reference</sub>
 - [PayloadsAllTheThings — XSS Injection](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XSS%20Injection) — <sub>cheatsheet, reference, xss, web</sub>
 
@@ -267,6 +272,7 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [zsteg (PNG/BMP LSB detector)](https://github.com/zed-0xff/zsteg) — <sub>steganography, image, forensics</sub>
 - [outguess (JPEG stego)](https://github.com/resurrecting-open-source-projects/outguess) — <sub>steganography, image, forensics</sub>
 - [ExifTool (metadata reader)](https://exiftool.org/) — <sub>steganography, metadata, image, forensics</sub>
+- [stegoveritas (Automated Steganography Analyzer)](https://github.com/bannsec/stegoVeritas) — <sub>steganography, image, forensics</sub>
 - [Aperi'Solve (all-in-one image stego)](https://www.aperisolve.com/) — <sub>steganography, image, online-service, reference</sub>
 - [StegOnline (in-browser LSB explorer)](https://georgeom.net/StegOnline/upload) — <sub>steganography, image, online-service</sub>
 - [Futureboy Stegano decoder](https://futureboy.us/stegano/decinput.html) — <sub>steganography, online-service, reference</sub>
@@ -330,6 +336,7 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - Payload Injector
 - Web crawling
 - Mix tools
+- [tshark (CLI Packet Analyzer)](https://www.wireshark.org/docs/man-pages/tshark.html) — <sub>network, sniffing, pcap, forensics</sub>
 - [CyberChef (Cyber Swiss-Army Knife)](https://gchq.github.io/CyberChef/) — <sub>reference, online-service</sub>
 
 ## 🔓 Hash Cracking

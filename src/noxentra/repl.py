@@ -25,6 +25,8 @@ _COMMANDS = {
     "/ai": "recommend tools for a goal",
     "/goal": "AI-plan & run an objective (per-step confirm)",
     "/find": "find tools for a need (catalog + GitHub)",
+    "/engage": "manage engagements & run live pipelines",
+    "/report": "export Markdown / HTML / SARIF reports",
     "/panes": "list background panes",
     "/attach": "attach to background panes (Ctrl-b d to return)",
     "/kill": "kill a background pane (/kill <label|all>)",

@@ -141,6 +141,20 @@ tools:
       media file — look at Comment, Artist, Software and GPS fields before pulling
       out the heavy stego tooling.
 
+  - title: "stegoveritas (Automated Steganography Analyzer)"
+    kind: install
+    tags: [steganography, image, forensics]
+    description: "Runs automated image/file steganography checks (metadata, color planes, trailing data, LSB, brute-force) and extracts artifacts."
+    system_pkgs: {which: stegoveritas}
+    install: {pip: stegoveritas}
+    run: ["stegoveritas -h"]
+    project_url: "https://github.com/bannsec/stegoVeritas"
+    usage:
+      - ["run full automated triage on an image", "stegoveritas suspicious.png"]
+    lab_safe_notes: >-
+      Purely offline file analysis — writes extracted layers and artifacts into a local
+      `results/` directory.
+
   # --- RESOURCE entries: the online stego toolkits CTF players actually use. ---
   - title: "Aperi'Solve (all-in-one image stego)"
     kind: resource

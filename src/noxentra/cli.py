@@ -70,6 +70,8 @@ def show_help():
             ("  r / a  ", "bold cyan"), ("recommend tools — pick a task or type it (e.g. r crack a hash)\n", "white"),
             ("  /goal  ", "bold cyan"), ("AI-plan & run an objective, one step at a time (e.g. /goal find subdomains of x.com)\n", "white"),
             ("  /find  ", "bold cyan"), ("find tools for a need — your toolbox + GitHub, suggest-only (e.g. /find hidden directories on a website)\n", "white"),
+            ("  /engage ", "bold cyan"), ("create/open an engagement & run recon/web/cloud pipelines live\n", "white"),
+            ("  /report ", "bold cyan"), ("export engagement findings as Markdown, HTML, or SARIF\n", "white"),
             ("  ?      ", "bold cyan"), ("show this help\n", "white"),
             ("  clear  ", "bold cyan"), ("clear the screen (also /clear)\n", "white"),
             ("  /config ", "bold cyan"), ("view/edit settings; /config test checks the AI connection\n", "white"),
