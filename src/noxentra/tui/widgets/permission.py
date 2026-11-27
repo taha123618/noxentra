@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.screen import ModalScreen
@@ -7,8 +9,8 @@ from textual.widgets import RadioButton, RadioSet, Static
 class PermissionModal(ModalScreen[str]):
     """Confirm before a sudo / target-touching action. Returns 'yes'|'no'. (claude-permission)"""
 
-    BINDINGS = [("escape", "cancel", "Cancel")]
-    _VALUES = ["yes", "no"]
+    BINDINGS: ClassVar = [("escape", "cancel", "Cancel")]
+    _VALUES: ClassVar = ["yes", "no"]
 
     def __init__(self, message: str):
         self._message = message

@@ -1,7 +1,7 @@
 import sys
 from unittest import mock
 
-import noxentra.cli as cli
+from noxentra import cli
 
 
 # NOTE: cli imports get_tools_dir via `from noxentra.config import get_tools_dir`,

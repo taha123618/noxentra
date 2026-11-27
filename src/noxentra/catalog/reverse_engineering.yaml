@@ -9,9 +9,25 @@ category:
 
 # --- enrich existing Python-defined tools by title --------------------------
 overlay:
+  - title: "Apk2Gold"
+    tags: [reversing, apk, mobile]
+    usage:
+      - ["decompile an APK to Java", "apk2gold app.apk"]
+    lab_safe_notes: >-
+      apk2gold statically decompiles an APK's Dalvik bytecode back to Java — it never
+      installs or runs the app. Analyze only APKs you're authorized to study; treat
+      malicious samples in an isolated VM.
+
+# --- migrated from tools/reverse_engineering.py + missing RE tools ----------
+tools:
   - title: "Androguard"
+    kind: install
     tags: [reversing, apk, mobile, malware-analysis]
+    description: "Androguard is a Reverse engineering, Malware and goodware analysis of Android applications and more"
     system_pkgs: {which: androguard, apt: androguard}
+    install:
+      commands: ["sudo pip3 install -U androguard"]
+    project_url: "https://github.com/androguard/androguard"
     usage:
       - ["open an interactive analysis session", "androguard analyze app.apk"]
       - ["decode AndroidManifest.xml", "androguard axml app.apk"]
@@ -23,17 +39,15 @@ overlay:
       running the app, so it's safe on suspected-malicious samples. For live/dynamic
       Android malware still detonate inside an isolated emulator/VM, never a real device.
 
-  - title: "Apk2Gold"
-    tags: [reversing, apk, mobile]
-    usage:
-      - ["decompile an APK to Java", "apk2gold app.apk"]
-    lab_safe_notes: >-
-      apk2gold statically decompiles an APK's Dalvik bytecode back to Java — it never
-      installs or runs the app. Analyze only APKs you're authorized to study; treat
-      malicious samples in an isolated VM.
-
   - title: "JadX"
+    kind: install
     tags: [reversing, apk, mobile]
+    description: "Jadx is Dex to Java decompiler for APK, dex, aar and zip files."
+    install:
+      commands:
+        - "git clone https://github.com/skylot/jadx.git"
+        - "java -version 2>&1 | grep -q 'version' && cd jadx && ./gradlew dist || echo '[ERROR] Java not found. Install: sudo apt install default-jdk'"
+    project_url: "https://github.com/skylot/jadx"
     usage:
       - ["decompile an APK to a folder", "jadx app.apk -d out/"]
       - ["decompile a single .dex", "jadx classes.dex -d out/"]
@@ -46,7 +60,14 @@ overlay:
       engine. Study only apps you're authorized to; keep malware work in an isolated VM.
 
   - title: "Ghidra (NSA Reverse Engineering)"
+    kind: install
     tags: [reversing, binary, malware-analysis]
+    description: "NSA's software reverse engineering framework — disassembly, decompilation, scripting."
+    supported_os: [linux, macos]
+    install:
+      commands: ["sudo apt-get install -y ghidra || echo 'Download from https://ghidra-sre.org/'"]
+    run: ["ghidra --help || echo 'Run: ghidraRun'"]
+    project_url: "https://github.com/NationalSecurityAgency/ghidra"
     usage:
       - ["launch the GUI", "ghidraRun"]
       - ["headless: import + auto-analyze a binary", "analyzeHeadless ./proj MyProj -import ./bin"]
@@ -58,8 +79,17 @@ overlay:
       inside an isolated VM.
 
   - title: "Radare2 (RE Framework)"
+    kind: install
     tags: [reversing, binary]
+    description: "Portable UNIX-like reverse engineering framework and command-line toolset."
+    supported_os: [linux, macos]
     system_pkgs: {which: r2, apt: radare2}
+    install:
+      commands:
+        - "git clone https://github.com/radareorg/radare2.git"
+        - "cd radare2 && sys/install.sh"
+    run: ["r2 -h"]
+    project_url: "https://github.com/radareorg/radare2"
     usage:
       - ["load + auto-analyze a binary", "r2 -A ./bin"]
       - ["batch: list functions then quit", "r2 -qc afl ./bin"]
@@ -72,9 +102,6 @@ overlay:
       Static analysis (-A, aaa, afl, pdf, iz) only reads the file. r2 can also debug
       live (r2 -d), which actually runs the target — do that only in an isolated VM for
       untrusted binaries. Cutter is the r2 GUI over the same core.
-
-# --- genuinely-missing, widely-used RE tools ---------------------------------
-tools:
   - title: "apktool (APK Decode/Rebuild)"
     kind: install
     tags: [reversing, apk, mobile]
@@ -134,6 +161,66 @@ tools:
       Every command here reads the binary statically and runs nothing from it — safe on
       any sample, including malware. strings is usually the fastest first look for URLs,
       keys and hints in CTF binaries.
+
+  - title: "capa (FLARE Capability Detector)"
+    kind: install
+    tags: [reversing, binary, malware-analysis]
+    description: "Mandiant FLARE tool that identifies capabilities in PE/ELF/.NET binaries (anti-analysis, C2, crypto, persistence) and maps them to MITRE ATT&CK."
+    system_pkgs: {which: capa}
+    install: {pip: flare-capa}
+    run: ["capa --version"]
+    project_url: "https://github.com/mandiant/capa"
+    usage:
+      - ["summarize capabilities in a binary", "capa ./sample.exe"]
+      - ["verbose rule matches + ATT&CK mapping", "capa -v ./sample.elf"]
+      - ["emit JSON output for triage", "capa -j ./sample.exe > capa.json"]
+    lab_safe_notes: >-
+      Purely static analysis — capa never executes the analyzed binary, making it safe
+      for initial malware triage.
+
+  - title: "Rizin (Reverse Engineering Framework)"
+    kind: install
+    tags: [reversing, binary, malware-analysis]
+    description: "Modern, community-maintained fork of radare2 providing a UNIX-friendly CLI disassembler, debugger, and binary analysis toolkit."
+    system_pkgs: {which: rizin, apt: rizin, brew: rizin}
+    install: {apt: rizin}
+    run: ["rizin -v"]
+    project_url: "https://github.com/rizinorg/rizin"
+    usage:
+      - ["open and auto-analyze a binary", "rizin -A ./binary"]
+      - ["list functions in batch mode", "rizin -q -c 'aa;afl' ./binary"]
+    lab_safe_notes: >-
+      Static analysis (`rizin -A`) does not run the binary. Only debug mode (`-d`)
+      executes code — run untrusted samples inside an isolated VM.
+
+  - title: "checksec (Binary Mitigation Checker)"
+    kind: install
+    tags: [reversing, binary, scanner]
+    description: "Inspects ELF/PE binaries and running processes for security mitigations (RELRO, Stack Canary, NX, PIE, Fortify, CFI)."
+    system_pkgs: {which: checksec, apt: checksec, brew: checksec}
+    install: {apt: checksec}
+    run: ["checksec --version"]
+    project_url: "https://github.com/slimm609/checksec.sh"
+    usage:
+      - ["check binary exploit mitigations", "checksec --file=./binary"]
+      - ["emit JSON mitigation report", "checksec --output=json --file=./binary"]
+    lab_safe_notes: >-
+      Purely static inspection of ELF headers/sections — never executes the binary.
+
+  - title: "ROPgadget (ROP Chain Gadget Finder)"
+    kind: install
+    tags: [reversing, binary, exploitation]
+    description: "Searches ELF, PE, and Mach-O binaries for Return-Oriented Programming (ROP) gadgets across x86, x64, ARM, and MIPS."
+    system_pkgs: {which: ROPgadget}
+    install: {pip: ROPgadget}
+    run: ["ROPgadget --version"]
+    project_url: "https://github.com/JonathanSalwan/ROPgadget"
+    usage:
+      - ["list ROP gadgets in a binary", "ROPgadget --binary ./vuln"]
+      - ["search for a specific gadget pattern", "ROPgadget --binary ./vuln --only 'pop|ret'"]
+    lab_safe_notes: >-
+      Offline static binary analysis — standard tool for binary exploitation CTFs and
+      vulnerability research.
 
 # --- RE learning references --------------------------------------------------
   - title: "crackmes.one (RE Practice)"

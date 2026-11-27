@@ -1,3 +1,4 @@
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection
 
@@ -9,8 +10,8 @@ class TerminalMultiplexer(Noxentra):
         "allows opening several terminal sessions inside one window."
     )
     # Bug 19 fix: tilix is a Debian/Ubuntu package only — mark Linux-only
-    INSTALL_COMMANDS = ["sudo apt-get install -y tilix"]
-    SUPPORTED_OS = ["linux"]
+    INSTALL_COMMANDS: ClassVar = ["sudo apt-get install -y tilix"]
+    SUPPORTED_OS: ClassVar = ["linux"]
 
     def __init__(self):
         # Py3-4 fix: super(TerminalMultiplexer, self) → super()
@@ -24,7 +25,7 @@ class Crivo(Noxentra):
         "from web pages or text, with built-in web scraping capabilities.\n"
         "See: python3 crivo_cli.py -h"
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/GMDSantana/crivo.git",
         # Bug 18 verify: this is correct — cd and pip in same string works
         "cd crivo && pip install --user -r requirements.txt",
@@ -38,7 +39,7 @@ class Crivo(Noxentra):
 
 class MixTools(NoxentraCollection):
     TITLE = "Mix tools"
-    TOOLS = [
+    TOOLS: ClassVar = [
         TerminalMultiplexer(),
         Crivo()
     ]

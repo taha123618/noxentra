@@ -14,8 +14,8 @@ run() {
   fi
 }
 
-echo "==> ruff (must-fix: syntax / undefined names / bad f-strings)"
-run ruff check . --select=E9,F63,F7,F82,PLE,YTT
+echo "==> ruff (full lint, hygiene, and typing checks)"
+run ruff check .
 
 echo "==> pytest (unit + catalog/taxonomy conformance)"
 run pytest -q

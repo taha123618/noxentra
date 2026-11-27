@@ -16,6 +16,19 @@ category:
 overlay: []
 
 tools:
+  - title: "Pyshell"
+    kind: install
+    archived: true
+    archived_reason: "Upstream repo archived by author (last commit 2022-02)"
+    tags: [c2, reverse-shell, post-exploitation]
+    description: "Pyshell is a Rat Tool that can be able to download & upload files, Execute OS Command and more.."
+    install:
+      commands:
+        - "git clone https://github.com/knassar702/Pyshell.git;pip install --user pyscreenshot python-nmap requests"
+    run: ["cd Pyshell;./Pyshell"]
+    project_url: "https://github.com/knassar702/pyshell"
+    usage:
+      - ["launch Pyshell (archived)", "./Pyshell"]
   - title: "Villain (Reverse Shell / C2 Manager)"
     kind: install
     tags: [c2, reverse-shell, post-exploitation, payload]
@@ -63,6 +76,40 @@ tools:
       you control and only run the payload on an in-scope Windows host. Because the
       channel rides HTTP(S) it is quiet on the wire; that is exactly why you must stay
       strictly within written scope.
+
+  - title: "frp (Fast Reverse Proxy)"
+    kind: install
+    tags: [tunneling, network]
+    description: >-
+      High-performance reverse proxy (`frps` / `frpc`) for exposing local TCP, UDP,
+      HTTP, HTTPS, and SOCKS5 services behind NAT or firewalls.
+    system_pkgs: {which: frpc, brew: frpc}
+    install: {brew: frpc}
+    run: ["frpc --help"]
+    project_url: "https://github.com/fatedier/frp"
+    usage:
+      - ["start frp client with a TOML config", "frpc -c frpc.toml"]
+      - ["start frp relay server", "frps -c frps.toml"]
+    lab_safe_notes: >-
+      Exposes internal ports to your relay server (`frps`); always configure token
+      authentication and TLS, and tunnel only authorized lab hosts.
+
+  - title: "bore (Modern Rust TCP Tunnel)"
+    kind: install
+    tags: [tunneling, network]
+    description: >-
+      Minimalist, fast Rust CLI (`bore-cli`) that exposes local TCP ports to a
+      remote server or self-hosted `bore server` without complex configuration.
+    system_pkgs: {which: bore, brew: bore-cli}
+    install: {commands: ["cargo install bore-cli"]}
+    run: ["bore --help"]
+    project_url: "https://github.com/ekzhang/bore"
+    usage:
+      - ["expose local port 8000 via public relay", "bore local 8000 --to bore.pub"]
+      - ["run a self-hosted authenticated relay", "bore server --secret <token>"]
+    lab_safe_notes: >-
+      Public relays (`bore.pub`) expose the forwarded local port to the internet;
+      prefer a self-hosted `bore server` with `--secret` for sensitive lab services.
 
   # Heavier C2 frameworks kept as REFERENCES — their build/deploy is platform-specific
   # (Go / .NET, Docker) and I won't hardcode an install/run line I can't verify.

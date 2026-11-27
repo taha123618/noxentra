@@ -23,11 +23,13 @@ _ITEM = {
 
 
 def _repo(**kw):
-    base = dict(full_name="acme/tool", description="A real security tool for testing",
-                url="https://github.com/acme/tool", stars=1000, forks=100,
-                pushed_at="2026-06-01T00:00:00Z", created_at="2022-01-01T00:00:00Z",
-                archived=False, fork=False, license="MIT", language="Go",
-                topics=["security"], owner="acme", owner_type="User")
+    base = {
+        "full_name": "acme/tool", "description": "A real security tool for testing",
+        "url": "https://github.com/acme/tool", "stars": 1000, "forks": 100,
+        "pushed_at": "2026-06-01T00:00:00Z", "created_at": "2022-01-01T00:00:00Z",
+        "archived": False, "fork": False, "license": "MIT", "language": "Go",
+        "topics": ["security"], "owner": "acme", "owner_type": "User",
+    }
     base.update(kw)
     return discover.Repo(**base)
 
@@ -130,11 +132,14 @@ def test_offensive_jammer_and_flood_phrasing_is_refused(need):
 
 def test_generated_owners_file_is_current():
     """The committed file must match a fresh generation — it cannot rot."""
-    import sys
-    sys.path.insert(0, "scripts")
+    import importlib.util
     from pathlib import Path
 
-    import gen_catalog_owners as gen
+    script = Path(__file__).resolve().parents[1] / "scripts" / "gen_catalog_owners.py"
+    spec = importlib.util.spec_from_file_location("gen_catalog_owners", script)
+    assert spec is not None and spec.loader is not None
+    gen = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gen)
     assert gen.render(gen.collect()) == Path(gen.OUT).read_text()
 
 
@@ -572,11 +577,11 @@ def test_saving_twice_does_not_duplicate(tmp_path, monkeypatch):
     assert len(yaml.safe_load(path.read_text())["tools"]) == 1
 
 
-_SAVE_REPO = dict(
-    full_name="x/y", description="d", url="https://github.com/x/y",
-    stars=1, forks=0, pushed_at="", created_at="", archived=False,
-    fork=False, license="", language="", topics=[], owner="x", owner_type="User",
-)
+_SAVE_REPO = {
+    "full_name": "x/y", "description": "d", "url": "https://github.com/x/y",
+    "stars": 1, "forks": 0, "pushed_at": "", "created_at": "", "archived": False,
+    "fork": False, "license": "", "language": "", "topics": [], "owner": "x", "owner_type": "User",
+}
 
 
 def test_save_repo_never_raises_on_unwritable_dir(tmp_path, monkeypatch):

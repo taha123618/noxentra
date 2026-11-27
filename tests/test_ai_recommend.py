@@ -1,6 +1,5 @@
 """AI1 recommend: taxonomy guardrail, keyword fallback, transport degrade."""
-import noxentra.ai_recommend as ai_recommend
-import noxentra.tags as tags
+from noxentra import ai_recommend, tags
 
 
 def test_parse_drops_fabricated_tags():

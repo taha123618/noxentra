@@ -1,11 +1,12 @@
 import subprocess
+from typing import ClassVar
 
 from noxentra.core import Noxentra, NoxentraCollection, console, validate_input
 
 
 class SteganoHide(Noxentra):
     TITLE = "SteganoHide"
-    INSTALL_COMMANDS = ["sudo apt-get install steghide -y"]
+    INSTALL_COMMANDS: ClassVar = ["sudo apt-get install steghide -y"]
 
     def run(self):
         choice_run = input(
@@ -28,57 +29,19 @@ class SteganoHide(Noxentra):
             if not file_hide.strip() or not file_to_be_hide.strip():
                 console.print("[bold red]Both filenames are required[/bold red]")
                 return
-            subprocess.run(["steghide", "embed", "-cf", file_to_be_hide, "-ef", file_hide])
+            subprocess.run(["steghide", "embed", "-cf", file_to_be_hide, "-ef", file_hide], check=False)
 
         elif choice_run == 2:
             from_file = input("Enter Filename to Extract Data From >> ")
             if not from_file.strip():
                 console.print("[bold red]A filename is required[/bold red]")
                 return
-            subprocess.run(["steghide", "extract", "-sf", from_file])
-
-
-class StegnoCracker(Noxentra):
-    TITLE = "Stegseek (fast steganography cracker)"
-    DESCRIPTION = "Stegseek brute-forces and extracts steghide-embedded data extremely fast"
-    INSTALL_COMMANDS = ["sudo apt-get install -y stegseek"]
-    RUN_COMMANDS = ["stegseek --help"]
-    PROJECT_URL = "https://github.com/RickdeJager/stegseek"
-    SYSTEM_PKGS = {"which": "stegseek", "apt": "stegseek"}
-
-
-class StegoCracker(Noxentra):
-    ARCHIVED = True
-    ARCHIVED_REASON = "Unmaintained — no commits since 2021-09"
-    TITLE = "StegoCracker"
-    DESCRIPTION = "StegoCracker lets you hide and retrieve data in image or audio files"
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/W1LDN16H7/StegoCracker.git",
-        "sudo chmod -R 755 StegoCracker"
-    ]
-    RUN_COMMANDS = [
-        "cd StegoCracker && python3 -m pip install -r requirements.txt",
-        "./install.sh"
-    ]
-    PROJECT_URL = "https://github.com/W1LDN16H7/StegoCracker"
-
-
-class Whitespace(Noxentra):
-    ARCHIVED = True
-    ARCHIVED_REASON = "Upstream repo deleted (404)"
-    TITLE = "Whitespace"
-    DESCRIPTION = "Use whitespace and unicode characters for steganography"
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/beardog108/snow10.git",
-        "sudo chmod -R 755 snow10"
-    ]
-    RUN_COMMANDS = ["cd snow10 && ./install.sh"]
-    PROJECT_URL = "https://github.com/beardog108/snow10"
+            subprocess.run(["steghide", "extract", "-sf", from_file], check=False)
 
 
 class SteganographyTools(NoxentraCollection):
     TITLE = "Steganography Tools"
-    TOOLS = [SteganoHide(), StegnoCracker(), StegoCracker(), Whitespace()]
+    TOOLS: ClassVar = [SteganoHide()]
 
 if __name__ == "__main__":
     tools = SteganographyTools()

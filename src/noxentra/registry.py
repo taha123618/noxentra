@@ -75,6 +75,14 @@ class CatalogTool(Noxentra):
         self.SYSTEM_PKGS = entry.get("system_pkgs", {}) or {}
         self.LAB_SAFE_NOTES = entry.get("lab_safe_notes", "")
         self.PROJECT_URL = entry.get("project_url", "") or entry.get("url", "")
+        if "archived" in entry:
+            self.ARCHIVED = bool(entry["archived"])
+        if "archived_reason" in entry:
+            self.ARCHIVED_REASON = entry["archived_reason"]
+        if "supported_os" in entry:
+            self.SUPPORTED_OS = list(entry["supported_os"])
+        if "requires_wifi" in entry:
+            self.REQUIRES_WIFI = bool(entry["requires_wifi"])
 
         install = entry.get("install", {}) or {}
         self.INSTALL_COMMANDS = _install_commands(install)
@@ -212,10 +220,13 @@ def load(catalog_dir: Path = CATALOG_DIR, user_dir: Path | None = None) -> Regis
                 {k: v for k, v in o.items() if k != "title"}
             )
     if user_dir and user_dir.is_dir():
+        import logging
+
         for p in sorted(user_dir.glob("*.yaml")):
             try:
                 category, _file_overlays = _load_file(p, inert=True)
-            except Exception:
+            except (OSError, ValueError, yaml.YAMLError, KeyError, TypeError) as exc:
+                logging.getLogger(__name__).debug("Ignoring broken user catalog %s: %s", p, exc)
                 continue                  # a broken user file must never break the catalog
             if category:
                 cats.append(category)

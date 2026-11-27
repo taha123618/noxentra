@@ -1,0 +1,18 @@
+# pipelines/iac_scan.yaml
+name: iac_scan
+description: IaC misconfiguration & policy scan (terrascan) -> filesystem vuln check (trivy fs).
+steps:
+  - tool: terrascan
+    args: ["scan", "-o", "json"]
+    input: targets
+    per_target_flag: "-d"
+    workers: 2
+    output: raw/terrascan.json
+    parser: terrascan
+  - tool: trivy
+    args: ["fs", "--quiet", "--format", "json"]
+    input: targets
+    per_target_positional: true
+    workers: 2
+    output: raw/trivy_fs.json
+    parser: trivy

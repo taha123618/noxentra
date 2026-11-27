@@ -7,7 +7,6 @@ category:
   title: "Payload Creation (catalog)"
   merge_into: "Payload creation tools"
 
-# --- enrich existing Python-defined tools by title --------------------------
 overlay:
   - title: "The FatRat"
     tags: [payload, reverse-shell, apk, c2]
@@ -19,17 +18,19 @@ overlay:
       Everything it produces is a real backdoor: generate and deploy only against hosts
       you're authorized to test, in your own lab. Set LHOST to your attacker IP.
 
-  - title: "Venom Shellcode Generator"
-    tags: [payload, reverse-shell, c2]
-    usage:
-      - ["launch the interactive generator", "./venom.sh"]
-    lab_safe_notes: >-
-      Venom is a menu-driven multi-format shellcode/agent generator (msfvenom under the
-      hood) that also spins up the matching listener. Menu-driven — follow the prompts;
-      there are no shell flags to memorise. Authorized targets / own lab only.
-
+# --- migrated from tools/payload_creator.py + msfvenom ----------------------
+tools:
   - title: "Stitch"
+    kind: install
     tags: [payload, c2, reverse-shell, persistence]
+    description: "Stitch is a Cross Platform Python Remote Administrator Tool."
+    supported_os: [linux]
+    install:
+      commands:
+        - "git clone https://github.com/nathanlopez/Stitch.git"
+        - "cd Stitch && pip install --user -r lnx_requirements.txt"
+    run: ["cd Stitch && sudo python3 main.py"]
+    project_url: "https://nathanlopez.github.io/Stitch"
     usage:
       - ["launch the framework", "python3 main.py"]
     lab_safe_notes: >-
@@ -38,8 +39,63 @@ overlay:
       remote-access implant: run it only in an authorized engagement or your own lab,
       never on systems you don't control.
 
+  - title: "MSFvenom Payload Creator"
+    kind: install
+    archived: true
+    archived_reason: "Unmaintained — no commits since 2021-05"
+    tags: [payload, reverse-shell]
+    description: "MSFvenom Payload Creator (MSFPC) is a wrapper to generate multiple types of payloads."
+    supported_os: [linux]
+    install:
+      commands:
+        - "git clone https://github.com/g0tmi1k/msfpc.git"
+        - "cd msfpc && chmod +x msfpc.sh"
+    run: ["cd msfpc && sudo bash msfpc.sh -h -v"]
+    project_url: "https://github.com/g0tmi1k/msfpc"
+    usage:
+      - ["show MSFPC help (archived)", "sudo bash msfpc.sh -h -v"]
+
+  - title: "Venom Shellcode Generator"
+    kind: install
+    tags: [payload, reverse-shell, c2]
+    description: "Venom exploits apache2 webserver to deliver LAN payloads via fake webpages."
+    supported_os: [linux]
+    install:
+      commands:
+        - "git clone https://github.com/r00t-3xp10it/venom.git"
+        - "sudo chmod -R 775 venom*/ && cd venom*/ && cd aux && sudo bash setup.sh"
+    run: ["cd venom && sudo ./venom.sh"]
+    project_url: "https://github.com/r00t-3xp10it/venom"
+    usage:
+      - ["launch the interactive generator", "./venom.sh"]
+    lab_safe_notes: >-
+      Venom is a menu-driven multi-format shellcode/agent generator (msfvenom under the
+      hood) that also spins up the matching listener. Menu-driven — follow the prompts;
+      there are no shell flags to memorise. Authorized targets / own lab only.
+
+  - title: "Spycam"
+    kind: install
+    archived: true
+    archived_reason: "Unmaintained — no commits since 2018-12"
+    tags: [payload]
+    description: "Generates a Win32 payload that captures webcam images every 1 minute."
+    install:
+      commands:
+        - "git clone https://github.com/indexnotfound404/spycam.git"
+        - "cd spycam && bash install.sh && chmod +x spycam"
+    run: ["cd spycam && ./spycam"]
+    project_url: "https://github.com/indexnotfound404/spycam"
+    usage:
+      - ["run Spycam (archived)", "./spycam"]
+
   - title: "Mob-Droid"
+    kind: install
     tags: [payload, mobile, apk, reverse-shell]
+    description: "Generates metasploit payloads easily without typing long commands."
+    supported_os: [linux]
+    install: {git: "https://github.com/kinghacker0/mob-droid.git"}
+    run: ["cd mob-droid && sudo python3 mob-droid.py"]
+    project_url: "https://github.com/kinghacker0/Mob-Droid"
     usage:
       - ["launch the Android payload generator", "python3 mob-droid.py"]
     lab_safe_notes: >-
@@ -47,8 +103,18 @@ overlay:
       payloads via msfvenom. The APKs are real backdoors — install them only on test
       devices/emulators you own, and set LHOST to your attacker IP when prompted.
 
-# --- the standard payload generator (missing as a first-class entry) ---------
-tools:
+  - title: "Enigma"
+    kind: install
+    archived: true
+    archived_reason: "Upstream repo archived by author (last commit 2021-08)"
+    tags: [payload]
+    description: "Enigma is a Multiplatform payload dropper."
+    supported_os: [linux]
+    install: {git: "https://github.com/UndeadSec/Enigma.git"}
+    run: ["cd Enigma && sudo python3 enigma.py"]
+    project_url: "https://github.com/UndeadSec/Enigma"
+    usage:
+      - ["launch Enigma (archived)", "sudo python3 enigma.py"]
   - title: "msfvenom (Payload Generator)"
     kind: install
     tags: [payload, reverse-shell, c2, apk]
@@ -69,6 +135,40 @@ tools:
       authorized targets in your own lab, and set LHOST to your attacker IP. Catch the
       callback with Metasploit's `exploit/multi/handler` (matching PAYLOAD/LHOST/LPORT).
       Encoders (-e) change bytes, not behaviour — they are not reliable AV evasion.
+
+  - title: "pwntools (CTF & Shellcode Toolkit)"
+    kind: install
+    tags: [payload, exploitation, reversing, binary]
+    description: >-
+      Python exploit development and binary exploitation library with `pwn` CLI
+      helpers for shellcode assembly, cyclic patterns, ELF inspection, and ROP.
+    system_pkgs: {which: pwn}
+    install: {pipx: pwntools}
+    run: ["pwn --help"]
+    project_url: "https://github.com/Gallopsled/pwntools"
+    usage:
+      - ["generate amd64 Linux shellcode", "pwn shellcraft amd64.linux.sh"]
+      - ["inspect binary security mitigations", "pwn checksec ./target_bin"]
+    lab_safe_notes: >-
+      Local binary inspection and shellcode assembly are safe offline; target remote
+      services only in authorized labs or CTFs.
+
+  - title: "Donut (PE/.NET Shellcode Generator)"
+    kind: install
+    tags: [payload, binary, exploitation]
+    description: >-
+      Generates position-independent x86/x64 shellcode from PE executables, DLLs,
+      .NET assemblies, and VBScript/JScript payloads for in-memory execution.
+    system_pkgs: {which: donut}
+    install: {pipx: donut-shellcode}
+    run: ["donut --help"]
+    project_url: "https://github.com/TheWover/donut"
+    usage:
+      - ["convert a PE or .NET binary into shellcode", "donut -i payload.exe -o loader.bin"]
+      - ["target x64 architecture explicitly", "donut -a 2 -i payload.exe -o loader64.bin"]
+    lab_safe_notes: >-
+      Generates raw position-independent shellcode; use exclusively for authorized
+      red-team simulations and malware-analysis lab testing.
 
 # --- reference ---------------------------------------------------------------
   - title: "LOLBAS (Living Off The Land Binaries)"

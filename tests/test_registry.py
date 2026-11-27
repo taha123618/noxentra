@@ -5,11 +5,11 @@ tags stay within the taxonomy, resources are well-formed, install exemplars
 carry usage cheatsheets, and the menu wiring stays consistent.
 """
 import textwrap
+from typing import ClassVar
 
 import pytest
 
-import noxentra.registry as registry
-import noxentra.tags as tags
+from noxentra import registry, tags
 
 # --- real catalog (the shipped YAML files) ----------------------------------
 
@@ -73,7 +73,7 @@ def test_new_category_wiring_is_consistent(reg):
 
 
 def test_known_entries_round_trip(all_catalog_tools):
-    by_title = {t.TITLE: t for t in all_catalog_tools}
+    {t.TITLE: t for t in all_catalog_tools}
     crack = next(t for t in all_catalog_tools if "CrackStation" in t.TITLE)
     assert crack.KIND == "resource" and crack.PROJECT_URL.startswith("https://")
     hashcat = next(t for t in all_catalog_tools if "hashcat" in t.TITLE)
@@ -109,9 +109,9 @@ def test_overlay_enriches_existing_tool_by_title(tmp_path):
 
     class _Fake:
         TITLE = "Existing Tool"
-        TAGS = ["preexisting"]
-        USAGE = []
-        SYSTEM_PKGS = {}
+        TAGS: ClassVar = ["preexisting"]
+        USAGE: ClassVar = []
+        SYSTEM_PKGS: ClassVar = {}
         LAB_SAFE_NOTES = ""
 
     t = _Fake()

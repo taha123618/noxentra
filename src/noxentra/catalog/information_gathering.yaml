@@ -1,140 +1,987 @@
-# Adds maintained, widely-used recon tools into the EXISTING (Python-defined)
-# "Information gathering tools" category via merge_into — proving a new tool is
-# one YAML entry, no code edits. These are not duplicates of the Python classes.
 category:
-  title: "Information gathering (catalog)"
-  merge_into: "Information gathering tools"
-
-# Overlays enrich EXISTING (Python-defined) tools by title — usage cheatsheets,
-# tags, lab-safe notes, reuse-first hints — with no per-tool Python edits.
-overlay:
-  - title: "Network Map (nmap)"
-    tags: [scanner, port-scan, recon, network]
-    system_pkgs: {which: nmap, apt: nmap, brew: nmap}
-    usage:
-      - ["ping-sweep a subnet (who's alive)", "nmap -sn 10.10.10.0/24"]
-      - ["quick scan of common ports", "nmap -F <target>"]
-      - ["service + version detection", "nmap -sV -Pn <target>"]
-      - ["full TCP port scan", "nmap -p- <target>"]
-      - ["safe default scripts + versions", "nmap -sC -sV -Pn <target>"]
-      - ["output all formats for later", "nmap -sV -oA scan <target>"]
-    lab_safe_notes: >-
-      To go easy on a lab box, prefer -T2 and scope to the single target; avoid
-      -T5 subnet sweeps. -Pn skips host discovery (useful when ICMP is blocked).
-      nmap only touches the hosts you name — never a broadcast.
-
+  title: Information gathering (catalog)
+  merge_into: Information gathering tools
+overlay: []
 tools:
-  - title: "naabu (fast port scanner)"
-    kind: install
-    tags: [port-scan, recon, network]
-    description: "SYN/CONNECT port scanner built for reliability and speed; pipes cleanly into nmap/httpx."
-    system_pkgs: {which: naabu}
-    install: {go: "github.com/projectdiscovery/naabu/v2/cmd/naabu@latest"}
-    run: ["naabu -version"]
-    project_url: "https://github.com/projectdiscovery/naabu"
-    usage:
-      - ["scan top ports on a host", "naabu -host <target> -top-ports 100"]
-      - ["scan a list of hosts", "naabu -l hosts.txt"]
-      - ["hand open ports to nmap", "naabu -host <target> -silent | nmap -sV -iL -"]
-    lab_safe_notes: >-
-      naabu sends real connection packets — scope to the target box only. Use
-      -rate 150 (or lower) on lab networks so you don't overwhelm a small VM.
+- title: Amass (Attack Surface Mapping)
+  kind: install
+  tags:
+  - subdomain-enum
+  - recon
+  - osint
+  - dns
+  description: 'In-depth subdomain enumeration and attack surface mapping.
 
-  - title: "dnsx (DNS toolkit)"
-    kind: install
-    tags: [dns, recon, enumeration]
-    description: "Fast, multi-purpose DNS toolkit for resolving and probing records from a list."
-    system_pkgs: {which: dnsx}
-    install: {go: "github.com/projectdiscovery/dnsx/cmd/dnsx@latest"}
-    run: ["dnsx -version"]
-    project_url: "https://github.com/projectdiscovery/dnsx"
-    usage:
-      - ["resolve a list of hosts (A records)", "dnsx -l hosts.txt -a -resp"]
-      - ["find live subdomains from a wordlist", "dnsx -d example.com -w words.txt"]
-      - ["pull CNAME/MX/TXT records", "dnsx -l hosts.txt -cname -mx -txt -resp"]
-    lab_safe_notes: >-
-      Passive-ish: only queries DNS resolvers, not the target host itself. Safe for
-      recon before you touch the box. Use -rl to rate-limit against public resolvers.
+    Usage: amass enum -d example.com'
+  supported_os:
+  - linux
+  install:
+    commands:
+    - go install -v github.com/owasp-amass/amass/v4/...@master
+  run:
+  - amass -h
+  project_url: https://github.com/owasp-amass/amass
+  usage:
+  - - active + passive enumeration
+    - amass enum -d <domain>
+  - - passive-only enumeration
+    - amass enum -passive -d <domain>
+  - - intel gathering by domain
+    - amass intel -d <domain>
+- title: Dracnmap
+  kind: install
+  tags:
+  - port-scan
+  - scanner
+  - network
+  - recon
+  description: "Dracnmap is an open source program which is using to \nexploit the\
+    \ network and gathering information with nmap help."
+  archived: true
+  archived_reason: Unmaintained — no commits since 2018-01
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/Screetsec/Dracnmap.git
+    - cd Dracnmap && chmod +x dracnmap-v2.2-dracOs.sh  dracnmap-v2.2.sh
+  run:
+  - cd Dracnmap;sudo ./dracnmap-v2.2.sh
+  project_url: https://github.com/Screetsec/Dracnmap
+  usage:
+  - - run Dracnmap
+    - cd Dracnmap;sudo ./dracnmap-v2.2.sh
+- title: Gitleaks (Git Secret Scanner)
+  kind: install
+  tags:
+  - git-secrets
+  - credentials
+  - reporting
+  description: Fast secret scanner for git repos — detects hardcoded passwords, API
+    keys, tokens.
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - go install github.com/gitleaks/gitleaks/v8@latest
+  run:
+  - gitleaks --help
+  project_url: https://github.com/gitleaks/gitleaks
+  usage:
+  - - scan git history
+    - gitleaks detect --source <path> -v
+  - - scan uncommitted changes
+    - gitleaks protect --source <path> -v
+- title: Holehe (Email → Social Accounts)
+  kind: install
+  tags:
+  - osint
+  - email
+  - recon
+  - lookup
+  description: 'Check if an email address is registered on 120+ websites.
 
-  - title: "reconFTW (Automated Recon)"
-    kind: install
-    tags: [recon, osint, subdomain-enum, scanner, dns]
-    description: >-
-      Chains the best-of-breed recon tools (subdomain enum, web probing, takeovers,
-      port + vuln checks) into one automated pipeline against a domain.
-    install: {commands: ["git clone https://github.com/six2dez/reconftw", "cd reconftw && ./install.sh"]}
-    run: ["./reconftw.sh -h"]
-    project_url: "https://github.com/six2dez/reconftw"
-    usage:
-      - ["full recon on a domain (no active attacks)", "./reconftw.sh -d target.com -r"]
-      - ["passive footprint only (quietest)", "./reconftw.sh -d target.com -p"]
-      - ["subdomains + web probe + takeovers", "./reconftw.sh -d target.com -s"]
-      - ["recon a list of domains to a dir", "./reconftw.sh -l targets.txt -r -o out/"]
-      - ["deep recon (VPS recommended)", "./reconftw.sh -d target.com -r --deep"]
-    lab_safe_notes: >-
-      -p (passive) and -r (recon) launch no active attacks — safe first passes. -a
-      ("YOLO") adds active vulnerability checks and WILL send exploit-style traffic, so
-      use it only against scoped, authorized targets. --deep is heavy; run it off a VPS.
+    Usage: holehe user@example.com'
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - pip install --user holehe
+  run:
+  - holehe --help
+  project_url: https://github.com/megadose/holehe
+  usage:
+  - - check an email across sites
+    - holehe <email>
+  - - show only sites where used
+    - holehe --only-used <email>
+- title: httpx (HTTP Toolkit)
+  kind: install
+  tags:
+  - web
+  - recon
+  - scanner
+  - fingerprint
+  description: 'Fast multi-purpose HTTP probing tool.
 
-  - title: "gowitness (Web Screenshots)"
-    kind: install
-    tags: [web, recon, fingerprint, reporting]
-    description: >-
-      Single-binary web screenshotter (headless Chrome) — grab thumbnails of many hosts
-      at once and browse them in a built-in report UI. Great for triaging a big host list.
-    system_pkgs: {which: gowitness}
-    install: {go: "github.com/sensepost/gowitness@latest"}
-    run: ["gowitness version"]
-    project_url: "https://github.com/sensepost/gowitness"
-    usage:
-      - ["screenshot a single URL", "gowitness scan single --url https://example.com --write-db"]
-      - ["screenshot a list of URLs", "gowitness scan file -f urls.txt --write-db"]
-      - ["screenshot web services from an nmap XML", "gowitness scan nmap -f nmap.xml --service-contains http --write-db"]
-      - ["browse results in the report UI", "gowitness report server"]
-    lab_safe_notes: >-
-      gowitness just loads each URL in headless Chrome and saves a screenshot — passive
-      rendering, no attacks — but it does request every host, so scope to authorized
-      targets. After a scan, `gowitness report server` serves the gallery at
-      http://localhost:7171.
+    Usage: httpx -l urls.txt -status-code -title -tech-detect'
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+  run:
+  - httpx -h
+  project_url: https://github.com/projectdiscovery/httpx
+  usage:
+  - - probe a list of hosts
+    - httpx -l hosts.txt -silent
+  - - title, status, tech from stdin
+    - cat hosts.txt | httpx -title -status-code -tech-detect
+- title: Infoga - Email OSINT
+  kind: install
+  tags:
+  - osint
+  - email
+  - recon
+  description: 'Infoga is a tool gathering email accounts information
 
-  - title: "EyeWitness (Web Screenshots + Headers)"
-    kind: install
-    tags: [web, recon, fingerprint, reporting]
-    description: >-
-      Screenshots websites, grabs server headers and flags likely default credentials —
-      turns a host list into a skimmable HTML report. Reads nmap XML directly.
-    install: {commands: ["git clone https://github.com/RedSiege/EyeWitness", "cd EyeWitness/setup && sudo ./setup.sh"]}
-    run: ["python3 Python/EyeWitness.py --help"]
-    project_url: "https://github.com/RedSiege/EyeWitness"
-    usage:
-      - ["screenshot a list of URLs", "python3 Python/EyeWitness.py -f urls.txt"]
-      - ["screenshot a single site", "python3 Python/EyeWitness.py --single https://example.com"]
-      - ["screenshot web services from an nmap XML", "python3 Python/EyeWitness.py -x nmap.xml"]
-      - ["write the report to a folder", "python3 Python/EyeWitness.py -f urls.txt -d out/"]
-    lab_safe_notes: >-
-      EyeWitness only requests and renders each URL (like a browser) — no exploitation —
-      but it still hits every host, so screenshot only authorized targets. Run it from the
-      cloned dir with its virtualenv active (setup.sh builds eyewitness-venv); open
-      report.html in the output dir to triage fast.
+    (ip, hostname, country,...) from different public source'
+  archived: true
+  archived_reason: Upstream repo deleted (404)
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/m4ll0k/Infoga.git
+    - cd Infoga && pip install --user .
+  run:
+  - cd Infoga;python3 infoga.py
+  project_url: https://github.com/m4ll0k/Infoga
+  usage:
+  - - gather email info for a domain
+    - python infoga.py --domain <domain> --source all
+- title: Maigret (Username OSINT)
+  kind: install
+  tags:
+  - osint
+  - recon
+  - lookup
+  description: 'Collect a dossier on a person by username across 3000+ sites.
 
-  - title: "Sn1per (Attack Surface Scanner)"
-    kind: install
-    tags: [scanner, recon, vuln-scan, enumeration, web]
-    description: >-
-      All-in-one automated recon + vulnerability scanner that chains many tools into scan
-      "modes" (normal/stealth/web/discover) and collects everything into workspaces.
-    install: {commands: ["git clone https://github.com/1N3/Sn1per.git", "cd Sn1per && sudo bash install.sh"]}
-    run: ["sniper --status"]
-    project_url: "https://github.com/1N3/Sn1per"
-    usage:
-      - ["standard scan of a target", "sniper -t example.com -m normal"]
-      - ["quiet / low-intrusion scan", "sniper -t example.com -m stealth"]
-      - ["web-app scan (ports 80/443)", "sniper -t example.com -m web"]
-      - ["sweep a CIDR into a workspace", "sniper -t 10.10.10.0/24 -m discover -w labnet"]
-      - ["list scans / show status", "sniper --list"]
-    lab_safe_notes: >-
-      Two heads-up. (1) Install is the project's own `sudo bash install.sh` (installs to
-      /usr/share/sniper, needs root); Sn1per is source-available under a custom EULA —
-      review LICENSE.md before use or redistribution. (2) normal/web/nuke modes run ACTIVE
-      scans and real exploit checks; only stealth is low-intrusion. Point it solely at
-      systems you're authorized to test — prefer stealth or discover first to map scope.
+    Usage: maigret <username>'
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - pip install --user maigret
+  run:
+  - maigret --help
+  project_url: https://github.com/soxoj/maigret
+  usage:
+  - - search a username across sites
+    - maigret <username>
+  - - write an HTML/PDF report
+    - maigret <username> --html --pdf
+- title: Masscan (Fast Port Scanner)
+  kind: install
+  tags:
+  - port-scan
+  - scanner
+  - network
+  description: 'Fastest internet port scanner — 10 million packets/sec.
+
+    Usage: masscan -p1-65535 <IP> --rate=1000'
+  supported_os:
+  - linux
+  install:
+    commands:
+    - sudo apt-get install -y masscan
+  run:
+  - masscan --help
+  project_url: https://github.com/robertdavidgraham/masscan
+  usage:
+  - - scan all ports on a range
+    - sudo masscan <ip-range> -p1-65535 --rate 1000
+  - - scan common web ports
+    - sudo masscan <ip-range> -p80,443 --rate 10000
+- title: Network Map (nmap)
+  kind: install
+  tags:
+  - scanner
+  - port-scan
+  - recon
+  - network
+  description: Free and open source utility for network discovery and security auditing
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: nmap
+    apt: nmap
+    brew: nmap
+  install:
+    commands:
+    - git clone https://github.com/nmap/nmap.git
+    - sudo chmod -R 755 nmap && cd nmap && sudo ./configure && make && sudo make install
+  project_url: https://github.com/nmap/nmap
+  usage:
+  - - ping-sweep a subnet (who's alive)
+    - nmap -sn 10.10.10.0/24
+  - - quick scan of common ports
+    - nmap -F <target>
+  - - service + version detection
+    - nmap -sV -Pn <target>
+  - - full TCP port scan
+    - nmap -p- <target>
+  - - safe default scripts + versions
+    - nmap -sC -sV -Pn <target>
+  - - output all formats for later
+    - nmap -sV -oA scan <target>
+  lab_safe_notes: To go easy on a lab box, prefer -T2 and scope to the single target;
+    avoid -T5 subnet sweeps. -Pn skips host discovery (useful when ICMP is blocked).
+    nmap only touches the hosts you name — never a broadcast.
+- title: ReconDog
+  kind: install
+  tags:
+  - recon
+  - osint
+  - scanner
+  description: ReconDog Information Gathering Suite
+  archived: true
+  archived_reason: Unmaintained — no commits since 2021-01
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/s0md3v/ReconDog.git
+  run:
+  - cd ReconDog;sudo python dog
+  project_url: https://github.com/s0md3v/ReconDog
+  usage:
+  - - run ReconDog
+    - cd ReconDog;sudo python dog
+- title: ReconSpider(For All Scanning)
+  kind: install
+  tags:
+  - osint
+  - recon
+  - crawler
+  description: "ReconSpider is most Advanced Open Source Intelligence (OSINT) Framework\
+    \ for scanning IP Address, Emails, \nWebsites, Organizations and find out information\
+    \ from different sources."
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/bhavsec/reconspider.git
+    - sudo apt install -y python3 python3-pip && cd reconspider && pip install --user
+      .
+  run:
+  - cd reconspider;python3 reconspider.py
+  project_url: https://github.com/bhavsec/reconspider
+  usage:
+  - - run ReconSpider(For All Scanning)
+    - cd reconspider;python3 reconspider.py
+- title: RED HAWK (All In One Scanning)
+  kind: install
+  tags:
+  - web
+  - recon
+  - scanner
+  - fingerprint
+  description: All in one tool for Information Gathering and Vulnerability Scanning.
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/Tuhinshubhra/RED_HAWK.git
+  run:
+  - cd RED_HAWK;php rhawk.php
+  project_url: https://github.com/Tuhinshubhra/RED_HAWK
+  usage:
+  - - run RED HAWK (All In One Scanning)
+    - cd RED_HAWK;php rhawk.php
+- title: RustScan (Modern Port Scanner)
+  kind: install
+  tags:
+  - port-scan
+  - scanner
+  - network
+  description: 'Scans all 65k ports in 3 seconds, passes results to nmap automatically.
+
+    Usage: rustscan -a <IP> -- -sV'
+  supported_os:
+  - linux
+  install:
+    commands:
+    - curl -sLO https://github.com/RustScan/RustScan/releases/latest/download/rustscan_2.3.0_amd64.deb
+    - sudo dpkg -i rustscan_2.3.0_amd64.deb
+  run:
+  - rustscan --help
+  project_url: https://github.com/RustScan/RustScan
+  usage:
+  - - fast scan a host
+    - rustscan -a <target>
+  - - scan then pipe to nmap
+    - rustscan -a <target> -- -A -sC
+- title: SecretFinder (like API & etc)
+  kind: install
+  tags:
+  - web
+  - recon
+  - credentials
+  - git-secrets
+  description: "SecretFinder - A python script for find sensitive data \nlike apikeys,\
+    \ accesstoken, authorizations, jwt,..etc \n and search anything on javascript\
+    \ files.\n\n Usage: python SecretFinder.py -h"
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/m4ll0k/SecretFinder.git secretfinder
+    - cd secretfinder; sudo pip3 install -r requirements.txt
+  project_url: https://github.com/m4ll0k/SecretFinder
+  usage:
+  - - scan a live JS-heavy URL
+    - python3 SecretFinder.py -i https://<target>/ -o cli
+  - - scan a local JS file
+    - python3 SecretFinder.py -i /path/to/app.js -o cli
+- title: Find Info Using Shodan
+  kind: install
+  tags:
+  - osint
+  - recon
+  - lookup
+  - network
+  description: "Get ports, vulnerabilities, information, banners,..etc \n for any\
+    \ IP with Shodan (no apikey! no rate limit!)\n[X] Don't use this tool because\
+    \ your ip will be blocked by Shodan!"
+  archived: true
+  archived_reason: Upstream repo deleted (404)
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/m4ll0k/Shodanfy.py.git
+  project_url: https://github.com/m4ll0k/Shodanfy.py
+  usage:
+  - - look up a host by IP
+    - shodan host <ip>
+  - - search the Shodan index
+    - shodan search <query>
+- title: SpiderFoot (OSINT Automation)
+  kind: install
+  tags:
+  - osint
+  - recon
+  - subdomain-enum
+  description: Automates OSINT collection for threat intelligence and attack surface
+    mapping.
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - pip install --user spiderfoot
+  run:
+  - spiderfoot -h
+  project_url: https://github.com/smicallef/spiderfoot
+  usage:
+  - - start the web UI
+    - python3 sf.py -l 127.0.0.1:5001
+- title: Subfinder (Subdomain Enumeration)
+  kind: install
+  tags:
+  - subdomain-enum
+  - recon
+  - osint
+  - dns
+  description: Fast passive subdomain enumeration using multiple sources.
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+  run:
+  - subfinder -h
+  project_url: https://github.com/projectdiscovery/subfinder
+  usage:
+  - - passive subdomain enum
+    - subfinder -d <domain>
+  - - clean output for pipelines
+    - subfinder -d <domain> -silent
+- title: theHarvester (OSINT)
+  kind: install
+  tags:
+  - osint
+  - email
+  - subdomain-enum
+  - recon
+  description: 'Gather emails, names, subdomains, IPs and URLs from public sources.
+
+    Usage: theHarvester -d example.com -b all'
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/laramies/theHarvester.git
+    - cd theHarvester && pip install --user -r requirements/base.txt
+  run:
+  - cd theHarvester && python3 theHarvester.py -h
+  project_url: https://github.com/laramies/theHarvester
+  usage:
+  - - gather emails/hosts for a domain
+    - theHarvester -d <domain> -b all
+  - - query a single source
+    - theHarvester -d <domain> -b google
+- title: TruffleHog (Secret Scanner)
+  kind: install
+  tags:
+  - git-secrets
+  - credentials
+  - recon
+  description: Find, verify, and analyze leaked credentials across git repos, S3 buckets,
+    filesystems.
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - pip install --user trufflehog
+  run:
+  - trufflehog --help
+  project_url: https://github.com/trufflesecurity/trufflehog
+  usage:
+  - - scan a git repo
+    - trufflehog git <repo-url>
+  - - scan a local filesystem path
+    - trufflehog filesystem <path>
+  - - only verified secrets
+    - trufflehog git <repo-url> --only-verified
+- title: Xerosploit
+  kind: install
+  tags:
+  - mitm
+  - sniffing
+  - network
+  - poisoning
+  description: 'Xerosploit is a penetration testing toolkit whose goal is to perform
+
+    man-in-the-middle attacks for testing purposes'
+  archived: true
+  archived_reason: Unmaintained — no commits since 2023-03
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/LionSec/xerosploit.git
+    - cd xerosploit && sudo python install.py
+  run:
+  - sudo xerosploit
+  project_url: https://github.com/LionSec/xerosploit
+  usage:
+  - - run Xerosploit
+    - sudo xerosploit
+- title: naabu (fast port scanner)
+  kind: install
+  tags:
+  - port-scan
+  - recon
+  - network
+  description: SYN/CONNECT port scanner built for reliability and speed; pipes cleanly
+    into nmap/httpx.
+  system_pkgs:
+    which: naabu
+  install:
+    go: github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+  run:
+  - naabu -version
+  project_url: https://github.com/projectdiscovery/naabu
+  usage:
+  - - scan top ports on a host
+    - naabu -host <target> -top-ports 100
+  - - scan a list of hosts
+    - naabu -l hosts.txt
+  - - hand open ports to nmap
+    - naabu -host <target> -silent | nmap -sV -iL -
+  lab_safe_notes: naabu sends real connection packets — scope to the target box only.
+    Use -rate 150 (or lower) on lab networks so you don't overwhelm a small VM.
+- title: dnsx (DNS toolkit)
+  kind: install
+  tags:
+  - dns
+  - recon
+  - enumeration
+  description: Fast, multi-purpose DNS toolkit for resolving and probing records from
+    a list.
+  system_pkgs:
+    which: dnsx
+  install:
+    go: github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+  run:
+  - dnsx -version
+  project_url: https://github.com/projectdiscovery/dnsx
+  usage:
+  - - resolve a list of hosts (A records)
+    - dnsx -l hosts.txt -a -resp
+  - - find live subdomains from a wordlist
+    - dnsx -d example.com -w words.txt
+  - - pull CNAME/MX/TXT records
+    - dnsx -l hosts.txt -cname -mx -txt -resp
+  lab_safe_notes: 'Passive-ish: only queries DNS resolvers, not the target host itself.
+    Safe for recon before you touch the box. Use -rl to rate-limit against public
+    resolvers.'
+- title: reconFTW (Automated Recon)
+  kind: install
+  tags:
+  - recon
+  - osint
+  - subdomain-enum
+  - scanner
+  - dns
+  description: Chains the best-of-breed recon tools (subdomain enum, web probing,
+    takeovers, port + vuln checks) into one automated pipeline against a domain.
+  install:
+    commands:
+    - git clone https://github.com/six2dez/reconftw
+    - cd reconftw && ./install.sh
+  run:
+  - ./reconftw.sh -h
+  project_url: https://github.com/six2dez/reconftw
+  usage:
+  - - full recon on a domain (no active attacks)
+    - ./reconftw.sh -d target.com -r
+  - - passive footprint only (quietest)
+    - ./reconftw.sh -d target.com -p
+  - - subdomains + web probe + takeovers
+    - ./reconftw.sh -d target.com -s
+  - - recon a list of domains to a dir
+    - ./reconftw.sh -l targets.txt -r -o out/
+  - - deep recon (VPS recommended)
+    - ./reconftw.sh -d target.com -r --deep
+  lab_safe_notes: -p (passive) and -r (recon) launch no active attacks — safe first
+    passes. -a ("YOLO") adds active vulnerability checks and WILL send exploit-style
+    traffic, so use it only against scoped, authorized targets. --deep is heavy; run
+    it off a VPS.
+- title: gowitness (Web Screenshots)
+  kind: install
+  tags:
+  - web
+  - recon
+  - fingerprint
+  - reporting
+  description: Single-binary web screenshotter (headless Chrome) — grab thumbnails
+    of many hosts at once and browse them in a built-in report UI. Great for triaging
+    a big host list.
+  system_pkgs:
+    which: gowitness
+  install:
+    go: github.com/sensepost/gowitness@latest
+  run:
+  - gowitness version
+  project_url: https://github.com/sensepost/gowitness
+  usage:
+  - - screenshot a single URL
+    - gowitness scan single --url https://example.com --write-db
+  - - screenshot a list of URLs
+    - gowitness scan file -f urls.txt --write-db
+  - - screenshot web services from an nmap XML
+    - gowitness scan nmap -f nmap.xml --service-contains http --write-db
+  - - browse results in the report UI
+    - gowitness report server
+  lab_safe_notes: gowitness just loads each URL in headless Chrome and saves a screenshot
+    — passive rendering, no attacks — but it does request every host, so scope to
+    authorized targets. After a scan, `gowitness report server` serves the gallery
+    at http://localhost:7171.
+- title: EyeWitness (Web Screenshots + Headers)
+  kind: install
+  tags:
+  - web
+  - recon
+  - fingerprint
+  - reporting
+  description: Screenshots websites, grabs server headers and flags likely default
+    credentials — turns a host list into a skimmable HTML report. Reads nmap XML directly.
+  install:
+    commands:
+    - git clone https://github.com/RedSiege/EyeWitness
+    - cd EyeWitness/setup && sudo ./setup.sh
+  run:
+  - python3 Python/EyeWitness.py --help
+  project_url: https://github.com/RedSiege/EyeWitness
+  usage:
+  - - screenshot a list of URLs
+    - python3 Python/EyeWitness.py -f urls.txt
+  - - screenshot a single site
+    - python3 Python/EyeWitness.py --single https://example.com
+  - - screenshot web services from an nmap XML
+    - python3 Python/EyeWitness.py -x nmap.xml
+  - - write the report to a folder
+    - python3 Python/EyeWitness.py -f urls.txt -d out/
+  lab_safe_notes: EyeWitness only requests and renders each URL (like a browser) —
+    no exploitation — but it still hits every host, so screenshot only authorized
+    targets. Run it from the cloned dir with its virtualenv active (setup.sh builds
+    eyewitness-venv); open report.html in the output dir to triage fast.
+- title: Sn1per (Attack Surface Scanner)
+  kind: install
+  tags:
+  - scanner
+  - recon
+  - vuln-scan
+  - enumeration
+  - web
+  description: All-in-one automated recon + vulnerability scanner that chains many
+    tools into scan "modes" (normal/stealth/web/discover) and collects everything
+    into workspaces.
+  install:
+    commands:
+    - git clone https://github.com/1N3/Sn1per.git
+    - cd Sn1per && sudo bash install.sh
+  run:
+  - sniper --status
+  project_url: https://github.com/1N3/Sn1per
+  usage:
+  - - standard scan of a target
+    - sniper -t example.com -m normal
+  - - quiet / low-intrusion scan
+    - sniper -t example.com -m stealth
+  - - web-app scan (ports 80/443)
+    - sniper -t example.com -m web
+  - - sweep a CIDR into a workspace
+    - sniper -t 10.10.10.0/24 -m discover -w labnet
+  - - list scans / show status
+    - sniper --list
+  lab_safe_notes: Two heads-up. (1) Install is the project's own `sudo bash install.sh`
+    (installs to /usr/share/sniper, needs root); Sn1per is source-available under
+    a custom EULA — review LICENSE.md before use or redistribution. (2) normal/web/nuke
+    modes run ACTIVE scans and real exploit checks; only stealth is low-intrusion.
+    Point it solely at systems you're authorized to test — prefer stealth or discover
+    first to map scope.
+- title: gau (GetAllUrls)
+  kind: install
+  tags:
+  - recon
+  - osint
+  - web
+  - enumeration
+  description: Fetches known URLs from AlienVault OTX, Wayback Machine, Common Crawl,
+    and URLScan for any domain — passive URL discovery before active probing.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: gau
+    go: github.com/lc/gau/v2/cmd/gau@latest
+  install:
+    go: github.com/lc/gau/v2/cmd/gau@latest
+  run:
+  - gau --help
+  project_url: https://github.com/lc/gau
+  usage:
+  - - fetch archived URLs for a domain
+    - gau example.com
+  - - include subdomains and filter out static assets
+    - gau --subs --blacklist png,jpg,gif,css,woff2 example.com
+  - - pipe URLs into httpx for live probing
+    - gau example.com | httpx -silent
+  lab_safe_notes: Purely passive (queries public archives, never touches the target).
+    Pipe into httpx or dalfox when ready to validate live endpoints on authorized targets.
+- title: waybackurls (Wayback URLs)
+  kind: install
+  tags:
+  - recon
+  - osint
+  - web
+  - enumeration
+  description: Accepts domains on stdin and prints URLs archived by the Wayback Machine
+    and Common Crawl — lightweight passive endpoint discovery.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: waybackurls
+    go: github.com/tomnomnom/waybackurls@latest
+  install:
+    go: github.com/tomnomnom/waybackurls@latest
+  run:
+  - waybackurls -h
+  project_url: https://github.com/tomnomnom/waybackurls
+  usage:
+  - - fetch archived URLs for a domain
+    - echo example.com | waybackurls
+  - - exclude subdomains
+    - echo example.com | waybackurls -no-subs
+  lab_safe_notes: Passive archive lookup only — sends zero packets to the target.
+- title: tlsx (TLS Recon & Cert Prober)
+  kind: install
+  tags:
+  - recon
+  - network
+  - web
+  - fingerprint
+  - scanner
+  description: Fast, configurable TLS grabber for inspecting certificates, SANs, cipher
+    suites, JARM fingerprints, and TLS versions across hosts.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: tlsx
+    go: github.com/projectdiscovery/tlsx/cmd/tlsx@latest
+  install:
+    go: github.com/projectdiscovery/tlsx/cmd/tlsx@latest
+  run:
+  - tlsx -version
+  project_url: https://github.com/projectdiscovery/tlsx
+  usage:
+  - - extract SANs and CNs from TLS certificates
+    - echo example.com | tlsx -san -cn -silent
+  - - emit structured JSONL certificate metadata
+    - tlsx -l hosts.txt -json -silent
+  lab_safe_notes: Performs a standard TLS handshake per host — lightweight and non-destructive,
+    ideal for discovering additional virtual hosts via SANs on authorized targets.
+- title: cdncheck (CDN & WAF IP Detector)
+  kind: install
+  tags:
+  - recon
+  - network
+  - fingerprint
+  description: Classifies IPs and domains behind CDNs, cloud providers, and WAFs so
+    port scans stay focused on origin infrastructure.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: cdncheck
+    go: github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
+  install:
+    go: github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
+  run:
+  - cdncheck -version
+  project_url: https://github.com/projectdiscovery/cdncheck
+  usage:
+  - - identify CDN/WAF/cloud ranges for hosts
+    - cdncheck -i hosts.txt -resp
+  - - exclude CDN hosts before port scanning
+    - cdncheck -i hosts.txt -exclude-cdn
+  lab_safe_notes: Uses local/embedded provider ranges and DNS resolution — safe pre-scan
+    filtering to avoid hammering shared CDN edges.
+- title: uncover (Multi-Engine Asset Discovery)
+  kind: install
+  tags:
+  - recon
+  - osint
+  - network
+  description: Queries Shodan, Censys, FOFA, and ZoomEye APIs from one CLI to surface
+    exposed hosts and services passively.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: uncover
+    go: github.com/projectdiscovery/uncover/cmd/uncover@latest
+  install:
+    go: github.com/projectdiscovery/uncover/cmd/uncover@latest
+  run:
+  - uncover -version
+  project_url: https://github.com/projectdiscovery/uncover
+  usage:
+  - - query search engines with a dork
+    - uncover -q 'org:"Example Corp"' -silent
+  - - pipe discovered hosts into httpx
+    - uncover -q 'ssl:"example.com"' -silent | httpx -silent
+  lab_safe_notes: Passive API queries only (never touches targets directly). Configure
+    provider API keys in ~/.config/uncover/provider-config.yaml.
+- title: Nosey Parker (Secret Scanner)
+  kind: install
+  tags:
+  - scanner
+  - git-secrets
+  - credentials
+  - recon
+  description: High-speed Rust secret scanner by Praetorian for finding API keys, tokens,
+    and credentials across Git history, filesystems, and archives.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: noseyparker
+    brew: noseyparker
+  install:
+    brew: noseyparker
+  run:
+  - noseyparker --help
+  project_url: https://github.com/praetorian-inc/noseyparker
+  usage:
+  - - scan a local repository and git history
+    - noseyparker scan --datastore np.datastore ./repo
+  - - summarize discovered secrets
+    - noseyparker report --datastore np.datastore
+  lab_safe_notes: Runs completely locally and offline on repositories or directories you
+    are authorized to audit — store output datastores securely.
+- title: anew (Unique Line Appender)
+  kind: install
+  tags: [recon, enumeration]
+  description: Appends lines from stdin to a file only if they don't already exist
+    and prints newly added lines — essential for incremental recon pipelines.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: anew
+    go: github.com/tomnomnom/anew@latest
+  install:
+    go: github.com/tomnomnom/anew@latest
+  run:
+  - anew -h
+  project_url: https://github.com/tomnomnom/anew
+  usage:
+  - - append only new subdomains to a running list
+    - subfinder -d example.com -silent | anew subs.txt
+  lab_safe_notes: Local file/stream utility — zero network traffic of its own.
+- title: unfurl (URL Component Extractor)
+  kind: install
+  tags: [recon, web, enumeration]
+  description: Parses URLs from stdin and extracts domains, paths, keys, values, and
+    extensions for targeted fuzzing or parameter analysis.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: unfurl
+    go: github.com/tomnomnom/unfurl@latest
+  install:
+    go: github.com/tomnomnom/unfurl@latest
+  run:
+  - unfurl -h
+  project_url: https://github.com/tomnomnom/unfurl
+  usage:
+  - - extract unique query parameter names from URLs
+    - cat urls.txt | unfurl keys | sort -u
+  - - extract unique hosts from URLs
+    - cat urls.txt | unfurl domains | sort -u
+  lab_safe_notes: Purely offline URL parser — ideal for post-processing gau/katana output.
+- title: massdns (High-Performance DNS Resolver)
+  kind: install
+  tags:
+  - dns
+  - recon
+  - enumeration
+  description: High-performance DNS stub resolver capable of resolving millions of
+    subdomain candidates per second using a list of public resolvers.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: massdns
+    apt: massdns
+    brew: massdns
+  install:
+    apt: massdns
+  run:
+  - massdns --help
+  project_url: https://github.com/blechschmidt/massdns
+  usage:
+  - - resolve a list of candidate subdomains
+    - massdns -r resolvers.txt -t A -o S subs.txt
+  lab_safe_notes: Queries DNS resolvers rather than the target host directly; keep
+    concurrency reasonable on small networks.
+- title: arp-scan (Layer-2 Host Discovery)
+  kind: install
+  tags:
+  - network
+  - recon
+  - scanner
+  description: Sends ARP packets to discover live hosts and MAC vendors across local
+    Ethernet segments even when ICMP/TCP is firewalled.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: arp-scan
+    apt: arp-scan
+    brew: arp-scan
+  install:
+    apt: arp-scan
+  run:
+  - arp-scan --version
+  project_url: https://github.com/royhills/arp-scan
+  usage:
+  - - scan the local subnet via ARP
+    - sudo arp-scan --localnet
+  lab_safe_notes: Layer-2 broadcast discovery on your local LAN only — requires root
+    privileges to send raw ARP frames.
+- title: fping (Parallel ICMP Sweep)
+  kind: install
+  tags:
+  - network
+  - recon
+  - scanner
+  description: High-speed parallel ping sweep tool for checking host liveness across
+    CIDR ranges and IP lists.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: fping
+    apt: fping
+    brew: fping
+  install:
+    apt: fping
+  run:
+  - fping -v
+  project_url: https://github.com/schweikert/fping
+  usage:
+  - - sweep a /24 subnet for alive hosts
+    - fping -a -g 10.0.0.0/24 2>/dev/null
+  lab_safe_notes: Sends ICMP echo probes across specified IP ranges — scope strictly
+    to authorized subnets.
+- title: puredns (Fast Domain Resolver & Wildcard Filter)
+  kind: install
+  tags:
+  - dns
+  - recon
+  - enumeration
+  description: Fast domain resolver and DNS bruteforcing wrapper around massdns with
+    automatic wildcard filtering.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: puredns
+    go: github.com/d3mondev/puredns/v2@latest
+  install:
+    go: github.com/d3mondev/puredns/v2@latest
+  run:
+  - puredns --help
+  project_url: https://github.com/d3mondev/puredns
+  usage:
+  - - resolve subdomains and filter DNS wildcards
+    - puredns resolve subs.txt -r resolvers.txt -w resolved.txt
+  - - bruteforce subdomains with a wordlist
+    - puredns bruteforce wordlist.txt example.com -r resolvers.txt
+  lab_safe_notes: Queries public DNS resolvers rather than the target directly; keep
+    rate limits reasonable and test only authorized domains.
+- title: asnmap (ASN & CIDR Network Mapper)
+  kind: install
+  tags:
+  - recon
+  - network
+  - osint
+  - enumeration
+  description: ProjectDiscovery CLI for mapping organization names, domains, and ASNs
+    to IPv4/IPv6 CIDR ranges for attack-surface discovery.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: asnmap
+    brew: asnmap
+    go: github.com/projectdiscovery/asnmap/cmd/asnmap@latest
+  install:
+    go: github.com/projectdiscovery/asnmap/cmd/asnmap@latest
+  run:
+  - asnmap -version
+  project_url: https://github.com/projectdiscovery/asnmap
+  usage:
+  - - map an organization name to CIDR ranges
+    - asnmap -org "Example Corp" -silent
+  - - map a domain to its ASN and CIDR blocks
+    - asnmap -d example.com -json
+  lab_safe_notes: Passive ASN/WHOIS/BGP lookup only — sends no packets to target
+    hosts.

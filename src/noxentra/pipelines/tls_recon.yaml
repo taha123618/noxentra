@@ -1,0 +1,21 @@
+# pipelines/tls_recon.yaml
+name: tls_recon
+description: Subdomain enum (subfinder) -> TLS cert/SAN probe (tlsx) -> HTTP probe (httpx).
+steps:
+  - tool: subfinder
+    args: ["-silent"]
+    input: hosts
+    output: raw/subfinder.txt
+    parser: subfinder
+  - tool: tlsx
+    args: ["-san", "-cn", "-json", "-silent"]
+    input: previous
+    fallback_to_targets: true
+    output: raw/tlsx.jsonl
+    parser: tlsx
+  - tool: httpx
+    args: ["-silent", "-json"]
+    input: previous
+    fallback_to_targets: true
+    output: raw/httpx.jsonl
+    parser: httpx

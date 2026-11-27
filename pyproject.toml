@@ -7,6 +7,7 @@ name = "noxentra"
 dynamic = ["version"]                       # single-sourced from constants.VERSION
 description = "Noxentra — AI-guided reconnaissance and security assessment platform"
 readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.10"                  # floor: code uses 3.10 union syntax; no upper cap so newer Pythons work
 authors = [{ name = "taha123618" }]
 keywords = ["security", "pentesting", "hacking", "recon", "osint", "cli"]
@@ -16,6 +17,7 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: Microsoft :: Windows",
@@ -48,7 +50,7 @@ dev = ["pytest>=8", "ruff>=0.6"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-noxentra = ["catalog/*.yaml", "pipelines/*.yaml", "skill/*.md", "tui/*.tcss", "sponsors.yaml"]
+noxentra = ["catalog/*.yaml", "pipelines/*.yaml", "pipelines/*.txt", "skill/*.md", "tui/*.tcss", "sponsors.yaml"]
 
 [tool.setuptools.dynamic]
 version = { attr = "noxentra.constants.VERSION" }

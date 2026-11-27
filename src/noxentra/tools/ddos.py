@@ -1,4 +1,5 @@
 import subprocess
+from typing import ClassVar
 
 from rich.prompt import Prompt
 
@@ -7,12 +8,12 @@ from noxentra.core import Noxentra, NoxentraCollection
 
 class DDoSTool(Noxentra):
     TITLE = "DDoS"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = (
         "Best DDoS Attack Script With 36 Plus Methods. "
         "DDoS attacks for SECURITY TESTING PURPOSES ONLY!"
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/the-deepnet/ddos.git",
         "cd ddos && sudo pip3 install -r requirements.txt",
     ]
@@ -31,33 +32,34 @@ class DDoSTool(Noxentra):
             ["sudo", "python3", "ddos.py", method, url,
              "socks_type5.4.1", threads, proxylist, multiple, timer],
             cwd=str(get_tools_dir() / "ddos"),
+            check=False,
         )
 
 
 class SlowLoris(Noxentra):
     TITLE = "SlowLoris"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = (
         "Slowloris is basically an HTTP Denial of Service attack. "
         "It sends lots of HTTP requests."
     )
-    INSTALL_COMMANDS = ["sudo pip3 install slowloris"]
+    INSTALL_COMMANDS: ClassVar = ["sudo pip3 install slowloris"]
 
     def run(self):
         target_site = Prompt.ask("Enter Target Site")
-        subprocess.run(["slowloris", target_site])
+        subprocess.run(["slowloris", target_site], check=False)
 
 
 class Asyncrone(Noxentra):
     ARCHIVED = True
     ARCHIVED_REASON = "Upstream repo deleted (404)"
     TITLE = "Asyncrone | Multifunction SYN Flood DDoS Weapon"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = (
         "aSYNcrone is a C language based, multifunction SYN Flood DDoS Weapon.\n"
         "Disable the destination system by sending SYN packets intensively."
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/fatih4842/aSYNcrone.git",
         "cd aSYNcrone && sudo gcc aSYNcrone.c -o aSYNcrone -lpthread",
     ]
@@ -73,35 +75,21 @@ class Asyncrone(Noxentra):
         subprocess.run(
             ["sudo", "./aSYNcrone", str(source_port), str(target_ip), str(target_port), "1000"],
             cwd=str(get_tools_dir() / "aSYNcrone"),
+            check=False,
         )
-
-
-class UFONet(Noxentra):
-    TITLE = "UFOnet"
-    SUPPORTED_OS = ["linux"]
-    DESCRIPTION = (
-        "UFONet is a free software, P2P and cryptographic disruptive toolkit "
-        "that allows performing DoS and DDoS attacks."
-    )
-    INSTALL_COMMANDS = [
-        "git clone https://github.com/epsylon/ufonet.git",
-        "cd ufonet && pip install --user .",
-    ]
-    RUN_COMMANDS = ["python3 ufonet --gui"]
-    PROJECT_URL = "https://github.com/epsylon/ufonet"
 
 
 class GoldenEye(Noxentra):
     ARCHIVED = True
     ARCHIVED_REASON = "Upstream repo archived by author (last commit 2023-11)"
     TITLE = "GoldenEye"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = (
         "GoldenEye is a python3 app for SECURITY TESTING PURPOSES ONLY!\n"
         "GoldenEye is a HTTP DoS Test Tool.\n"
         "Usage: ./goldeneye.py <url> [OPTIONS]"
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/jseidl/GoldenEye.git",
         "chmod -R 755 GoldenEye",
     ]
@@ -112,14 +100,14 @@ class GoldenEye(Noxentra):
         # Bug 4 fix: removed os.system("cd GoldenEye; ...") — no-op cd subshell
         url = Prompt.ask("Enter target URL")
         subprocess.run(["sudo", "./goldeneye.py", url],
-                       cwd=str(get_tools_dir() / "GoldenEye"))
+                       cwd=str(get_tools_dir() / "GoldenEye"), check=False)
 
 
 class Saphyra(Noxentra):
     TITLE = "SaphyraDDoS"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
     DESCRIPTION = "A Python DDoS script for SECURITY TESTING PURPOSES ONLY."
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         # Bug 7 fix: removed "sudo su" (first step was dropping into interactive root shell)
         "git clone https://github.com/anonymous24x7/Saphyra-DDoS.git",
         "chmod +x Saphyra-DDoS/saphyra.py",
@@ -134,12 +122,13 @@ class Saphyra(Noxentra):
         subprocess.run(
             ["python3", "saphyra.py", url],
             cwd=str(get_tools_dir() / "Saphyra-DDoS"),
+            check=False,
         )
 
 
 class DDOSTools(NoxentraCollection):
     TITLE = "DDOS Attack Tools"
-    TOOLS = [DDoSTool(), SlowLoris(), Asyncrone(), UFONet(), GoldenEye(), Saphyra()]
+    TOOLS: ClassVar = [DDoSTool(), SlowLoris(), Asyncrone(), GoldenEye(), Saphyra()]
 
 
 if __name__ == "__main__":

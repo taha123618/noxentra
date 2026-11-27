@@ -1,0 +1,18 @@
+# pipelines/cloud_scan.yaml
+name: cloud_scan
+description: Filesystem / IaC vulnerability scan (trivy fs) -> SBOM/vuln check (grype).
+steps:
+  - tool: trivy
+    args: ["fs", "--quiet", "--format", "json"]
+    input: targets
+    per_target_positional: true
+    workers: 2
+    output: raw/trivy_fs.json
+    parser: trivy
+  - tool: grype
+    args: ["--quiet", "-o", "json"]
+    input: targets
+    per_target_positional: true
+    workers: 2
+    output: raw/grype_fs.json
+    parser: grype

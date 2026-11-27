@@ -1,4 +1,5 @@
 import subprocess
+from typing import ClassVar
 
 from rich.prompt import Prompt
 
@@ -12,8 +13,8 @@ class InstaBrute(Noxentra):
     # Py3-7: Python 2 only (pip2.7); also violates Instagram ToS
     ARCHIVED = True
     ARCHIVED_REASON = "Python 2 only — EOL January 2020. Repo unmaintained since 2017."
-    INSTALL_COMMANDS = []
-    RUN_COMMANDS = []
+    INSTALL_COMMANDS: ClassVar = []
+    RUN_COMMANDS: ClassVar = []
 
     def __init__(self):
         super().__init__(installable=False, runnable=False)
@@ -25,11 +26,11 @@ class BruteForce(Noxentra):
     TITLE = "AllinOne SocialMedia Attack"
     DESCRIPTION = "Brute_Force_Attack Gmail Hotmail Twitter Facebook Netflix \n" \
                   "[!] python3 Brute_Force.py -g <Account@gmail.com> -l <File_list>"
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/Matrix07ksa/Brute_Force.git",
         "cd Brute_Force;sudo pip3 install proxylist;pip3 install mechanize"
     ]
-    RUN_COMMANDS = ["cd Brute_Force;python3 Brute_Force.py -h"]
+    RUN_COMMANDS: ClassVar = ["cd Brute_Force;python3 Brute_Force.py -h"]
     PROJECT_URL = "https://github.com/Matrix07ksa/Brute_Force"
 
 
@@ -38,7 +39,7 @@ class Faceshell(Noxentra):
     ARCHIVED_REASON = "Unmaintained — no commits since 2021-10"
     TITLE = "Facebook Attack"
     DESCRIPTION = "Facebook BruteForcer"
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/Matrix07ksa/Brute_Force.git",
         "cd Brute_Force;sudo pip3 install proxylist;pip3 install mechanize"
     ]
@@ -52,6 +53,7 @@ class Faceshell(Noxentra):
         subprocess.run(
             ["python3", "Brute_Force.py", "-f", name, "-l", wordlist],
             cwd=str(get_tools_dir() / "Brute_Force"),
+            check=False,
         )
 
 
@@ -60,17 +62,17 @@ class AppCheck(Noxentra):
     ARCHIVED_REASON = "Unmaintained — no commits since 2020-03"
     TITLE = "Application Checker"
     DESCRIPTION = "Tool to check if an app is installed on the target device through a link."
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/jakuta-tech/underhanded.git",
         "cd underhanded && sudo chmod +x underhanded.sh"
     ]
-    RUN_COMMANDS = ["cd underhanded;sudo bash underhanded.sh"]
+    RUN_COMMANDS: ClassVar = ["cd underhanded;sudo bash underhanded.sh"]
     PROJECT_URL = "https://github.com/jakuta-tech/underhanded"
 
 
 class SocialMediaBruteforceTools(NoxentraCollection):
     TITLE = "SocialMedia Bruteforce"
-    TOOLS = [
+    TOOLS: ClassVar = [
         InstaBrute(),
         BruteForce(),
         Faceshell(),

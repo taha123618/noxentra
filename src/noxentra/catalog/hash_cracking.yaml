@@ -68,6 +68,49 @@ tools:
       it's noisy and WILL lock accounts and trip alerts. Authorized targets only. Use
       -t 4 to slow it down and -f to stop at the first valid credential.
 
+  - title: "haiti (Hash Type Identifier)"
+    kind: install
+    tags: [hash-crack, enumeration]
+    description: "Modern CLI hash type identifier recognizing 500+ hash formats and outputting Hashcat and John the Ripper mode numbers."
+    system_pkgs: {which: haiti}
+    install:
+      commands:
+        - gem install haiti-hash
+    run: ["haiti --help"]
+    project_url: "https://github.com/noraj/haiti"
+    usage:
+      - ["identify a hash and see hashcat/john modes", "haiti 5f4dcc3b5aa765d61d8327deb882cf99"]
+    lab_safe_notes: >-
+      Purely offline string classification — never sends hashes to external services.
+
+  - title: "Name-That-Hash (nth)"
+    kind: install
+    tags: [hash-crack, enumeration]
+    description: "Fast Python hash identifier that ranks the most likely hash algorithms and prints ready-to-run Hashcat/John flags."
+    system_pkgs: {which: nth}
+    install: {pip: name-that-hash}
+    run: ["nth --help"]
+    project_url: "https://github.com/HashPals/Name-That-Hash"
+    usage:
+      - ["identify a single hash", "nth -t '5f4dcc3b5aa765d61d8327deb882cf99'"]
+      - ["identify hashes from a file", "nth -f hashes.txt"]
+    lab_safe_notes: >-
+      Offline local hash classification — safe for sensitive engagement artifacts.
+
+  - title: "Medusa (Parallel Login Brute-Forcer)"
+    kind: install
+    tags: [password-attack, credentials, bruteforce, network]
+    description: "Modular, thread-based parallel network login auditor supporting SSH, FTP, HTTP, SMB, RDP, and database services."
+    system_pkgs: {which: medusa, apt: medusa, brew: medusa}
+    install: {apt: medusa}
+    run: ["medusa -V"]
+    project_url: "https://github.com/jmk-foofus/medusa"
+    usage:
+      - ["test SSH logins against a target", "medusa -h 10.10.10.5 -u admin -P rockyou.txt -M ssh"]
+    lab_safe_notes: >-
+      Sends live authentication attempts over the network — throttle threads (-t) and
+      target strictly authorized lab or scoped systems.
+
   - title: "CrackStation (online lookup)"
     kind: resource
     tags: [hash-crack, online-service, lookup]

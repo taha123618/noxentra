@@ -1,15 +1,4 @@
 #!/usr/bin/env python3
-import sys
-
-# ── Python version guard (must be before any other local import) ───────────────
-if sys.version_info < (3, 10):
-    print(
-        f"[ERROR] Python 3.10 or newer is required.\n"
-        f"You are running Python {sys.version_info.major}.{sys.version_info.minor}.\n"
-        f"Upgrade with: sudo apt install python3.10"
-    )
-    sys.exit(1)
-
 import argparse
 import datetime
 import difflib
@@ -17,6 +6,7 @@ import os
 import platform
 import random
 import socket
+import sys
 import webbrowser
 from itertools import zip_longest
 from pathlib import Path
@@ -28,113 +18,43 @@ from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 
-import noxentra.ai_recommend as ai_recommend
-import noxentra.ai_report as ai_report
-import noxentra.ai_summary as ai_summary
-import noxentra.engagement as engagement
-import noxentra.orchestrator as orchestrator
-import noxentra.report as report
-from noxentra import update_check
+from noxentra import (
+    ai_recommend,
+    ai_report,
+    ai_summary,
+    engagement,
+    orchestrator,
+    report,
+    update_check,
+)
 from noxentra.config import get_tools_dir
-from noxentra.constants import REPO_WEB_URL, USER_CONFIG_DIR, VERSION_DISPLAY
-from noxentra.core import NoxentraCollection, ask, clear_screen, console
-from noxentra.tools.active_directory import ActiveDirectoryTools
-from noxentra.tools.anonsurf import AnonSurfTools
-from noxentra.tools.cloud_security import CloudSecurityTools
-from noxentra.tools.ddos import DDOSTools
-from noxentra.tools.exploit_frameworks import ExploitFrameworkTools
-from noxentra.tools.forensics import ForensicTools
-from noxentra.tools.information_gathering import InformationGatheringTools
-from noxentra.tools.mobile_security import MobileSecurityTools
-from noxentra.tools.other_tools import OtherTools
-from noxentra.tools.payload_creator import PayloadCreatorTools
-from noxentra.tools.phishing_attack import PhishingAttackTools
-from noxentra.tools.post_exploitation import PostExploitationTools
-from noxentra.tools.remote_administration import RemoteAdministrationTools
-from noxentra.tools.reverse_engineering import ReverseEngineeringTools
-from noxentra.tools.sql_injection import SqlInjectionTools
-from noxentra.tools.steganography import SteganographyTools
-from noxentra.tools.tool_manager import ToolManager
-from noxentra.tools.web_attack import WebAttackTools
-from noxentra.tools.wireless_attack import WirelessAttackTools
-from noxentra.tools.wordlist_generator import WordlistGeneratorTools
-from noxentra.tools.xss_attack import XSSAttackTools
+from noxentra.constants import REPO_WEB_URL, VERSION_DISPLAY
+from noxentra.core import ask, clear_screen, console
+from noxentra.toolbox import (
+    RECOMMENDATIONS as _RECOMMENDATIONS,
+)
+from noxentra.toolbox import (
+    AllTools,
+    _reg,
+    all_tools,
+    tool_definitions,
+)
+from noxentra.toolbox import (
+    collect_all_tools as _collect_all_tools,
+)
+from noxentra.toolbox import (
+    get_all_tags as _get_all_tags,
+)
 
-# ── Tool registry ──────────────────────────────────────────────────────────────
-
-# (full_title, icon, menu_label)
-# menu_label is the concise name shown in the 2-column main menu grid.
-# full_title is shown when entering the category.
-tool_definitions = [
-    ("Anonymously Hiding Tools",           "🛡 ", "Anonymously Hiding"),
-    ("Information gathering tools",        "🔍",  "Information Gathering"),
-    ("Wordlist Generator",                 "📚",  "Wordlist Generator"),
-    ("Wireless attack tools",              "📶",  "Wireless Attack"),
-    ("SQL Injection Tools",                "🧩",  "SQL Injection"),
-    ("Phishing attack tools",              "🎣",  "Phishing Attack"),
-    ("Web Attack tools",                   "🌐",  "Web Attack"),
-    ("Post exploitation tools",            "🔧",  "Post Exploitation"),
-    ("Forensic tools",                     "🕵 ", "Forensics"),
-    ("Payload creation tools",             "📦",  "Payload Creation"),
-    ("Exploit framework",                  "🧰",  "Exploit Framework"),
-    ("Reverse engineering tools",          "🔁",  "Reverse Engineering"),
-    ("DDOS Attack Tools",                  "⚡",  "DDOS Attack"),
-    ("Remote Administrator Tools (RAT)",   "🖥 ", "Remote Admin (RAT)"),
-    ("XSS Attack Tools",                   "💥",  "XSS Attack"),
-    ("Steganography tools",                "🖼 ", "Steganography"),
-    ("Active Directory Tools",             "🏢",  "Active Directory"),
-    ("Cloud Security Tools",               "☁ ",  "Cloud Security"),
-    ("Mobile Security Tools",              "📱",  "Mobile Security"),
-    ("Other tools",                        "✨",  "Other Tools"),
-    ("Update or Uninstall | Noxentra",  "♻ ",  "Update / Uninstall"),
+__all__ = [
+    "_RECOMMENDATIONS",
+    "AllTools",
+    "_collect_all_tools",
+    "_get_all_tags",
+    "_reg",
+    "all_tools",
+    "tool_definitions",
 ]
-
-all_tools = [
-    AnonSurfTools(),
-    InformationGatheringTools(),
-    WordlistGeneratorTools(),
-    WirelessAttackTools(),
-    SqlInjectionTools(),
-    PhishingAttackTools(),
-    WebAttackTools(),
-    PostExploitationTools(),
-    ForensicTools(),
-    PayloadCreatorTools(),
-    ExploitFrameworkTools(),
-    ReverseEngineeringTools(),
-    DDOSTools(),
-    RemoteAdministrationTools(),
-    XSSAttackTools(),
-    SteganographyTools(),
-    ActiveDirectoryTools(),
-    CloudSecurityTools(),
-    MobileSecurityTools(),
-    OtherTools(),
-    ToolManager(),
-]
-
-# ── Data-driven catalog (M3) ─────────────────────────────────────────────────
-# Merge YAML catalog tools into existing categories, and append brand-new
-# catalog categories just before ToolManager (which must stay last in the menu).
-# Adding a tool/category is now a YAML edit only — no changes here.
-import noxentra.registry as _registry
-
-_reg = _registry.load(user_dir=USER_CONFIG_DIR)
-for _coll in all_tools:
-    _extra = _reg.merge_tools_for(_coll.TITLE)
-    if _extra:
-        _coll.TOOLS = list(_coll.TOOLS) + _extra
-
-_insert_at = len(all_tools) - 1   # keep ToolManager (last) at the end
-all_tools[_insert_at:_insert_at] = _reg.new_collections
-tool_definitions[_insert_at:_insert_at] = _reg.new_definitions
-
-
-# Flat list of every top-level tool collection (menu order)
-class AllTools(NoxentraCollection):
-    TITLE = "All tools"
-    TOOLS = all_tools
-
 
 # ── Help overlay ───────────────────────────────────────────────────────────────
 
@@ -150,6 +70,8 @@ def show_help():
             ("  r / a  ", "bold cyan"), ("recommend tools — pick a task or type it (e.g. r crack a hash)\n", "white"),
             ("  /goal  ", "bold cyan"), ("AI-plan & run an objective, one step at a time (e.g. /goal find subdomains of x.com)\n", "white"),
             ("  /find  ", "bold cyan"), ("find tools for a need — your toolbox + GitHub, suggest-only (e.g. /find hidden directories on a website)\n", "white"),
+            ("  /engage ", "bold cyan"), ("create/open an engagement & run recon/web/cloud pipelines live\n", "white"),
+            ("  /report ", "bold cyan"), ("export engagement findings as Markdown, HTML, or SARIF\n", "white"),
             ("  ?      ", "bold cyan"), ("show this help\n", "white"),
             ("  clear  ", "bold cyan"), ("clear the screen (also /clear)\n", "white"),
             ("  /config ", "bold cyan"), ("view/edit settings; /config test checks the AI connection\n", "white"),
@@ -214,7 +136,7 @@ def _sys_info() -> dict:
     # OS pretty name
     try:
         info["os"] = platform.freedesktop_os_release().get("PRETTY_NAME", "")
-    except Exception:
+    except (OSError, AttributeError):
         info["os"] = ""
     if not info["os"]:
         info["os"] = f"{platform.system()} {platform.release()}"
@@ -224,7 +146,7 @@ def _sys_info() -> dict:
     # Current user
     try:
         info["user"] = os.getlogin()
-    except Exception:
+    except OSError:
         info["user"] = os.environ.get("USER", os.environ.get("LOGNAME", "root"))
 
     info["host"] = socket.gethostname()
@@ -236,7 +158,7 @@ def _sys_info() -> dict:
         s.connect(("10.254.254.254", 1))
         info["ip"] = s.getsockname()[0]
         s.close()
-    except Exception:
+    except OSError:
         info["ip"] = "127.0.0.1"
 
     info["time"] = datetime.datetime.now().strftime("%Y-%m-%d  %H:%M")
@@ -371,36 +293,7 @@ def build_menu():
 
 
 # ── Search ─────────────────────────────────────────────────────────────────────
-
-def _collect_all_tools() -> list[tuple]:
-    """Walk all collections and return (tool_instance, category_name) pairs."""
-    from noxentra.core import Noxentra, NoxentraCollection
-    results = []
-
-    def _walk(items, parent_title=""):
-        for item in items:
-            if isinstance(item, NoxentraCollection):
-                _walk(item.TOOLS, item.TITLE)
-            elif isinstance(item, Noxentra):
-                results.append((item, parent_title))
-
-    _walk(all_tools)
-    return results
-
-
-def _get_all_tags() -> dict[str, list[tuple]]:
-    """Build tag → [(tool, category)] index from each tool's curated ``.TAGS``.
-
-    One source, one vocabulary: ``tool.TAGS`` (⊆ ``tags.TAXONOMY``) comes from the
-    catalog YAML + ``legacy_overlays.yaml``. Every real tool is tagged; the only
-    untagged entries are the Update/Uninstall menu items, which shouldn't surface
-    in discovery anyway.
-    """
-    tag_index: dict[str, list[tuple]] = {}
-    for tool, cat in _collect_all_tools():
-        for t in getattr(tool, "TAGS", []) or []:
-            tag_index.setdefault(t, []).append((tool, cat))
-    return tag_index
+# _collect_all_tools, _get_all_tags, and _RECOMMENDATIONS live in toolbox.py.
 
 
 def _tool_table(matches, title):
@@ -463,32 +356,6 @@ def filter_by_tag():
     matches = tag_index[tag]
     _tool_table(matches, f"Tools tagged '{tag}'")
     _pick_tool(matches)
-
-
-_RECOMMENDATIONS = {
-    "scan a network":           ["scanner", "port-scan"],
-    "find subdomains":          ["recon"],
-    "scan for vulnerabilities": ["scanner", "web"],
-    "crack passwords":          ["bruteforce", "credentials"],
-    "find leaked secrets":      ["credentials"],
-    "phishing campaign":        ["social-engineering"],
-    "post exploitation":        ["c2", "privesc"],
-    "pivot through network":    ["network"],
-    "pentest active directory": ["active-directory"],
-    "pentest web application":  ["web", "scanner"],
-    "pentest cloud":            ["cloud"],
-    "pentest mobile app":       ["mobile"],
-    "reverse engineer binary":  ["reversing"],
-    "capture wifi handshake":   ["wireless"],
-    "intercept http traffic":   ["web", "network"],
-    "forensic analysis":        ["forensics"],
-    "ddos testing":             ["ddos"],
-    "create payloads":          ["payload"],
-    "find xss vulnerabilities": ["web"],
-    "brute force directories":  ["bruteforce", "web"],
-    "osint / recon a target":   ["osint", "recon"],
-    "hide my identity":         ["network"],
-}
 
 
 def _show_recommended(matches, label):
@@ -711,7 +578,7 @@ def interact_menu():
                 ))
                 try:
                     all_tools[choice - 1].show_options()
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001 - REPL UI boundary isolates failing tool plugins
                     console.print(Panel(
                         f"[red]Error while opening {title}[/red]\n{e}",
                         border_style="red",
@@ -732,9 +599,17 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="noxentra", add_help=True,
                                 description="noxentra headless orchestrator")
     p.add_argument("--engagement", help="engagement name (creates if new)")
-    p.add_argument("--targets", help="a domain, or a path to a file of domains (one per line)")
+    p.add_argument("--targets", help="target, comma-separated targets, or a file path (one per line)")
+    p.add_argument("--scope-out", dest="scope_out",
+                   help="comma-separated exclusion globs or a file path (merged into engagement)")
     p.add_argument("--pipeline", default=None, help="pipeline to run against the engagement's targets (default: recon)")
-    p.add_argument("--report", action="store_true", help="(re)generate the Markdown report")
+    p.add_argument("--report", action="store_true", help="(re)generate the report")
+    p.add_argument("--format", dest="report_format", choices=["md", "html", "sarif", "all"],
+                   default="md", help="report output format (default: md)")
+    p.add_argument("--list-pipelines", dest="list_pipelines", action="store_true",
+                   help="list available pipelines and exit")
+    p.add_argument("--list-engagements", dest="list_engagements", action="store_true",
+                   help="list saved engagements and exit")
     p.add_argument("--ai-summary", dest="ai_summary", action="store_true",
                    help="opt-in local-AI (Ollama) summary of findings")
     p.add_argument("--ai-report", dest="ai_report", action="store_true",
@@ -742,11 +617,32 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     return p
 
 
-def _load_targets(spec: str) -> list[str]:
+def _load_list_arg(spec: str) -> list[str]:
     p = Path(spec)
     if p.is_file():
         return [ln.strip() for ln in p.read_text().splitlines() if ln.strip()]
-    return [spec]
+    return [part.strip() for part in spec.split(",") if part.strip()]
+
+
+def _load_targets(spec: str) -> list[str]:
+    return _load_list_arg(spec)
+
+
+def _print_pipelines() -> None:
+    for item in orchestrator.list_pipelines():
+        desc = f" — {item['description']}" if item["description"] else ""
+        console.print(f"[cyan]{item['name']}[/cyan]{desc}")
+
+
+def _print_engagements() -> None:
+    from noxentra.tui import data
+
+    rows = data.engagements()
+    if not rows:
+        console.print("[dim]No engagements found.[/dim]")
+        return
+    for r in rows:
+        console.print(f"[cyan]{r.name}[/cyan] · {r.targets_count} target(s) · {r.findings_count} finding(s)")
 
 
 def _run_headless(args) -> None:
@@ -755,6 +651,14 @@ def _run_headless(args) -> None:
                         border_style="yellow"))
     targets = _load_targets(args.targets) if args.targets else None
     e = engagement.get_or_create(args.engagement, targets)
+    if getattr(args, "scope_out", None):
+        merged_out = list(e.scope_out)
+        for pat in _load_list_arg(args.scope_out):
+            if pat not in merged_out:
+                merged_out.append(pat)
+        if merged_out != e.scope_out:
+            e.scope_out = merged_out
+            e.save()
 
     for t in e.targets:
         if not e.in_scope(t):
@@ -770,13 +674,24 @@ def _run_headless(args) -> None:
         else:
             pipeline = args.pipeline or "recon"
             console.print(f"[cyan]Running pipeline '{pipeline}'...[/cyan]")
-            result = orchestrator.run_pipeline(e, pipeline)
-            console.print(f"[green]{len(result)} findings ->[/green] {e.findings_file}")
+            with orchestrator.live_progress(console.print):
+                result = orchestrator.run_pipeline(e, pipeline)
+            new_n = e.runs[-1].get("new_findings") if e.runs else None
+            prefix = f"+{new_n} new, " if new_n is not None else ""
+            console.print(f"[green]{prefix}{len(result)} total findings ->[/green] {e.findings_file}")
             ran = True
 
     if ran or args.report:
-        path = report.generate_report(e)
-        console.print(f"[green]Report ->[/green] {path}")
+        fmt = getattr(args, "report_format", "md")
+        if fmt in ("md", "all"):
+            path = report.generate_report(e)
+            console.print(f"[green]Report ->[/green] {path}")
+        if fmt in ("html", "all"):
+            path = report.generate_html_report(e)
+            console.print(f"[green]HTML report ->[/green] {path}")
+        if fmt in ("sarif", "all"):
+            path = report.generate_sarif_report(e)
+            console.print(f"[green]SARIF report ->[/green] {path}")
 
     if args.ai_summary:
         summary = ai_summary.summarize(e)
@@ -814,6 +729,12 @@ def main():
         # exit 2 (instead of silently opening the menu); -h/--help exits 0.
         parser = _build_arg_parser()
         args = parser.parse_args(argv)
+        if args.list_pipelines or args.list_engagements:
+            if args.list_pipelines:
+                _print_pipelines()
+            if args.list_engagements:
+                _print_engagements()
+            return
         if not args.engagement:
             parser.error("--engagement is required in headless mode")   # prints usage, exits 2
         _run_headless(args)
@@ -851,10 +772,6 @@ def main():
 
     except KeyboardInterrupt:
         console.print("\n[bold red]Exiting...[/bold red]")
-
-
-# Apply YAML guidance overlays onto existing tools (usage/tags/lab-safe stay data).
-_reg.apply_overlays(_collect_all_tools())
 
 
 if __name__ == "__main__":

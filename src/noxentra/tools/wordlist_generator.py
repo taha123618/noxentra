@@ -1,3 +1,4 @@
+from typing import ClassVar
 
 from rich import box
 from rich.panel import Panel
@@ -10,8 +11,8 @@ class Cupp(Noxentra):
     TITLE = "Cupp"
     # Bug 24 fix: DESCRIPTION was copy-pasted from WlCreator — completely wrong
     DESCRIPTION = "Common User Passwords Profiler — generates personalized wordlists based on target info."
-    INSTALL_COMMANDS = ["git clone https://github.com/Mebus/cupp.git"]
-    RUN_COMMANDS = ["cd cupp && python3 cupp.py -i"]
+    INSTALL_COMMANDS: ClassVar = ["git clone https://github.com/Mebus/cupp.git"]
+    RUN_COMMANDS: ClassVar = ["cd cupp && python3 cupp.py -i"]
     PROJECT_URL = "https://github.com/Mebus/cupp"
 
     def show_info(self):
@@ -32,8 +33,8 @@ class WlCreator(Noxentra):
     DESCRIPTION = "WlCreator is a C program that can create all possibilities" \
                   " of passwords,\n and you can choose Length, Lowercase, " \
                   "Capital, Numbers and Special Chars"
-    INSTALL_COMMANDS = ["git clone https://github.com/Keshav2136/wlcreator.git"]
-    RUN_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = ["git clone https://github.com/Keshav2136/wlcreator.git"]
+    RUN_COMMANDS: ClassVar = [
         "cd wlcreator && sudo gcc -o wlcreator wlcreator.c && ./wlcreator 5"]
     PROJECT_URL = "https://github.com/Keshav2136/wlcreator"
 
@@ -53,9 +54,9 @@ class GoblinWordGenerator(Noxentra):
     ARCHIVED_REASON = "Upstream repo archived by author (last commit 2022-04)"
     TITLE = "Goblin WordGenerator"
     DESCRIPTION = "Goblin WordGenerator"
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/UndeadSec/GoblinWordGenerator.git"]
-    RUN_COMMANDS = ["cd GoblinWordGenerator && python3 goblin.py"]
+    RUN_COMMANDS: ClassVar = ["cd GoblinWordGenerator && python3 goblin.py"]
     PROJECT_URL = "https://github.com/UndeadSec/GoblinWordGenerator.git"
 
     def show_info(self):
@@ -78,11 +79,11 @@ class showme(Noxentra):
                   "1.4 Billion clear text credentials which was dumped as " \
                   "part of BreachCompilation leak. This database makes " \
                   "finding passwords faster and easier than ever before."
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/Viralmaniar/SMWYG-Show-Me-What-You-Got.git",
         "cd SMWYG-Show-Me-What-You-Got && pip3 install -r requirements.txt"
     ]
-    RUN_COMMANDS = ["cd SMWYG-Show-Me-What-You-Got && python SMWYG.py"]
+    RUN_COMMANDS: ClassVar = ["cd SMWYG-Show-Me-What-You-Got && python SMWYG.py"]
     PROJECT_URL = "https://github.com/Viralmaniar/SMWYG-Show-Me-What-You-Got"
 
     def show_info(self):
@@ -102,9 +103,9 @@ class Hashcat(Noxentra):
         "World's fastest GPU/CPU password recovery tool — supports 300+ hash types.\n"
         "Usage: hashcat -m 0 -a 0 hashes.txt wordlist.txt"
     )
-    SUPPORTED_OS = ["linux"]
-    INSTALL_COMMANDS = ["sudo apt-get install -y hashcat"]
-    RUN_COMMANDS = ["hashcat --help"]
+    SUPPORTED_OS: ClassVar = ["linux"]
+    INSTALL_COMMANDS: ClassVar = ["sudo apt-get install -y hashcat"]
+    RUN_COMMANDS: ClassVar = ["hashcat --help"]
     PROJECT_URL = "https://github.com/hashcat/hashcat"
 
 
@@ -114,9 +115,9 @@ class JohnTheRipper(Noxentra):
         "Open-source password security auditing and recovery tool.\n"
         "Usage: john --wordlist=wordlist.txt hashfile"
     )
-    SUPPORTED_OS = ["linux"]
-    INSTALL_COMMANDS = ["sudo apt-get install -y john"]
-    RUN_COMMANDS = ["john --help"]
+    SUPPORTED_OS: ClassVar = ["linux"]
+    INSTALL_COMMANDS: ClassVar = ["sudo apt-get install -y john"]
+    RUN_COMMANDS: ClassVar = ["john --help"]
     PROJECT_URL = "https://github.com/openwall/john"
 
 
@@ -127,14 +128,14 @@ class Haiti(Noxentra):
         "Usage: haiti <hash>"
     )
     REQUIRES_RUBY = True
-    INSTALL_COMMANDS = ["gem install haiti-hash"]
-    RUN_COMMANDS = ["haiti --help"]
+    INSTALL_COMMANDS: ClassVar = ["gem install haiti-hash"]
+    RUN_COMMANDS: ClassVar = ["haiti --help"]
     PROJECT_URL = "https://github.com/noraj/haiti"
 
 
 class WordlistGeneratorTools(NoxentraCollection):
     TITLE = "Wordlist Generator"
-    TOOLS = [
+    TOOLS: ClassVar = [
         Cupp(),
         WlCreator(),
         GoblinWordGenerator(),

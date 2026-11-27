@@ -2,12 +2,17 @@ from textual.message import Message
 from textual.widgets import OptionList
 from textual.widgets.option_list import Option
 
-# (command, help) — /config/menu/quit act now; /recommend,/report are Phase-2 (notify).
+# (command, help) — all commands are active in NoxentraApp.
 # No /search: just type in the prompt to filter live.
 COMMANDS = [
     ("/config", "edit settings"),
     ("/update", "check for & how to update noxentra"),
+    ("/engage", "create engagements & run live pipelines"),
     ("/recommend", "AI tool recommendation"),
+    ("/find", "discover tools on GitHub"),
+    ("/goal", "AI goal planner"),
+    ("/tags", "browse tools by tag"),
+    ("/skill", "operator playbook & charter"),
     ("/report", "export findings"),
     ("/menu", "browse categories"),
     ("/quit", "exit noxentra"),
@@ -25,6 +30,10 @@ class CommandPalette(OptionList):
     def __init__(self):
         super().__init__(*self._opts(""))
         self.can_focus = False      # prompt keeps focus; ↑↓ are routed here from it
+
+    def on_mount(self) -> None:
+        if self.option_count and self.highlighted is None:
+            self.highlighted = 0
 
     def _opts(self, needle: str) -> list[Option]:
         n = needle.lower()

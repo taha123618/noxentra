@@ -7,11 +7,21 @@ category:
   title: "XSS (catalog)"
   merge_into: "XSS Attack Tools"
 
-# --- enrich existing Python-defined tools by title --------------------------
-overlay:
+overlay: []
+
+# --- migrated from tools/xss_attack.py + kxss ------------------------------
+tools:
   - title: "DalFox (Finder of XSS)"
+    kind: install
     tags: [web, xss, scanner, fuzzing]
+    description: "XSS Scanning and Parameter Analysis tool."
     system_pkgs: {which: dalfox, go: "github.com/hahwul/dalfox/v2@latest"}
+    install:
+      commands:
+        - "sudo apt-get install -y golang"
+        - "go install github.com/hahwul/dalfox/v2@latest"
+    run: ["~/go/bin/dalfox --help"]
+    project_url: "https://github.com/hahwul/dalfox"
     usage:
       - ["scan a single URL", "dalfox url 'https://target/?q=1'"]
       - ["scan a file of URLs", "dalfox file urls.txt"]
@@ -25,7 +35,15 @@ overlay:
       endpoint you control. Pipe mode composes with recon output (gau, waybackurls).
 
   - title: "XSS Payload Generator"
+    kind: install
     tags: [web, xss, payload]
+    description: "XSS PAYLOAD GENERATOR - XSS SCANNER - XSS DORK FINDER"
+    install:
+      commands:
+        - "git clone https://github.com/capture0x/XSS-LOADER.git"
+        - "cd XSS-LOADER;sudo pip3 install -r requirements.txt"
+    run: ["cd XSS-LOADER;sudo python3 payloader.py"]
+    project_url: "https://github.com/capture0x/XSS-LOADER.git"
     usage:
       - ["launch the interactive generator", "python3 payloader.py"]
     lab_safe_notes: >-
@@ -33,8 +51,43 @@ overlay:
       payloads for you to test manually. Generating payloads is offline and safe;
       only fire the results at authorized targets.
 
+  - title: "XSS-Freak"
+    kind: install
+    archived: true
+    archived_reason: "Upstream repo deleted (404)"
+    tags: [web, xss, scanner]
+    description: "An XSS scanner fully written in Python 3 from scratch."
+    install:
+      commands:
+        - "git clone https://github.com/PR0PH3CY33/XSS-Freak.git"
+        - "cd XSS-Freak;sudo pip3 install -r requirements.txt"
+    run: ["cd XSS-Freak;sudo python3 XSS-Freak.py"]
+    project_url: "https://github.com/PR0PH3CY33/XSS-Freak"
+    usage:
+      - ["launch XSS-Freak (archived)", "python3 XSS-Freak.py"]
+
+  - title: "XSpear"
+    kind: install
+    archived: true
+    archived_reason: "Upstream repo archived by author (last commit 2026-03)"
+    tags: [web, xss, scanner]
+    description: "XSpear is an XSS Scanner built on Ruby Gems."
+    install:
+      commands: ["gem install XSpear"]
+    run: ["XSpear -h"]
+    project_url: "https://github.com/hahwul/XSpear"
+    usage:
+      - ["show XSpear help (archived)", "XSpear -h"]
+
   - title: "Advanced XSS Detection Suite"
+    kind: install
     tags: [web, xss, scanner, fuzzing]
+    description: "XSStrike is a Python-based tool designed to detect and exploit XSS vulnerabilities."
+    install:
+      commands:
+        - "sudo rm -rf XSStrike"
+        - "git clone https://github.com/UltimateHackers/XSStrike.git && cd XSStrike && pip install -r requirements.txt"
+    project_url: "https://github.com/UltimateHackers/XSStrike"
     usage:
       - ["scan a URL", "python3 xsstrike.py -u 'http://target/page?q=1'"]
       - ["test a POST body", "python3 xsstrike.py -u 'http://target/login' --data 'q=1'"]
@@ -45,8 +98,20 @@ overlay:
       authorized target. --crawl multiplies the requests it sends across the site,
       so keep it to lab/authorized scope. Run from inside the cloned XSStrike dir.
 
-# --- genuinely-missing, widely-used XSS tools --------------------------------
-tools:
+  - title: "RVuln"
+    kind: install
+    archived: true
+    archived_reason: "Unmaintained — no commits since 2020-07"
+    tags: [web, xss, scanner]
+    description: "Multi-threaded and Automated Web Vulnerability Scanner written in Rust."
+    supported_os: [linux]
+    install:
+      commands:
+        - "git clone https://github.com/iinc0gnit0/RVuln.git;curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh;source $HOME/.cargo/env;sudo apt install librust-openssl-dev;cd RVuln;cargo build --release;mv target/release/RVuln"
+    run: ["RVuln"]
+    project_url: "https://github.com/iinc0gnit0/RVuln"
+    usage:
+      - ["run RVuln (archived)", "RVuln"]
   - title: "kxss (Reflection Finder)"
     kind: install
     tags: [web, xss, scanner, recon]
@@ -62,6 +127,48 @@ tools:
       kxss only probes which characters reflect unfiltered — it doesn't execute an
       XSS, but it does send requests to the target, so feed it only authorized URLs.
       Its stdout (URLs with unfiltered chars) chains straight into dalfox pipe.
+
+  - title: "freq (Concurrent XSS Reflection Checker)"
+    kind: install
+    tags: [web, xss, scanner, recon]
+    description: "Fast Go tool that reads URLs from stdin, injects XSS payloads into query parameters concurrently, and reports reflected responses."
+    system_pkgs: {which: freq, go: "github.com/takshal/freq@latest"}
+    install: {go: "github.com/takshal/freq@latest"}
+    run: ["freq -h"]
+    project_url: "https://github.com/takshal/freq"
+    usage:
+      - ["check URLs on stdin for reflected XSS", "cat urls.txt | freq"]
+    lab_safe_notes: >-
+      Sends HTTP requests with reflection payloads to the supplied URLs — feed only
+      authorized scope targets.
+
+  - title: "qsreplace (Query String Payload Replacer)"
+    kind: install
+    tags: [web, xss, fuzzing, recon]
+    description: "Accepts URLs on stdin, replaces all query string values with a user-supplied value, and prints unique URLs — staple for XSS/SQLi pipelines."
+    system_pkgs: {which: qsreplace, go: "github.com/tomnomnom/qsreplace@latest"}
+    install: {go: "github.com/tomnomnom/qsreplace@latest"}
+    run: ["qsreplace -h"]
+    project_url: "https://github.com/tomnomnom/qsreplace"
+    usage:
+      - ["replace query parameter values with an XSS probe", "cat urls.txt | qsreplace '\"><script>alert(1)</script>'"]
+      - ["append a value to existing parameters", "cat urls.txt | qsreplace -a 'test'"]
+    lab_safe_notes: >-
+      Purely offline text transformation on stdin — responsible use applies when piping
+      into active scanners like dalfox or httpx.
+
+  - title: "airixss (XSS Vulnerability Checker)"
+    kind: install
+    tags: [web, xss, scanner]
+    description: "Lightweight Go XSS confirmation tool that reads candidate URLs from stdin and verifies unencoded payload reflection."
+    system_pkgs: {which: airixss, go: "github.com/ferreiraklet/airixss@latest"}
+    install: {go: "github.com/ferreiraklet/airixss@latest"}
+    run: ["airixss -h"]
+    project_url: "https://github.com/ferreiraklet/airixss"
+    usage:
+      - ["verify reflected XSS payloads from stdin", "cat urls.txt | qsreplace '\"><svg/onload=alert(1)>' | airixss -payload 'alert(1)'"]
+    lab_safe_notes: >-
+      Sends HTTP GET requests with supplied payloads — run only against authorized targets.
 
 # --- high-value XSS references -----------------------------------------------
   - title: "PortSwigger — XSS Labs"

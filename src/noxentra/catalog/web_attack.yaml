@@ -1,281 +1,1052 @@
-# Web Attack — guided-ops cheatsheets for the existing Python "Web Attack tools"
-# collection plus a few genuinely-missing web tools and high-value references.
-# Overlays enrich existing tools by EXACT title (no Python edits); tools/resources
-# are added as one YAML entry each.
 category:
-  title: "Web Attack (catalog)"
-  merge_into: "Web Attack tools"
-
-# --- enrich existing Python-defined tools by title --------------------------
+  title: Web Attack (catalog)
+  merge_into: Web Attack tools
 overlay:
-  - title: "Skipfish"
-    tags: [web, vuln-scan, scanner, crawler]
-    system_pkgs: {which: skipfish, apt: skipfish}
-    usage:
-      - ["crawl + audit a site to a report dir", "skipfish -o out/ http://target/"]
-      - ["use a request-word dictionary", "skipfish -o out/ -S /usr/share/skipfish/dictionaries/minimal.wl http://target/"]
-      - ["authenticated scan via cookie", "skipfish -o out/ -C 'session=VALUE' http://target/"]
-      - ["cap request rate to be gentle", "skipfish -o out/ -l 20 http://target/"]
-    lab_safe_notes: >-
-      Skipfish is a fully active scanner and generates heavy traffic — scope it to
-      a single authorized target and use -l to cap requests/sec on small lab VMs.
-      The HTML report lands in the -o directory.
-
-  - title: "SubDomain Finder"
-    tags: [subdomain-enum, recon, osint, dns]
-    system_pkgs: {which: sublist3r, apt: sublist3r}
-    usage:
-      - ["enumerate subdomains (passive OSINT)", "python3 sublist3r.py -d example.com"]
-      - ["add DNS brute-force", "python3 sublist3r.py -d example.com -b"]
-      - ["limit to specific engines", "python3 sublist3r.py -d example.com -e google,bing"]
-      - ["port-check discovered hosts", "python3 sublist3r.py -d example.com -p 80,443"]
-    lab_safe_notes: >-
-      The default run is passive — it only queries public OSINT/search sources, so
-      it's safe pre-engagement recon. -b adds active DNS queries; still light. Only
-      enumerate domains you're authorized to test.
-
-  - title: "Sub-Domain TakeOver"
-    tags: [subdomain-enum, web, vuln-scan]
-    system_pkgs: {which: takeover}
-    usage:
-      - ["check one domain (verbose)", "python3 takeover.py -d www.domain.com -v"]
-      - ["check a list of subdomains", "python3 takeover.py -l subdomains.txt"]
-      - ["tune concurrency", "python3 takeover.py -l subdomains.txt -t 20"]
-    lab_safe_notes: >-
-      Only inspects CNAME chains and service fingerprints of dangling records — very
-      low traffic and non-destructive. Confirm a flagged takeover manually before
-      reporting, and stay within authorized domains.
-
-  - title: "Dirb"
-    tags: [web, enumeration, bruteforce, wordlist]
-    system_pkgs: {which: dirb, apt: dirb}
-    usage:
-      - ["default wordlist scan", "dirb http://target/"]
-      - ["pick a wordlist", "dirb http://target/ /usr/share/wordlists/dirb/common.txt"]
-      - ["append file extensions", "dirb http://target/ -X .php,.txt"]
-      - ["throttle between requests (ms)", "dirb http://target/ -z 100"]
-    lab_safe_notes: >-
-      Directory brute-forcing sends one request per word — use -z to add a delay so
-      you don't flood a small lab box. Scope to the single target URL; -c passes a
-      session cookie for authenticated areas.
-
-  - title: "Nuclei (Vulnerability Scanner)"
-    tags: [web, vuln-scan, scanner]
-    system_pkgs: {which: nuclei, go: "github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"}
-    usage:
-      - ["scan a single URL", "nuclei -u https://target"]
-      - ["scan a list of targets", "nuclei -l urls.txt"]
-      - ["focus on high/critical only", "nuclei -u https://target -severity critical,high"]
-      - ["select template tags", "nuclei -u https://target -tags cve,exposure"]
-      - ["rate-limit requests/sec", "nuclei -u https://target -rl 50"]
-    lab_safe_notes: >-
-      Run `nuclei -update-templates` first. Some templates are intrusive — narrow
-      with -severity/-tags and throttle with -rl and -c on lab networks. Templates
-      only hit the hosts you pass; scope to authorized targets.
-
-  - title: "ffuf (Web Fuzzer)"
-    tags: [web, fuzzing, enumeration, wordlist]
-    system_pkgs: {which: ffuf, apt: ffuf, go: "github.com/ffuf/ffuf/v2@latest"}
-    usage:
-      - ["directory/file discovery", "ffuf -w wordlist.txt -u https://target/FUZZ"]
-      - ["keep only real hits", "ffuf -w wordlist.txt -u https://target/FUZZ -mc 200,301,302"]
-      - ["virtual-host fuzzing", "ffuf -w subs.txt -u https://target -H 'Host: FUZZ.target'"]
-      - ["POST body parameter fuzz", "ffuf -w wordlist.txt -X POST -d 'user=FUZZ' -u https://target/login"]
-      - ["rate-limit requests/sec", "ffuf -w wordlist.txt -u https://target/FUZZ -rate 50"]
-    lab_safe_notes: >-
-      Use -rate (and -p for a per-request delay) so you don't hammer a lab VM, and
-      -fc/-fs/-mc to filter noise. FUZZ marks the injection point; scope the URL to
-      the authorized target.
-
-  - title: "Feroxbuster (Directory Brute Force)"
-    tags: [web, enumeration, bruteforce, wordlist]
-    system_pkgs: {which: feroxbuster, apt: feroxbuster}
-    usage:
-      - ["recursive content discovery", "feroxbuster -u https://target"]
-      - ["choose a wordlist", "feroxbuster -u https://target -w /usr/share/wordlists/dirb/common.txt"]
-      - ["probe for extensions", "feroxbuster -u https://target -x php,txt,html"]
-      - ["cap depth + rate on labs", "feroxbuster -u https://target -d 2 --rate-limit 50"]
-    lab_safe_notes: >-
-      Recursion is on by default and can explode request counts — cap it with -d and
-      throttle with --rate-limit on small boxes. Scope -u to the single authorized
-      host.
-
-  - title: "Nikto (Web Server Scanner)"
-    tags: [web, vuln-scan, scanner]
-    system_pkgs: {which: nikto, apt: nikto}
-    usage:
-      - ["scan a host", "nikto -h https://target"]
-      - ["scan a non-standard TLS port", "nikto -h target -p 8443 -ssl"]
-      - ["save an HTML report", "nikto -h https://target -o report.html -Format htm"]
-      - ["select test categories", "nikto -h https://target -Tuning 1234"]
-    lab_safe_notes: >-
-      Nikto is deliberately noisy (thousands of probes) and will trip IDS — expected
-      and fine in a lab. Scope -h to the target; use -Pause to slow down and -Tuning
-      to run only the checks you need.
-
-  - title: "wafw00f (WAF Detector)"
-    tags: [web, fingerprint, recon]
-    system_pkgs: {which: wafw00f, apt: wafw00f, pip: wafw00f}
-    usage:
-      - ["detect a WAF", "wafw00f https://target"]
-      - ["list detectable WAFs", "wafw00f -l"]
-      - ["verbose fingerprint", "wafw00f https://target -v"]
-    lab_safe_notes: >-
-      Sends only a handful of probe requests, so it's a light, safe first step before
-      heavier scanning. Knowing the WAF up front tells you what evasion/throttling you
-      may need.
-
-  - title: "Katana (Web Crawler)"
-    tags: [web, crawler, recon, enumeration]
-    system_pkgs: {which: katana, go: "github.com/projectdiscovery/katana/cmd/katana@latest"}
-    usage:
-      - ["crawl a site", "katana -u https://target"]
-      - ["headless crawl (renders JS)", "katana -u https://target -headless"]
-      - ["depth cap + JS endpoint parsing", "katana -u https://target -d 3 -jc"]
-      - ["save discovered endpoints", "katana -u https://target -o endpoints.txt"]
-    lab_safe_notes: >-
-      Request volume scales with site size — cap with -d and throttle with -rl/-rate
-      on labs. Crawling only touches the target you pass; feed its output into ffuf or
-      nuclei. Scope to authorized hosts.
-
-  - title: "Gobuster (Dir/DNS/Vhost Brute Force)"
-    tags: [web, enumeration, bruteforce, dns, wordlist]
-    system_pkgs: {which: gobuster, apt: gobuster, go: "github.com/OJ/gobuster/v3@latest"}
-    usage:
-      - ["directory/file brute-force", "gobuster dir -u https://target -w wordlist.txt"]
-      - ["DNS subdomain brute-force", "gobuster dns -d example.com -w subdomains.txt"]
-      - ["virtual-host discovery", "gobuster vhost -u https://target -w subdomains.txt"]
-      - ["probe extensions", "gobuster dir -u https://target -w wordlist.txt -x php,html"]
-    lab_safe_notes: >-
-      Throttle with --delay and lower -t (threads) on small VMs. dns mode queries
-      resolvers rather than the host itself; dir/vhost hit the target directly, so
-      scope -u to the authorized host.
-
-  - title: "Dirsearch (Web Path Discovery)"
-    tags: [web, enumeration, bruteforce, wordlist]
-    system_pkgs: {which: dirsearch, apt: dirsearch, pip: dirsearch}
-    usage:
-      - ["scan a URL", "dirsearch -u https://target"]
-      - ["probe extensions", "dirsearch -u https://target -e php,html,js"]
-      - ["custom wordlist + threads", "dirsearch -u https://target -w wordlist.txt -t 20"]
-      - ["throttle between requests", "dirsearch -u https://target --delay 0.2"]
-    lab_safe_notes: >-
-      Keep -t low and add --delay to be gentle on lab boxes; avoid -r (recursive) on
-      large sites to limit request volume. Scope -u to the single authorized target.
-
-  - title: "OWASP ZAP (Web App Scanner)"
-    tags: [web, vuln-scan, scanner, fuzzing]
-    system_pkgs: {which: zaproxy, apt: zaproxy}
-    usage:
-      - ["launch the GUI proxy/scanner", "zaproxy"]
-      - ["headless daemon (API on 8080)", "zaproxy -daemon -host 127.0.0.1 -port 8080"]
-      - ["scripted quick scan to a report", "zaproxy -cmd -quickurl https://target -quickout report.html"]
-    lab_safe_notes: >-
-      Passive spidering/scanning is gentle and safe. The ACTIVE scan sends real attack
-      payloads — run it only against authorized targets and set the ZAP context/scope
-      so it can't wander off the box.
-
-  - title: "testssl.sh (TLS/SSL Checker)"
-    tags: [web, scanner, fingerprint]
-    system_pkgs: {which: testssl.sh, apt: testssl.sh}
-    usage:
-      - ["full TLS/SSL assessment", "testssl.sh https://target"]
-      - ["check a specific port", "testssl.sh target:8443"]
-      - ["test known vulnerabilities only", "testssl.sh -U https://target"]
-      - ["list protocols + ciphers", "testssl.sh -p -E https://target"]
-    lab_safe_notes: >-
-      Only negotiates TLS handshakes — no exploitation and very light traffic, so it's
-      safe against any authorized host. Great for spotting weak ciphers/protocols
-      (Heartbleed, POODLE, etc.) without touching the app.
-
-  - title: "Arjun (HTTP Parameter Discovery)"
-    tags: [web, fuzzing, enumeration]
-    system_pkgs: {which: arjun, apt: arjun, pip: arjun}
-    usage:
-      - ["discover GET parameters", "arjun -u https://target/endpoint"]
-      - ["test POST parameters", "arjun -u https://target/api -m POST"]
-      - ["use a custom param wordlist", "arjun -u https://target/endpoint -w params.txt"]
-      - ["save results as JSON", "arjun -u https://target/endpoint -oJ params.json"]
-    lab_safe_notes: >-
-      Arjun guesses params in bulk, so it fires many requests — add -T (per-request
-      timeout) and keep threads modest on lab boxes. Point it at one authorized
-      endpoint at a time.
-
-  - title: "mitmproxy (Intercepting Proxy)"
-    tags: [web, mitm, sniffing]
-    system_pkgs: {which: mitmproxy, apt: mitmproxy, pip: mitmproxy, brew: mitmproxy}
-    usage:
-      - ["interactive TUI proxy", "mitmproxy"]
-      - ["browser-based web UI", "mitmweb"]
-      - ["non-interactive capture to file", "mitmdump -w flows.mitm"]
-      - ["run a modifying addon script", "mitmdump -s addon.py"]
-    lab_safe_notes: >-
-      mitmproxy only sees traffic you route through it — set your browser/system proxy
-      to 127.0.0.1:8080 and install its CA cert for TLS. Only intercept traffic to
-      authorized targets; it forwards nothing until you let it.
-
-# --- genuinely-missing, widely-used web tools --------------------------------
+- title: Dirb
+  tags:
+  - web
+  - enumeration
+  - bruteforce
+  - wordlist
+  system_pkgs:
+    which: dirb
+    apt: dirb
+  usage:
+  - - default wordlist scan
+    - dirb http://target/
+  - - pick a wordlist
+    - dirb http://target/ /usr/share/wordlists/dirb/common.txt
+  - - append file extensions
+    - dirb http://target/ -X .php,.txt
+  - - throttle between requests (ms)
+    - dirb http://target/ -z 100
+  lab_safe_notes: Directory brute-forcing sends one request per word — use -z to add
+    a delay so you don't flood a small lab box. Scope to the single target URL; -c
+    passes a session cookie for authenticated areas.
 tools:
-  - title: "WhatWeb (Web Fingerprinter)"
-    kind: install
-    tags: [web, fingerprint, recon, scanner]
-    description: "Identifies web technologies — CMS, frameworks, servers, JS libs — via 1800+ plugins."
-    system_pkgs: {which: whatweb, apt: whatweb, brew: whatweb}
-    install: {apt: whatweb}
-    run: ["whatweb --help"]
-    project_url: "https://github.com/urbanadventurer/WhatWeb"
-    usage:
-      - ["fingerprint a site", "whatweb https://target"]
-      - ["stealthy single-request scan", "whatweb -a 1 https://target"]
-      - ["aggressive plugin detection", "whatweb -a 3 https://target"]
-      - ["scan a list of hosts", "whatweb -i hosts.txt"]
-      - ["verbose plugin output", "whatweb -v https://target"]
-    lab_safe_notes: >-
-      -a 1 (passive/stealthy) sends a single request; -a 3/-a 4 add extra probes but
-      traffic stays light. Knowing the stack up front points you at the right exploit
-      path. Scope to authorized targets.
+- title: Arjun (HTTP Parameter Discovery)
+  kind: install
+  tags:
+  - web
+  - fuzzing
+  - enumeration
+  description: HTTP parameter discovery suite that finds hidden GET/POST parameters.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: arjun
+    apt: arjun
+    pip: arjun
+  install:
+    commands:
+    - pip install --user arjun
+  run:
+  - arjun --help
+  project_url: https://github.com/s0md3v/Arjun
+  usage:
+  - - discover GET parameters
+    - arjun -u https://target/endpoint
+  - - test POST parameters
+    - arjun -u https://target/api -m POST
+  - - use a custom param wordlist
+    - arjun -u https://target/endpoint -w params.txt
+  - - save results as JSON
+    - arjun -u https://target/endpoint -oJ params.json
+  lab_safe_notes: Arjun guesses params in bulk, so it fires many requests — add -T
+    (per-request timeout) and keep threads modest on lab boxes. Point it at one authorized
+    endpoint at a time.
+- title: Blazy(Also Find ClickJacking)
+  kind: resource
+  tags:
+  - web
+  - bruteforce
+  - password-attack
+  description: Blazy is a modern login page bruteforcer
+  url: https://github.com/UltimateHackers/Blazy
+  archived: true
+  archived_reason: Python 2 only (pip2.7/python2.7). Repo archived/unmaintained.
+  supported_os:
+  - linux
+  - macos
+  project_url: https://github.com/UltimateHackers/Blazy
+  usage:
+  - - run Blazy(Also Find ClickJacking)
+    - https://github.com/UltimateHackers/Blazy
+- title: Caido (Web Security Auditing)
+  kind: install
+  tags:
+  - web
+  - scanner
+  - crawler
+  description: Lightweight, modern web security auditing toolkit — Burp Suite alternative
+    written in Rust.
+  supported_os:
+  - linux
+  system_pkgs:
+    which: caido-cli
+  install:
+    commands:
+    - sudo tar xzf {file} -C /usr/local/bin
+  run:
+  - caido-cli --help
+  project_url: https://github.com/caido/caido
+  usage:
+  - - run Caido (Web Security Auditing)
+    - caido-cli --help
+- title: CheckURL
+  kind: install
+  tags:
+  - web
+  - phishing
+  - lookup
+  description: "Detect evil urls that uses IDN Homograph Attack.\n\t[!] python3 checkURL.py\
+    \ --url google.com"
+  archived: true
+  archived_reason: Upstream repo archived by author (last commit 2018-01)
+  supported_os:
+  - linux
+  - macos
+  install:
+    commands:
+    - git clone https://github.com/UndeadSec/checkURL.git
+  run:
+  - cd checkURL && python3 checkURL.py --help
+  project_url: https://github.com/UndeadSec/checkURL
+  usage:
+  - - run CheckURL
+    - cd checkURL && python3 checkURL.py --help
+- title: Dirsearch (Web Path Discovery)
+  kind: install
+  tags:
+  - web
+  - enumeration
+  - bruteforce
+  - wordlist
+  description: Web path brute-forcing tool for discovering directories and files on
+    web servers.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: dirsearch
+    apt: dirsearch
+    pip: dirsearch
+  install:
+    commands:
+    - pip install --user dirsearch
+  run:
+  - dirsearch --help
+  project_url: https://github.com/maurosoria/dirsearch
+  usage:
+  - - scan a URL
+    - dirsearch -u https://target
+  - - probe extensions
+    - dirsearch -u https://target -e php,html,js
+  - - custom wordlist + threads
+    - dirsearch -u https://target -w wordlist.txt -t 20
+  - - throttle between requests
+    - dirsearch -u https://target --delay 0.2
+  lab_safe_notes: Keep -t low and add --delay to be gentle on lab boxes; avoid -r
+    (recursive) on large sites to limit request volume. Scope -u to the single authorized
+    target.
+- title: Feroxbuster (Directory Brute Force)
+  kind: install
+  tags:
+  - web
+  - enumeration
+  - bruteforce
+  - wordlist
+  description: 'Fast, recursive content discovery tool written in Rust.
 
-  - title: "WPScan (WordPress Scanner)"
-    kind: install
-    tags: [web, vuln-scan, scanner, enumeration]
-    description: "Black-box WordPress security scanner — enumerates users, plugins, themes and known CVEs."
-    system_pkgs: {which: wpscan, apt: wpscan}
-    install: {apt: wpscan}
-    run: ["wpscan --help"]
-    project_url: "https://github.com/wpscanteam/wpscan"
-    usage:
-      - ["scan a WordPress site", "wpscan --url https://target"]
-      - ["enumerate users", "wpscan --url https://target -e u"]
-      - ["enumerate vulnerable plugins", "wpscan --url https://target -e vp"]
-      - ["throttle requests (ms between)", "wpscan --url https://target --throttle 500"]
-      - ["password-guess a known user", "wpscan --url https://target -U admin -P rockyou.txt"]
-      - ["use the vuln DB (free API token)", "wpscan --url https://target --api-token TOKEN"]
-    lab_safe_notes: >-
-      Enumeration is active (many requests) — use --throttle and scope --url to the
-      target. The -P password attack hammers the login form, so run it only against
-      authorized boxes. A free WPScan API token unlocks real CVE data.
+    Usage: feroxbuster -u https://example.com -w wordlist.txt'
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: feroxbuster
+    apt: feroxbuster
+    brew: feroxbuster
+  install:
+    commands:
+    - command -v brew >/dev/null 2>&1 && brew install feroxbuster || sudo apt-get
+      install -y feroxbuster
+  run:
+  - feroxbuster -h
+  project_url: https://github.com/epi052/feroxbuster
+  usage:
+  - - recursive content discovery
+    - feroxbuster -u https://target
+  - - choose a wordlist
+    - feroxbuster -u https://target -w /usr/share/wordlists/dirb/common.txt
+  - - probe for extensions
+    - feroxbuster -u https://target -x php,txt,html
+  - - cap depth + rate on labs
+    - feroxbuster -u https://target -d 2 --rate-limit 50
+  lab_safe_notes: Recursion is on by default and can explode request counts — cap
+    it with -d and throttle with --rate-limit on small boxes. Scope -u to the single
+    authorized host.
+- title: ffuf (Web Fuzzer)
+  kind: install
+  tags:
+  - web
+  - fuzzing
+  - enumeration
+  - wordlist
+  description: 'Fast web fuzzer — content discovery, parameter fuzzing, vhost discovery.
 
-# --- high-value web-exploitation references ----------------------------------
-  - title: "PortSwigger Web Security Academy"
-    kind: resource
-    tags: [learning, web, reference]
-    description: "Free, hands-on labs + guides for every major web vuln class, from the makers of Burp Suite."
-    url: "https://portswigger.net/web-security"
+    Usage: ffuf -w wordlist.txt -u https://example.com/FUZZ'
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: ffuf
+    apt: ffuf
+    go: github.com/ffuf/ffuf/v2@latest
+  install:
+    commands:
+    - go install -v github.com/ffuf/ffuf/v2@latest
+  run:
+  - ffuf -h
+  project_url: https://github.com/ffuf/ffuf
+  usage:
+  - - directory/file discovery
+    - ffuf -w wordlist.txt -u https://target/FUZZ
+  - - keep only real hits
+    - ffuf -w wordlist.txt -u https://target/FUZZ -mc 200,301,302
+  - - virtual-host fuzzing
+    - 'ffuf -w subs.txt -u https://target -H ''Host: FUZZ.target'''
+  - - POST body parameter fuzz
+    - ffuf -w wordlist.txt -X POST -d 'user=FUZZ' -u https://target/login
+  - - rate-limit requests/sec
+    - ffuf -w wordlist.txt -u https://target/FUZZ -rate 50
+  lab_safe_notes: Use -rate (and -p for a per-request delay) so you don't hammer a
+    lab VM, and -fc/-fs/-mc to filter noise. FUZZ marks the injection point; scope
+    the URL to the authorized target.
+- title: Gobuster (Dir/DNS/Vhost Brute Force)
+  kind: install
+  tags:
+  - web
+  - enumeration
+  - bruteforce
+  - dns
+  - wordlist
+  description: Directory/file, DNS, and vhost brute-forcing tool written in Go.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: gobuster
+    apt: gobuster
+    go: github.com/OJ/gobuster/v3@latest
+  install:
+    commands:
+    - go install github.com/OJ/gobuster/v3@latest
+  run:
+  - gobuster --help
+  project_url: https://github.com/OJ/gobuster
+  usage:
+  - - directory/file brute-force
+    - gobuster dir -u https://target -w wordlist.txt
+  - - DNS subdomain brute-force
+    - gobuster dns -d example.com -w subdomains.txt
+  - - virtual-host discovery
+    - gobuster vhost -u https://target -w subdomains.txt
+  - - probe extensions
+    - gobuster dir -u https://target -w wordlist.txt -x php,html
+  lab_safe_notes: Throttle with --delay and lower -t (threads) on small VMs. dns mode
+    queries resolvers rather than the host itself; dir/vhost hit the target directly,
+    so scope -u to the authorized host.
+- title: Katana (Web Crawler)
+  kind: install
+  tags:
+  - web
+  - crawler
+  - recon
+  - enumeration
+  description: 'Next-generation crawling and spidering framework from ProjectDiscovery.
 
-  - title: "PayloadsAllTheThings"
-    kind: resource
-    tags: [cheatsheet, reference, payload, web]
-    description: "Massive repo of payloads and bypass techniques for web attacks — SQLi, XSS, SSTI, SSRF, upload, and more."
-    url: "https://github.com/swisskyrepo/PayloadsAllTheThings"
+    Usage: katana -u https://example.com'
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: katana
+    go: github.com/projectdiscovery/katana/cmd/katana@latest
+  install:
+    commands:
+    - go install -v github.com/projectdiscovery/katana/cmd/katana@latest
+  run:
+  - katana -h
+  project_url: https://github.com/projectdiscovery/katana
+  usage:
+  - - crawl a site
+    - katana -u https://target
+  - - headless crawl (renders JS)
+    - katana -u https://target -headless
+  - - depth cap + JS endpoint parsing
+    - katana -u https://target -d 3 -jc
+  - - save discovered endpoints
+    - katana -u https://target -o endpoints.txt
+  lab_safe_notes: Request volume scales with site size — cap with -d and throttle
+    with -rl/-rate on labs. Crawling only touches the target you pass; feed its output
+    into ffuf or nuclei. Scope to authorized hosts.
+- title: mitmproxy (Intercepting Proxy)
+  kind: install
+  tags:
+  - web
+  - mitm
+  - sniffing
+  description: Interactive TLS-capable intercepting HTTP proxy for pentesters and
+    developers.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: mitmproxy
+    apt: mitmproxy
+    pip: mitmproxy
+    brew: mitmproxy
+  install:
+    commands:
+    - pip install --user mitmproxy
+  run:
+  - mitmproxy --version
+  project_url: https://github.com/mitmproxy/mitmproxy
+  usage:
+  - - interactive TUI proxy
+    - mitmproxy
+  - - browser-based web UI
+    - mitmweb
+  - - non-interactive capture to file
+    - mitmdump -w flows.mitm
+  - - run a modifying addon script
+    - mitmdump -s addon.py
+  lab_safe_notes: mitmproxy only sees traffic you route through it — set your browser/system
+    proxy to 127.0.0.1:8080 and install its CA cert for TLS. Only intercept traffic
+    to authorized targets; it forwards nothing until you let it.
+- title: Nikto (Web Server Scanner)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - scanner
+  description: 'Scan web servers for dangerous files, outdated software, misconfigurations.
 
-  - title: "HackTricks"
-    kind: resource
-    tags: [cheatsheet, reference, web, privesc]
-    description: "Go-to pentest wiki: methodology and copy-paste commands for web, network, cloud and privilege escalation."
-    url: "https://book.hacktricks.xyz/"
+    Usage: nikto -h https://example.com'
+  supported_os:
+  - linux
+  system_pkgs:
+    which: nikto
+    apt: nikto
+  install:
+    commands:
+    - sudo apt-get install -y nikto
+  run:
+  - nikto -Help
+  project_url: https://github.com/sullo/nikto
+  usage:
+  - - scan a host
+    - nikto -h https://target
+  - - scan a non-standard TLS port
+    - nikto -h target -p 8443 -ssl
+  - - save an HTML report
+    - nikto -h https://target -o report.html -Format htm
+  - - select test categories
+    - nikto -h https://target -Tuning 1234
+  lab_safe_notes: Nikto is deliberately noisy (thousands of probes) and will trip
+    IDS — expected and fine in a lab. Scope -h to the target; use -Pause to slow down
+    and -Tuning to run only the checks you need.
+- title: Nuclei (Vulnerability Scanner)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - scanner
+  description: 'Fast, template-based vulnerability scanner used by 50k+ security teams.
 
-  - title: "revshells.com (Reverse Shell Generator)"
-    kind: resource
-    tags: [reverse-shell, cheatsheet, online-service, web]
-    description: "Generate reverse/bind shell one-liners in any language with your IP/port — plus listener and upgrade tips."
-    url: "https://www.revshells.com/"
+    Usage: nuclei -u https://example.com'
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: nuclei
+    go: github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+  install:
+    commands:
+    - go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+    - nuclei -update-templates
+  run:
+  - nuclei -h
+  project_url: https://github.com/projectdiscovery/nuclei
+  usage:
+  - - scan a single URL
+    - nuclei -u https://target
+  - - scan a list of targets
+    - nuclei -l urls.txt
+  - - focus on high/critical only
+    - nuclei -u https://target -severity critical,high
+  - - select template tags
+    - nuclei -u https://target -tags cve,exposure
+  - - rate-limit requests/sec
+    - nuclei -u https://target -rl 50
+  lab_safe_notes: Run `nuclei -update-templates` first. Some templates are intrusive
+    — narrow with -severity/-tags and throttle with -rl and -c on lab networks. Templates
+    only hit the hosts you pass; scope to authorized targets.
+- title: OWASP ZAP (Web App Scanner)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - scanner
+  - fuzzing
+  description: Full-featured web application security scanner — proxy, spider, fuzzer,
+    scanner.
+  supported_os:
+  - linux
+  system_pkgs:
+    which: zaproxy
+    apt: zaproxy
+  install:
+    commands:
+    - sudo apt-get install -y zaproxy
+  run:
+  - zaproxy --help
+  project_url: https://github.com/zaproxy/zaproxy
+  usage:
+  - - launch the GUI proxy/scanner
+    - zaproxy
+  - - headless daemon (API on 8080)
+    - zaproxy -daemon -host 127.0.0.1 -port 8080
+  - - scripted quick scan to a report
+    - zaproxy -cmd -quickurl https://target -quickout report.html
+  lab_safe_notes: Passive spidering/scanning is gentle and safe. The ACTIVE scan sends
+    real attack payloads — run it only against authorized targets and set the ZAP
+    context/scope so it can't wander off the box.
+- title: Skipfish
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - scanner
+  - crawler
+  description: "Skipfish – Fully automated, active web application security reconnaissance\
+    \ tool \n Usage: skipfish -o [FolderName] targetip/site"
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: skipfish
+    apt: skipfish
+  install: {}
+  run:
+  - sudo skipfish -h
+  - echo "skipfish -o [FolderName] targetip/site"|boxes -d headline | lolcat
+  usage:
+  - - crawl + audit a site to a report dir
+    - skipfish -o out/ http://target/
+  - - use a request-word dictionary
+    - skipfish -o out/ -S /usr/share/skipfish/dictionaries/minimal.wl http://target/
+  - - authenticated scan via cookie
+    - skipfish -o out/ -C 'session=VALUE' http://target/
+  - - cap request rate to be gentle
+    - skipfish -o out/ -l 20 http://target/
+  lab_safe_notes: Skipfish is a fully active scanner and generates heavy traffic —
+    scope it to a single authorized target and use -l to cap requests/sec on small
+    lab VMs. The HTML report lands in the -o directory.
+- title: SubDomain Finder
+  kind: install
+  tags:
+  - subdomain-enum
+  - recon
+  - osint
+  - dns
+  description: "Sublist3r is a python tool designed to enumerate subdomains of websites\
+    \ using OSINT \n Usage:\n\t[1] python3 sublist3r.py -d example.com \n[2] python3\
+    \ sublist3r.py -d example.com -p 80,443"
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: sublist3r
+    apt: sublist3r
+  install:
+    commands:
+    - sudo pip3 install requests argparse dnspython
+    - git clone https://github.com/aboul3la/Sublist3r.git
+    - cd Sublist3r && sudo pip3 install -r requirements.txt
+  run:
+  - cd Sublist3r && python3 sublist3r.py -h
+  project_url: https://github.com/aboul3la/Sublist3r
+  usage:
+  - - enumerate subdomains (passive OSINT)
+    - python3 sublist3r.py -d example.com
+  - - add DNS brute-force
+    - python3 sublist3r.py -d example.com -b
+  - - limit to specific engines
+    - python3 sublist3r.py -d example.com -e google,bing
+  - - port-check discovered hosts
+    - python3 sublist3r.py -d example.com -p 80,443
+  lab_safe_notes: The default run is passive — it only queries public OSINT/search
+    sources, so it's safe pre-engagement recon. -b adds active DNS queries; still
+    light. Only enumerate domains you're authorized to test.
+- title: Sub-Domain TakeOver
+  kind: install
+  tags:
+  - subdomain-enum
+  - web
+  - vuln-scan
+  description: "Sub-domain takeover vulnerability occur when a sub-domain \n (subdomain.example.com)\
+    \ is pointing to a service (e.g: GitHub, AWS/S3,..)\nthat has been removed or\
+    \ deleted.\nUsage:python3 takeover.py -d www.domain.com -v"
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: takeover
+  install:
+    commands:
+    - git clone https://github.com/edoardottt/takeover.git
+    - cd takeover && pip install --user .
+  project_url: https://github.com/edoardottt/takeover
+  usage:
+  - - check one domain (verbose)
+    - python3 takeover.py -d www.domain.com -v
+  - - check a list of subdomains
+    - python3 takeover.py -l subdomains.txt
+  - - tune concurrency
+    - python3 takeover.py -l subdomains.txt -t 20
+  lab_safe_notes: Only inspects CNAME chains and service fingerprints of dangling
+    records — very low traffic and non-destructive. Confirm a flagged takeover manually
+    before reporting, and stay within authorized domains.
+- title: testssl.sh (TLS/SSL Checker)
+  kind: install
+  tags:
+  - web
+  - scanner
+  - fingerprint
+  description: Check TLS/SSL ciphers, protocols, and cryptographic flaws on any port.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: testssl.sh
+    apt: testssl.sh
+  install:
+    commands:
+    - git clone https://github.com/drwetter/testssl.sh.git
+  run:
+  - cd testssl.sh && ./testssl.sh --help
+  project_url: https://github.com/drwetter/testssl.sh
+  usage:
+  - - full TLS/SSL assessment
+    - testssl.sh https://target
+  - - check a specific port
+    - testssl.sh target:8443
+  - - test known vulnerabilities only
+    - testssl.sh -U https://target
+  - - list protocols + ciphers
+    - testssl.sh -p -E https://target
+  lab_safe_notes: Only negotiates TLS handshakes — no exploitation and very light
+    traffic, so it's safe against any authorized host. Great for spotting weak ciphers/protocols
+    (Heartbleed, POODLE, etc.) without touching the app.
+- title: wafw00f (WAF Detector)
+  kind: install
+  tags:
+  - web
+  - fingerprint
+  - recon
+  description: 'Fingerprint and identify Web Application Firewalls (WAF).
+
+    Usage: wafw00f https://example.com'
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: wafw00f
+    apt: wafw00f
+    pip: wafw00f
+  install:
+    commands:
+    - git clone https://github.com/EnableSecurity/wafw00f.git
+    - cd wafw00f && pip install --user .
+  run:
+  - wafw00f --help
+  project_url: https://github.com/EnableSecurity/wafw00f
+  usage:
+  - - detect a WAF
+    - wafw00f https://target
+  - - list detectable WAFs
+    - wafw00f -l
+  - - verbose fingerprint
+    - wafw00f https://target -v
+  lab_safe_notes: Sends only a handful of probe requests, so it's a light, safe first
+    step before heavier scanning. Knowing the WAF up front tells you what evasion/throttling
+    you may need.
+- title: WhatWeb (Web Fingerprinter)
+  kind: install
+  tags:
+  - web
+  - fingerprint
+  - recon
+  - scanner
+  description: Identifies web technologies — CMS, frameworks, servers, JS libs — via
+    1800+ plugins.
+  system_pkgs:
+    which: whatweb
+    apt: whatweb
+    brew: whatweb
+  install:
+    apt: whatweb
+  run:
+  - whatweb --help
+  project_url: https://github.com/urbanadventurer/WhatWeb
+  usage:
+  - - fingerprint a site
+    - whatweb https://target
+  - - stealthy single-request scan
+    - whatweb -a 1 https://target
+  - - aggressive plugin detection
+    - whatweb -a 3 https://target
+  - - scan a list of hosts
+    - whatweb -i hosts.txt
+  - - verbose plugin output
+    - whatweb -v https://target
+  lab_safe_notes: -a 1 (passive/stealthy) sends a single request; -a 3/-a 4 add extra
+    probes but traffic stays light. Knowing the stack up front points you at the right
+    exploit path. Scope to authorized targets.
+- title: WPScan (WordPress Scanner)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - scanner
+  - enumeration
+  description: Black-box WordPress security scanner — enumerates users, plugins, themes
+    and known CVEs.
+  system_pkgs:
+    which: wpscan
+    apt: wpscan
+  install:
+    apt: wpscan
+  run:
+  - wpscan --help
+  project_url: https://github.com/wpscanteam/wpscan
+  usage:
+  - - scan a WordPress site
+    - wpscan --url https://target
+  - - enumerate users
+    - wpscan --url https://target -e u
+  - - enumerate vulnerable plugins
+    - wpscan --url https://target -e vp
+  - - throttle requests (ms between)
+    - wpscan --url https://target --throttle 500
+  - - password-guess a known user
+    - wpscan --url https://target -U admin -P rockyou.txt
+  - - use the vuln DB (free API token)
+    - wpscan --url https://target --api-token TOKEN
+  lab_safe_notes: Enumeration is active (many requests) — use --throttle and scope
+    --url to the target. The -P password attack hammers the login form, so run it
+    only against authorized boxes. A free WPScan API token unlocks real CVE data.
+- title: Kiterunner (API Endpoint Discovery)
+  kind: install
+  tags:
+  - web
+  - api
+  - fuzzing
+  - enumeration
+  description: Contextual API endpoint and route discovery using Assetnote's Swagger/OpenAPI-trained
+    wordlists rather than flat path guessing.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: kr
+    brew: kiterunner
+    go: github.com/assetnote/kiterunner/cmd/kr@latest
+  install:
+    go: github.com/assetnote/kiterunner/cmd/kr@latest
+  run:
+  - kr --help
+  project_url: https://github.com/assetnote/kiterunner
+  usage:
+  - - scan an API with Assetnote routes wordlist
+    - kr scan https://target -w routes-large.kite
+  - - brute-force with a standard wordlist
+    - kr brute https://target -w wordlist.txt
+  lab_safe_notes: Sends active HTTP requests across methods (GET/POST/PUT/DELETE) —
+    throttle with -x and scope strictly to authorized API targets.
+- title: hakrawler (Fast Web Crawler)
+  kind: install
+  tags:
+  - web
+  - crawler
+  - recon
+  - enumeration
+  description: Fast Go web spider for discovering endpoints, subdomains, and JS files
+    by piping URLs on stdin.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: hakrawler
+    go: github.com/hakluke/hakrawler@latest
+  install:
+    go: github.com/hakluke/hakrawler@latest
+  run:
+  - hakrawler -h
+  project_url: https://github.com/hakluke/hakrawler
+  usage:
+  - - crawl a URL to depth 2
+    - echo https://target | hakrawler -d 2
+  - - include subdomains and emit JSON
+    - echo https://target | hakrawler -subs -json
+  lab_safe_notes: Actively spiders links on the target — cap depth (-d) and threads
+    (-t) on small lab targets.
+- title: interactsh-client (OOB Interaction Client)
+  kind: install
+  tags:
+  - web
+  - api
+  - vuln-scan
+  - recon
+  description: Out-of-band (OOB) interaction client for confirming blind SSRF, blind
+    XSS, XXE, and DNS/HTTP callbacks during authorized testing.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: interactsh-client
+    go: github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
+  install:
+    go: github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
+  run:
+  - interactsh-client -version
+  project_url: https://github.com/projectdiscovery/interactsh
+  usage:
+  - - start an OOB callback listener
+    - interactsh-client
+  - - log interactions as JSONL
+    - interactsh-client -json -o interactions.jsonl
+  lab_safe_notes: Listens passively on an OOB domain you control; only inject callback
+    URLs into authorized targets.
+- title: jwt_tool (JWT Security Auditor)
+  kind: install
+  tags:
+  - web
+  - api
+  - vuln-scan
+  - scanner
+  description: Toolkit for validating, forging, scanning, and tampering with JSON Web
+    Tokens (alg:none, weak HMAC secrets, kid injection, JWKS spoofing).
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: jwt_tool.py
+  install:
+    commands:
+    - git clone https://github.com/ticarpi/jwt_tool.git
+    - cd jwt_tool && python3 -m pip install --user -r requirements.txt
+  run:
+  - python3 jwt_tool.py --help
+  project_url: https://github.com/ticarpi/jwt_tool
+  usage:
+  - - decode and inspect a JWT offline
+    - python3 jwt_tool.py <JWT>
+  - - run known-vulnerability checks against a target endpoint
+    - python3 jwt_tool.py -t https://target/api/me -rh "Authorization: Bearer <JWT>" -M at
+  - - dictionary-crack a weak HMAC secret offline
+    - python3 jwt_tool.py <JWT> -C -d wordlist.txt
+  lab_safe_notes: Decoding and dictionary cracking (`-C`) are completely offline. Active
+    tampering (`-M at`) sends modified tokens to the target — authorized targets only.
+- title: clairvoyance (GraphQL Schema Enumerator)
+  kind: install
+  tags:
+  - web
+  - api
+  - enumeration
+  - recon
+  description: Recovers GraphQL schemas even when introspection is disabled, using
+    field/type suggestion error messages.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: clairvoyance
+  install:
+    pip: clairvoyance
+  run:
+  - clairvoyance --help
+  project_url: https://github.com/nikitastupin/clairvoyance
+  usage:
+  - - reconstruct schema from a GraphQL endpoint
+    - clairvoyance https://target/graphql -o schema.json
+  lab_safe_notes: Sends probe queries to enumerate GraphQL fields — use -w/-c concurrency
+    limits and scope strictly to authorized APIs.
+- title: graphql-cop (GraphQL Security Auditor)
+  kind: install
+  tags:
+  - web
+  - api
+  - vuln-scan
+  - scanner
+  description: Automated GraphQL security testing tool checking for introspection,
+    field suggestions, batching, alias overloading, and CSRF.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: graphql-cop.py
+  install:
+    commands:
+    - git clone https://github.com/dolevf/graphql-cop.git
+    - cd graphql-cop && python3 -m pip install --user -r requirements.txt
+  run:
+  - python3 graphql-cop.py --help
+  project_url: https://github.com/dolevf/graphql-cop
+  usage:
+  - - audit a GraphQL endpoint
+    - python3 graphql-cop.py -t https://target/graphql
+  lab_safe_notes: Sends active GraphQL misconfiguration probes — authorize the target
+    before running.
+- title: Smuggler (HTTP Request Smuggling)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - scanner
+  description: Detects HTTP Request Smuggling (CL.TE and TE.CL) desynchronization
+    issues on reverse proxies and load balancers.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: smuggler.py
+  install:
+    git: https://github.com/defparam/smuggler.git
+  run:
+  - python3 smuggler.py --help
+  project_url: https://github.com/defparam/smuggler
+  usage:
+  - - test a target URL for request smuggling
+    - python3 smuggler.py -u https://target
+  lab_safe_notes: Sends crafted HTTP desync probes — test only against authorized
+    staging or scoped targets.
+- title: SSTImap (SSTI Detection & Exploitation)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - exploitation
+  - scanner
+  description: Interactive Server-Side Template Injection (SSTI) scanner supporting
+    Jinja2, Twig, Freemarker, Velocity, Mako, and ERB templates.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: sstimap.py
+  install:
+    commands:
+    - git clone https://github.com/vladko312/SSTImap.git
+    - cd SSTImap && python3 -m pip install --user -r requirements.txt
+  run:
+  - python3 sstimap.py --help
+  project_url: https://github.com/vladko312/SSTImap
+  usage:
+  - - detect SSTI in a URL parameter
+    - python3 sstimap.py -u 'https://target/page?name=test'
+  - - crawl and test forms automatically
+    - python3 sstimap.py -u https://target -c 2 -f
+  lab_safe_notes: Sends template evaluation probes — run only against authorized targets
+    and avoid `--os-shell` outside explicit exploitation scope.
+- title: CRLFuzz (CRLF Injection Scanner)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - scanner
+  description: Fast Go scanner for detecting CRLF (Carriage Return Line Feed) injection
+    and HTTP response splitting across URL lists.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: crlfuzz
+    go: github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest
+  install:
+    go: github.com/dwisiswant0/crlfuzz/cmd/crlfuzz@latest
+  run:
+  - crlfuzz -h
+  project_url: https://github.com/dwisiswant0/crlfuzz
+  usage:
+  - - scan a single URL for CRLF injection
+    - crlfuzz -u https://target
+  - - scan a list of URLs silently
+    - crlfuzz -l urls.txt -s
+  lab_safe_notes: Sends header-injection test payloads — scope strictly to authorized
+    URLs.
+- title: grpcurl (gRPC CLI Client)
+  kind: install
+  tags:
+  - web
+  - api
+  - recon
+  - enumeration
+  description: Like curl for gRPC — lets you invoke gRPC methods and inspect protobuf
+    services on reflection-enabled endpoints.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: grpcurl
+    brew: grpcurl
+    go: github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+  install:
+    go: github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+  run:
+  - grpcurl --help
+  project_url: https://github.com/fullstorydev/grpcurl
+  usage:
+  - - list exposed gRPC services via reflection
+    - grpcurl -plaintext target:50051 list
+  - - describe a gRPC service schema
+    - grpcurl -plaintext target:50051 describe package.Service
+  lab_safe_notes: Uses gRPC server reflection to list methods read-only; invoking
+    mutating RPCs should only target authorized endpoints.
+- title: websocat (WebSocket CLI Client)
+  kind: install
+  tags:
+  - web
+  - api
+  - network
+  description: Netcat/curl-style CLI client and proxy for interactive WebSocket
+    testing, framing inspection, and automation.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: websocat
+    brew: websocat
+    apt: websocat
+  install:
+    brew: websocat
+  run:
+  - websocat --version
+  project_url: https://github.com/vi/websocat
+  usage:
+  - - connect to a WebSocket endpoint interactively
+    - websocat wss://target/ws
+  lab_safe_notes: Connects interactively to WebSocket endpoints you are authorized to
+    test.
+- title: mitmproxy2swagger (Traffic-to-OpenAPI Generator)
+  kind: install
+  tags:
+  - web
+  - api
+  - enumeration
+  description: Converts mitmproxy flow captures or HAR files into OpenAPI 3.0
+    (Swagger) specifications automatically for API testing.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: mitmproxy2swagger
+  install:
+    pip: mitmproxy2swagger
+  run:
+  - mitmproxy2swagger --help
+  project_url: https://github.com/alufers/mitmproxy2swagger
+  usage:
+  - - generate an OpenAPI spec from a HAR capture
+    - mitmproxy2swagger -i flows.har -o openapi.yml -p https://api.target.com
+  lab_safe_notes: Purely offline conversion of your own captured traffic logs.
+- title: cariddi (Endpoint, Secret & API Crawler)
+  kind: install
+  tags:
+  - web
+  - recon
+  - scanner
+  description: Fast Go web crawler that takes URLs from stdin and hunts for endpoints,
+    secrets, API keys, file extensions, and error patterns.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: cariddi
+    go: github.com/edoardottt/cariddi/cmd/cariddi@latest
+  install:
+    go: github.com/edoardottt/cariddi/cmd/cariddi@latest
+  run:
+  - cariddi -h
+  project_url: https://github.com/edoardottt/cariddi
+  usage:
+  - - crawl URLs for endpoints and secrets
+    - cat urls.txt | cariddi -s -e
+  - - hunt for interesting extensions and errors
+    - echo https://target.example | cariddi -ext 2 -err
+  lab_safe_notes: Crawls HTTP responses on the supplied targets — run only against
+    domains within written scope.
+- title: waymore (Comprehensive Archive URL Finder)
+  kind: install
+  tags:
+  - web
+  - osint
+  - recon
+  description: Queries Wayback Machine, Common Crawl, AlienVault OTX, URLScan, and
+    VirusTotal to gather historical URLs and archived responses.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: waymore
+  install:
+    pipx: waymore
+  run:
+  - waymore --help
+  project_url: https://github.com/xnl-h4ck3r/waymore
+  usage:
+  - - collect passive historical URLs for a domain
+    - waymore -i example.com -mode U -oU waymore_urls.txt
+  lab_safe_notes: Passive archive queries by default (`-mode U`); avoid `-mode R`
+    downloading third-party responses outside authorized scope.
+- title: PortSwigger Web Security Academy
+  kind: resource
+  tags:
+  - learning
+  - web
+  - reference
+  description: Free, hands-on labs + guides for every major web vuln class, from the
+    makers of Burp Suite.
+  url: https://portswigger.net/web-security
+- title: PayloadsAllTheThings
+  kind: resource
+  tags:
+  - cheatsheet
+  - reference
+  - payload
+  - web
+  description: Massive repo of payloads and bypass techniques for web attacks — SQLi,
+    XSS, SSTI, SSRF, upload, and more.
+  url: https://github.com/swisskyrepo/PayloadsAllTheThings
+- title: HackTricks
+  kind: resource
+  tags:
+  - cheatsheet
+  - reference
+  - web
+  - privesc
+  description: 'Go-to pentest wiki: methodology and copy-paste commands for web, network,
+    cloud and privilege escalation.'
+  url: https://book.hacktricks.xyz/
+- title: revshells.com (Reverse Shell Generator)
+  kind: resource
+  tags:
+  - reverse-shell
+  - cheatsheet
+  - online-service
+  - web
+  description: Generate reverse/bind shell one-liners in any language with your IP/port
+    — plus listener and upgrade tips.
+  url: https://www.revshells.com/

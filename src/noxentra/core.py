@@ -1,11 +1,20 @@
+import contextlib
 import logging
 import os
+import select
 import shutil
 import subprocess
+import threading
 import webbrowser
+
+try:
+    import pty
+except ImportError:  # Windows
+    pty = None  # type: ignore[assignment]
 from collections.abc import Callable
 from functools import lru_cache
 from platform import system
+from typing import ClassVar
 
 from rich import box
 from rich.console import Console
@@ -80,15 +89,147 @@ def _cmd_logger() -> logging.Logger:
     from platformdirs import user_log_dir
 
     log_dir = Path(user_log_dir("noxentra"))
-    log_dir.mkdir(parents=True, exist_ok=True)
     logger = logging.getLogger("noxentra.commands")
     logger.setLevel(logging.INFO)
     logger.propagate = False  # don't leak into root/console
     if not logger.handlers:
-        handler = logging.FileHandler(log_dir / "commands.log")
-        handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
-        logger.addHandler(handler)
+        try:
+            log_dir.mkdir(parents=True, exist_ok=True)
+            handler: logging.Handler = logging.FileHandler(log_dir / "commands.log")
+            handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+            logger.addHandler(handler)
+        except OSError:
+            logger.addHandler(logging.NullHandler())
     return logger
+
+
+_live_tls = threading.local()
+
+
+class _LiveWriter:
+    """Line-buffered writer that forwards Rich console output to a live callback."""
+
+    def __init__(self, on_line: Callable[[str], None]):
+        self._on_line = on_line
+        self._buf = ""
+
+    def write(self, s: str) -> int:
+        self._buf += s
+        while "\n" in self._buf:
+            line, self._buf = self._buf.split("\n", 1)
+            self._on_line(line)
+        return len(s)
+
+    def flush(self) -> None:
+        if self._buf:
+            self._on_line(self._buf)
+            self._buf = ""
+
+    def isatty(self) -> bool:
+        return False
+
+
+@contextlib.contextmanager
+def live_execution(
+    on_output: Callable[[str], None],
+    stop_event: threading.Event | None = None,
+    on_progress: Callable[[str], None] | None = None,
+):
+    """Stream Rich console prints and `_run_shell` subprocess output to `on_output`."""
+    prev_out = getattr(_live_tls, "on_output", None)
+    prev_prog = getattr(_live_tls, "on_progress", None)
+    prev_stop = getattr(_live_tls, "stop_event", None)
+    prev_rc = getattr(_live_tls, "last_rc", 0)
+    prev_file = console.file
+    writer = _LiveWriter(on_output)
+    _live_tls.on_output = on_output
+    _live_tls.on_progress = on_progress or on_output
+    _live_tls.stop_event = stop_event
+    _live_tls.last_rc = 0
+    console.file = writer
+    try:
+        yield
+    finally:
+        writer.flush()
+        console.file = prev_file
+        _live_tls.on_output = prev_out
+        _live_tls.on_progress = prev_prog
+        _live_tls.stop_event = prev_stop
+        _live_tls.last_rc = prev_rc
+
+
+def last_exit_code() -> int:
+    """Return the exit code of the last `_run_shell` call on this thread."""
+    return int(getattr(_live_tls, "last_rc", 0))
+
+
+def _stream_pty(
+    cmd: str,
+    on_output: Callable[[str], None],
+    on_progress: Callable[[str], None],
+    stop_event: threading.Event | None,
+) -> int:
+    """Run `cmd` attached to a real PTY so tools flush lines and progress live."""
+    assert pty is not None
+    master_fd, slave_fd = pty.openpty()
+    env = {**os.environ, "PYTHONUNBUFFERED": "1", "TERM": os.environ.get("TERM", "xterm-256color")}
+    proc = subprocess.Popen(
+        cmd,
+        shell=True,
+        stdin=slave_fd,
+        stdout=slave_fd,
+        stderr=slave_fd,
+        env=env,
+        close_fds=True,
+    )
+    os.close(slave_fd)
+    buf = ""
+    try:
+        while True:
+            if stop_event is not None and stop_event.is_set() and proc.poll() is None:
+                try:
+                    proc.terminate()
+                except OSError:
+                    pass
+            ready, _, _ = select.select([master_fd], [], [], 0.1)
+            if ready:
+                try:
+                    chunk = os.read(master_fd, 4096)
+                except OSError:
+                    break
+                if not chunk:
+                    break
+                buf += chunk.decode("utf-8", errors="replace")
+                while True:
+                    idx_n = buf.find("\n")
+                    idx_r = buf.find("\r")
+                    if idx_n == -1 and idx_r == -1:
+                        break
+                    if idx_r != -1 and (idx_n == -1 or idx_r < idx_n):
+                        # `\r\n` is a normal newline; bare `\r` is an in-place progress update.
+                        if idx_r + 1 < len(buf) and buf[idx_r + 1] == "\n":
+                            line, buf = buf[:idx_r], buf[idx_r + 2:]
+                            on_output(line)
+                        else:
+                            line, buf = buf[:idx_r], buf[idx_r + 1:]
+                            if line.strip():
+                                on_progress(line)
+                    else:
+                        line, buf = buf[:idx_n], buf[idx_n + 1:]
+                        on_output(line)
+            elif proc.poll() is not None:
+                break
+    finally:
+        try:
+            os.close(master_fd)
+        except OSError:
+            pass
+    if buf.strip():
+        on_output(buf.rstrip("\r\n"))
+    rc = proc.wait()
+    if stop_event is not None and stop_event.is_set() and rc == 0:
+        return 130
+    return rc
 
 
 def _run_shell(cmd: str) -> int:
@@ -101,8 +242,61 @@ def _run_shell(cmd: str) -> int:
     ponytail: shell=True is intentional — opt-in commands the user selected, not
     attacker input.
     """
+    on_output = getattr(_live_tls, "on_output", None)
+    on_progress = getattr(_live_tls, "on_progress", on_output)
+    stop_event = getattr(_live_tls, "stop_event", None)
+    if on_output is not None:
+        try:
+            if pty is not None:
+                try:
+                    rc = _stream_pty(cmd, on_output, on_progress or on_output, stop_event)
+                    _live_tls.last_rc = rc
+                    _cmd_logger().info("exit=%s :: %s", rc, cmd)
+                    return rc
+                except OSError:
+                    pass  # fall back to PIPE if PTY allocation fails
+            proc = subprocess.Popen(
+                cmd,
+                shell=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                errors="replace",
+            )
+            if stop_event is not None:
+                def _watch():
+                    while proc.poll() is None:
+                        if stop_event.wait(0.1):
+                            try:
+                                proc.terminate()
+                                if proc.poll() is None:
+                                    stop_event.wait(0.3)
+                                    if proc.poll() is None:
+                                        proc.kill()
+                            except OSError:
+                                pass
+                            break
+                threading.Thread(target=_watch, daemon=True).start()
+            if proc.stdout is not None:
+                for line in iter(proc.stdout.readline, ""):
+                    on_output(line.rstrip("\r\n"))
+            rc = proc.wait()
+            if stop_event is not None and stop_event.is_set() and rc == 0:
+                rc = 130
+        except KeyboardInterrupt:
+            on_output("⚠ Interrupted.")
+            rc = 130
+        except OSError as exc:
+            on_output(f"✘ Failed to launch command: {exc}")
+            rc = 1
+        _live_tls.last_rc = rc
+        _cmd_logger().info("exit=%s :: %s", rc, cmd)
+        return rc
+
     try:
-        rc = subprocess.run(cmd, shell=True).returncode
+        rc = subprocess.run(cmd, shell=True, check=False).returncode
     except KeyboardInterrupt:
         console.print("\n[warning]⚠ Interrupted.[/warning]")
         rc = 130
@@ -135,19 +329,19 @@ def _show_inline_help():
 class Noxentra:
     TITLE: str              = ""
     DESCRIPTION: str        = ""
-    INSTALL_COMMANDS: list[str]  = []
-    UNINSTALL_COMMANDS: list[str] = []
-    RUN_COMMANDS: list[str]      = []
+    INSTALL_COMMANDS: ClassVar[list[str]]  = []
+    UNINSTALL_COMMANDS: ClassVar[list[str]] = []
+    RUN_COMMANDS: ClassVar[list[str]]      = []
     # Safe-fetch install (the vetted curl|bash replacement): download INSTALL_URL,
     # require + verify INSTALL_SHA256, then run INSTALL_COMMANDS with {file} → the
     # verified download. See _url_install().
     INSTALL_URL: str        = ""
     INSTALL_SHA256: str     = ""
-    OPTIONS: list[tuple[str, Callable]] = []
+    OPTIONS: ClassVar[list[tuple[str, Callable]]] = []
     PROJECT_URL: str        = ""
 
     # OS / capability metadata
-    SUPPORTED_OS: list[str] = ["linux", "macos"]
+    SUPPORTED_OS: ClassVar[list[str]] = ["linux", "macos"]
     REQUIRES_ROOT: bool     = False
     REQUIRES_WIFI: bool     = False
     REQUIRES_GO: bool       = False
@@ -156,12 +350,12 @@ class Noxentra:
     REQUIRES_DOCKER: bool   = False
 
     # Tags for search/filter (e.g. ["osint", "web", "recon", "scanner"])
-    TAGS: list[str]         = []
+    TAGS: ClassVar[list[str]]         = []
 
     # Guided-operations metadata (set by the YAML catalog loader; see registry.py)
     KIND: str               = "install"        # "install" | "resource"
-    USAGE: list[tuple[str, str]] = []          # [(task, command)] cheatsheet
-    SYSTEM_PKGS: dict       = {}               # {which, apt, brew, ...} reuse-first hints
+    USAGE: ClassVar[list[tuple[str, str]]] = []          # [(task, command)] cheatsheet
+    SYSTEM_PKGS: ClassVar[dict]       = {}               # {which, apt, brew, ...} reuse-first hints
     LAB_SAFE_NOTES: str     = ""               # THM/CTF-safe usage guidance
 
     # Archived tool flags
@@ -202,9 +396,8 @@ class Noxentra:
             if cmd.startswith("sudo "):
                 cmd = cmd[5:].strip()
             binary = cmd.split()[0] if cmd else ""
-            if binary and binary not in (".", "echo", "cd"):
-                if shutil.which(binary):
-                    return True
+            if binary and binary not in (".", "echo", "cd") and shutil.which(binary):
+                return True
         # Check if git clone target dir exists
         if self.INSTALL_COMMANDS:
             for ic in self.INSTALL_COMMANDS:
@@ -248,7 +441,7 @@ class Noxentra:
     def _ai_command(self, goal=None):
         """AI2: turn a free-text goal into a command for this tool (display only).
         ``goal`` may be pre-supplied (bare text typed at the menu → dispatch)."""
-        import noxentra.ai_command as ai_command
+        from noxentra import ai_command
         if goal is None:
             goal = ask("[bold cyan]What do you want to do?[/bold cyan]",
                               default="").strip()
@@ -340,7 +533,7 @@ class Noxentra:
             elif 1 <= choice <= len(self.OPTIONS):
                 try:
                     self.OPTIONS[choice - 1][1]()
-                except Exception:
+                except Exception:  # noqa: BLE001 - isolate tool menu action failures in CLI
                     console.print_exception(show_locals=True)
                 ask("[dim]Press Enter to continue[/dim]", default="")
             else:
@@ -386,7 +579,7 @@ class Noxentra:
         try:
             with urllib.request.urlopen(self.INSTALL_URL) as resp:
                 data = resp.read()
-        except Exception as e:  # network / HTTP / TLS errors
+        except (urllib.error.URLError, OSError, ValueError) as e:  # network / HTTP / TLS errors
             console.print(f"[error]✘ Download failed: {e}[/error]")
             return
         digest = hashlib.sha256(data).hexdigest()
@@ -447,11 +640,10 @@ class Noxentra:
         return True
 
     def uninstall(self):
-        if self.before_uninstall():
-            if isinstance(self.UNINSTALL_COMMANDS, (list, tuple)):
-                for cmd in self.UNINSTALL_COMMANDS:
-                    console.print(f"[warning]→ {cmd}[/warning]")
-                    _run_shell(cmd)
+        if self.before_uninstall() and isinstance(self.UNINSTALL_COMMANDS, (list, tuple)):
+            for cmd in self.UNINSTALL_COMMANDS:
+                console.print(f"[warning]→ {cmd}[/warning]")
+                _run_shell(cmd)
         self.after_uninstall()
 
     def after_uninstall(self): pass
@@ -546,7 +738,7 @@ class Noxentra:
         else:
             console.print("[warning]Tool directory not found.[/warning]")
             if self.PROJECT_URL:
-                console.print(f"[dim]You can clone it manually:[/dim]")
+                console.print("[dim]You can clone it manually:[/dim]")
                 console.print(f"[cyan]  git clone {self.PROJECT_URL}.git[/cyan]")
 
     def before_run(self): pass
@@ -582,7 +774,7 @@ class Noxentra:
 class NoxentraCollection:
     TITLE: str       = ""
     DESCRIPTION: str = ""
-    TOOLS: list      = []
+    TOOLS: ClassVar[list]      = []
 
     def __init__(self):
         pass
@@ -716,7 +908,7 @@ class NoxentraCollection:
                     console.print(f"\n[bold cyan]({i}/{len(not_installed)})[/bold cyan] {tool.TITLE}")
                     try:
                         tool.install()
-                    except Exception:
+                    except Exception:  # noqa: BLE001 - continue installing remaining tools
                         console.print(f"[error]✘ Failed: {tool.TITLE}[/error]")
                 ask("\n[dim]Press Enter to continue[/dim]", default="")
             elif choice == 98 and archived:
@@ -724,7 +916,7 @@ class NoxentraCollection:
             elif 1 <= choice <= len(active):
                 try:
                     active[choice - 1].show_options(parent=self)
-                except Exception:
+                except Exception:  # noqa: BLE001 - isolate tool menu failures in CLI
                     console.print_exception(show_locals=True)
                     ask("[dim]Press Enter to continue[/dim]", default="")
             else:

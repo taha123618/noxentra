@@ -1,4 +1,6 @@
 """Inline value editor for free-text / secret config rows. Returns the new string, or None."""
+from typing import ClassVar
+
 from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.screen import ModalScreen
@@ -6,7 +8,7 @@ from textual.widgets import Input, Static
 
 
 class EditModal(ModalScreen[str | None]):
-    BINDINGS = [("escape", "cancel", "Cancel")]
+    BINDINGS: ClassVar = [("escape", "cancel", "Cancel")]
 
     def __init__(self, key: str, current: str = "", secret: bool = False):
         self._key = key

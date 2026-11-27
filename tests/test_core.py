@@ -2,7 +2,7 @@
 honest success/failure, and EOF-safe prompting."""
 import pytest
 
-import noxentra.core as core
+from noxentra import core
 
 
 def _tool(cmds):

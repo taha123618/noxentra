@@ -13,8 +13,10 @@ description: Add or update a security tool in Noxentra's YAML catalog or Python 
 2. **Author the entry**:
    - Set `title`, `description`, `project_url`, `tags`, and safe `install_commands` / `run_commands` (no `curl | bash`, no forced `sudo`).
    - Pick tags exclusively from `TAXONOMY` in `src/noxentra/tags.py`.
-3. **Regenerate catalog owners**:
+3. **Optional pipeline & parser wiring**:
+   - If the tool emits structured output used in orchestrated runs, add a parser in `src/noxentra/findings.py` (`PARSERS`) and/or a pipeline preset under `src/noxentra/pipelines/*.yaml`.
+4. **Regenerate catalog owners**:
    - Run `uv run python scripts/gen_catalog_owners.py` so `src/noxentra/catalog_owners.py` includes any new GitHub owner.
-4. **Verify**:
-   - Run `uv run --group dev pytest tests/test_registry.py tests/test_discover.py -q` and `uv run ruff check . --select=E9,F63,F7,F82,PLE,YTT`.
-   - Done when all registry, taxonomy, and owner-freshness tests pass.
+5. **Verify**:
+   - Run `uv run --group dev pytest tests/test_registry.py tests/test_discover.py tests/test_findings.py -q` and `uv run --group dev ruff check .`.
+   - Done when all registry, taxonomy, owner-freshness, and lint checks pass.

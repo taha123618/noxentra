@@ -1,5 +1,6 @@
 import os
 import subprocess
+from typing import ClassVar
 
 from rich.prompt import Confirm
 
@@ -68,7 +69,7 @@ class UninstallTool(Noxentra):
 
 class ToolManager(NoxentraCollection):
     TITLE = "Update or Uninstall | Noxentra"
-    TOOLS = [
+    TOOLS: ClassVar = [
         UpdateTool(),
         UninstallTool(),
     ]

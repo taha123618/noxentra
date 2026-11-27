@@ -23,8 +23,18 @@ overlay:
       trusting it. Needs root (iptables). Tor exit traffic is slow and some
       services block Tor; only tunnel activity you are authorized to route.
 
+# --- migrated from tools/anonsurf.py + missing anonymity staples ------------
+tools:
   - title: "Multitor"
+    kind: install
     tags: [anonymity, tunneling, network]
+    description: "How to stay in multi places at the same time."
+    supported_os: [linux]
+    install:
+      commands:
+        - "git clone https://github.com/trimstray/multitor.git"
+        - "cd multitor && sudo bash setup.sh install"
+    project_url: "https://github.com/trimstray/multitor"
     usage:
       - ["spawn N Tor instances behind a load balancer", "multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy"]
       - ["show all options", "multitor --help"]
@@ -35,9 +45,6 @@ overlay:
       authorized scanning/OSINT so no single circuit is hammered. Runs as the
       dedicated tor user (`--user debian-tor`); still slow, and rotating IPs
       does not make out-of-scope targets in-scope.
-
-# --- genuinely-missing anonymity staples ------------------------------------
-tools:
   - title: "Tor + torsocks (SOCKS anonymity proxy)"
     kind: install
     tags: [anonymity, tunneling, network]
@@ -75,6 +82,36 @@ tools:
       /etc/proxychains4.conf to point at Tor's 9050 socks and set
       `proxy_dns` to avoid DNS leaks. Chain only through proxies you are
       authorized to use, against authorized targets.
+
+  - title: "sshuttle (Transparent VPN over SSH)"
+    kind: install
+    tags: [anonymity, tunneling, network]
+    description: "Transparent proxy/VPN over any SSH connection — routes subnets and DNS without root or VPN software on the remote host."
+    system_pkgs: {which: sshuttle, apt: sshuttle, brew: sshuttle}
+    install: {pip: sshuttle}
+    run: ["sshuttle --version"]
+    project_url: "https://github.com/sshuttle/sshuttle"
+    usage:
+      - ["route a remote subnet over SSH", "sshuttle -r user@jumpbox 10.10.0.0/16"]
+      - ["route subnet and DNS queries", "sshuttle --dns -r user@jumpbox 10.10.0.0/16"]
+    lab_safe_notes: >-
+      Modifies local firewall/routing rules on the operator machine to forward traffic
+      through an SSH jump host you control — scope routed CIDRs to authorized networks.
+
+  - title: "gost (Modern Multi-Protocol Tunnel)"
+    kind: install
+    tags: [anonymity, tunneling, network]
+    description: "Fast Go security tunnel supporting SOCKS5, HTTP/HTTPS, SSH, WebSocket, and port-forwarding chains."
+    system_pkgs: {which: gost, brew: gost, go: "github.com/go-gost/gost/cmd/gost@latest"}
+    install: {go: "github.com/go-gost/gost/cmd/gost@latest"}
+    run: ["gost -V"]
+    project_url: "https://github.com/go-gost/gost"
+    usage:
+      - ["start a local SOCKS5 proxy", "gost -L socks5://127.0.0.1:1080"]
+      - ["forward traffic through an upstream proxy", "gost -L :8080 -F socks5://127.0.0.1:1080"]
+    lab_safe_notes: >-
+      Bind listeners to 127.0.0.1 unless intentionally exposing a tunnel, and use
+      authenticated endpoints for remote hops.
 
   # --- anonymity reference ---------------------------------------------------
   - title: "Whonix — Anonymity & Tor OpSec (docs)"

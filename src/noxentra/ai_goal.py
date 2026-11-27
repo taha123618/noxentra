@@ -84,9 +84,9 @@ _CONTRACT = (
 
 def _toolbox() -> list[dict]:
     """Catalog tools as light prompt context: title + category + one example."""
-    from noxentra import cli
+    from noxentra import toolbox
     box = []
-    for tool, cat in cli._collect_all_tools():
+    for tool, cat in toolbox.collect_all_tools():
         if not getattr(tool, "TITLE", ""):
             continue
         usage = getattr(tool, "USAGE", []) or []
@@ -200,7 +200,7 @@ def run(objective: str, ctx=None) -> None:
     with console.status("[bold magenta]Planning your engagement…[/bold magenta]", spinner="dots"):
         plan_ = plan(objective, _toolbox())
     if plan_ is None or not plan_.steps:
-        import noxentra.cli as cli
+        from noxentra import cli
         console.print("[dim]No AI plan available — showing tool recommendations instead. "
                       "(Set up a model via /config.)[/dim]")
         cli.recommend_tools(objective)

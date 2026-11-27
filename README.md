@@ -4,7 +4,7 @@
 
 ### Noxentra — AI-Guided Reconnaissance & Security Assessment Platform
 
-**219 curated tools across 21 categories** — recon, OSINT, web, wireless, phishing,
+**294 curated tools across 21 categories** — recon, OSINT, web, wireless, phishing,
 forensics, post-exploitation and more — with an **AI layer that turns plain English
 into the right tool and the exact command**.
 
@@ -15,7 +15,7 @@ students — all working **legally, on systems they own or are authorised to tes
 <br/>
 
 
-![](https://img.shields.io/badge/21_Categories-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/219_Tools-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/63_Tags-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/AI--Guided-7B61FF?style=for-the-badge&labelColor=0D1117&logo=openai&logoColor=white) &nbsp;![](https://img.shields.io/badge/Linux_%7C_Kali_%7C_Parrot_%7C_macOS-7B61FF?style=for-the-badge&labelColor=0D1117&logo=linux&logoColor=white)
+![](https://img.shields.io/badge/21_Categories-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/294_Tools-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/64_Tags-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/AI--Guided-7B61FF?style=for-the-badge&labelColor=0D1117&logo=openai&logoColor=white) &nbsp;![](https://img.shields.io/badge/Linux_%7C_Kali_%7C_Parrot_%7C_macOS-7B61FF?style=for-the-badge&labelColor=0D1117&logo=linux&logoColor=white)
 
 <br/>
 
@@ -43,6 +43,7 @@ students — all working **legally, on systems they own or are authorised to tes
   - [🏷 Tags and search](#-tags-and-search)
   - [▶ Background panes (tmux)](#-background-panes-tmux)
   - [⚙ Settings and the AI layer](#-settings-and-the-ai-layer)
+  - [🛰 `/engage` & `/report` — live pipelines, findings browser, and exports](#-engage--report--live-pipelines-findings-browser-and-exports)
   - [📋 Headless engagements](#-headless-engagements)
 - [Documentation](#documentation)
 
@@ -55,9 +56,9 @@ students — all working **legally, on systems they own or are authorised to tes
   plans an objective step by step, then summarizes findings and drafts an engagement
   report. Bring your own key or run a local model — nothing auto-executes and nothing
   is fabricated.
-- **🗂 219 curated tools, one interactive console** — type to search every tool, then
+- **🗂 294 curated tools, one interactive console** — type to search every tool, then
   install and run across 21 categories without hunting down Git repos; a fixed tag
-  taxonomy (63 tags in use) makes every tool discoverable.
+  taxonomy (64 tags in use) makes every tool discoverable.
 - **🔎 It knows what it doesn't have** — `/find` searches your catalog first, then the
   GitHub API, and shows real maintained projects with the reason each was ranked.
 - **🛡 Safe by default** — standard installs, **no `curl | bash`**, downloads pinned +
@@ -76,30 +77,30 @@ students — all working **legally, on systems they own or are authorised to tes
 
 ## Tool Categories
 
-**219 tools across 21 categories** — the full list, with links and tags, is in
+**294 tools across 21 categories** — the full list, with links and tags, is in
 **[docs/TOOLS.md](docs/TOOLS.md)**.
 
 <div align="center">
 
 | # | Category | Tools | | # | Category | Tools |
 |:---:|---|:---:|---|:---:|---|:---:|
-| 1 | 🛡 [Anonymously Hiding Tools](docs/TOOLS.md#-anonymously-hiding-tools) | 5 | | 12 | 🔁 [Reverse engineering tools](docs/TOOLS.md#-reverse-engineering-tools) | 10 |
-| 2 | 🔍 [Information gathering tools](docs/TOOLS.md#-information-gathering-tools) | 26 | | 13 | ⚡ [DDOS Attack Tools](docs/TOOLS.md#-ddos-attack-tools) | 7 |
-| 3 | 📚 [Wordlist Generator](docs/TOOLS.md#-wordlist-generator) | 8 | | 14 | 🖥 [Remote Administrator Tools (RAT)](docs/TOOLS.md#-remote-administrator-tools-rat) | 4 |
-| 4 | 📡 [Wireless attack tools](docs/TOOLS.md#-wireless-attack-tools) | 17 | | 15 | 🧪 [XSS Attack Tools](docs/TOOLS.md#-xss-attack-tools) | 6 |
-| 5 | 💉 [SQL Injection Tools](docs/TOOLS.md#-sql-injection-tools) | 7 | | 16 | 🖼 [Steganography Tools](docs/TOOLS.md#-steganography-tools) | 10 |
-| 6 | 🎣 [Phishing attack tools](docs/TOOLS.md#-phishing-attack-tools) | 13 | | 17 | 🏢 [Active Directory Tools](docs/TOOLS.md#-active-directory-tools) | 10 |
-| 7 | 🌐 [Web Attack tools](docs/TOOLS.md#-web-attack-tools) | 23 | | 18 | ☁ [Cloud Security Tools](docs/TOOLS.md#-cloud-security-tools) | 7 |
-| 8 | 🔧 [Post exploitation tools](docs/TOOLS.md#-post-exploitation-tools) | 15 | | 19 | 📱 [Mobile Security Tools](docs/TOOLS.md#-mobile-security-tools) | 6 |
-| 9 | 🕵 [Forensic tools](docs/TOOLS.md#-forensic-tools) | 12 | | 20 | ✨ [Other tools](docs/TOOLS.md#-other-tools) | 10 |
-| 10 | 📦 [Payload creation tools](docs/TOOLS.md#-payload-creation-tools) | 6 | | 21 | 🔑 [Password / Hash Cracking](docs/TOOLS.md#-password--hash-cracking) | 7 |
-| 11 | 🧰 [Exploit framework](docs/TOOLS.md#-exploit-framework) | 6 | | | | |
+| 1 | 🛡 [Anonymously Hiding Tools](docs/TOOLS.md#-anonymously-hiding) | 7 | | 12 | 🔁 [Reverse engineering tools](docs/TOOLS.md#-reverse-engineering) | 14 |
+| 2 | 🔍 [Information gathering tools](docs/TOOLS.md#-information-gathering) | 39 | | 13 | ⚡ [DDOS Attack Tools](docs/TOOLS.md#-ddos-attack) | 7 |
+| 3 | 📚 [Wordlist Generator](docs/TOOLS.md#-wordlist-generator) | 9 | | 14 | 🖥 [Remote Administrator Tools (RAT)](docs/TOOLS.md#-remote-admin-rat) | 6 |
+| 4 | 📡 [Wireless attack tools](docs/TOOLS.md#-wireless-attack) | 17 | | 15 | 🧪 [XSS Attack Tools](docs/TOOLS.md#-xss-attack) | 9 |
+| 5 | 💉 [SQL Injection Tools](docs/TOOLS.md#-sql-injection) | 7 | | 16 | 🖼 [Steganography Tools](docs/TOOLS.md#-steganography) | 11 |
+| 6 | 🎣 [Phishing attack tools](docs/TOOLS.md#-phishing-attack) | 13 | | 17 | 🏢 [Active Directory Tools](docs/TOOLS.md#-active-directory) | 15 |
+| 7 | 🌐 [Web Attack tools](docs/TOOLS.md#-web-attack) | 37 | | 18 | ☁ [Cloud Security Tools](docs/TOOLS.md#-cloud-security) | 17 |
+| 8 | 🔧 [Post exploitation tools](docs/TOOLS.md#-post-exploitation) | 17 | | 19 | 📱 [Mobile Security Tools](docs/TOOLS.md#-mobile-security) | 9 |
+| 9 | 🕵 [Forensic tools](docs/TOOLS.md#-forensics) | 17 | | 20 | ✨ [Other tools](docs/TOOLS.md#-other-tools) | 17 |
+| 10 | 📦 [Payload creation tools](docs/TOOLS.md#-payload-creation) | 8 | | 21 | 🔑 [Password / Hash Cracking](docs/TOOLS.md#-hash-cracking) | 10 |
+| 11 | 🧰 [Exploit framework](docs/TOOLS.md#-exploit-framework) | 8 | | | | |
 
 </div>
 
 <sub>44 further entries are archived (unmaintained or dead upstream) and hidden unless
 you set `show_archived true` via `/config`. The in-app header counts 22 categories /
-219 tools because it also counts the built-in Update / Uninstall menu.</sub>
+296 tools because it also counts the built-in Update / Uninstall menu.</sub>
 
 ---
 
@@ -240,9 +241,12 @@ Some individual tools need a language runtime to install/run; the core app doesn
 
 `noxentra` opens an **interactive terminal UI**: browse the categories, **type to
 search every tool** across all of them, `↑↓` to move, `Enter` to open, `←`/`Esc` to go
-back, and `/` for the command palette (`/config`, `/update`, `/menu`, `/quit`). When a
-newer release is out it shows an *update available* line on launch, and `/update`
-detects how you installed noxentra and shows the exact upgrade command to run.
+back, and `/` for the command palette (`/engage`, `/recommend`, `/find`, `/goal`,
+`/tags`, `/skill`, `/report`, `/config`, `/update`, `/menu`, `/quit`). Running a tool
+or pipeline streams live output, progress, and elapsed time into the built-in live
+panel (`c` cancels). When a newer release is out it shows an *update available* line on
+launch, and `/update` detects how you installed noxentra and shows the exact upgrade
+command to run.
 
 For a keyboard-driven REPL instead, `noxentra --classic` takes three kinds of input:
 
@@ -303,15 +307,15 @@ falls back to the classic numbered menu, where `/` or `s` searches, `t` filters 
 
 ## Features
 
-> **Where these live today.** `/find`, `/goal`, plain-English recommendations,
-> `/tags`/`/search` and background panes currently run in the **`--classic`** REPL
-> (`noxentra --classic`). The default TUI browses and type-searches the whole
-> catalog and runs tools; wiring these AI/search features into it is Phase 2. The
-> screenshots below showing a `/` command prompt are the `--classic` REPL.
+> **TUI & `--classic`.** The default TUI supports `/engage`, `/recommend`, `/find`,
+> `/goal`, `/tags`, `/skill`, `/report`, `/config`, `/update`, `/menu`, and `/quit` via
+> the `/` command palette. Background tmux panes and `@tool` / `@tag:` shortcuts also run
+> in **`--classic`** (`noxentra --classic`). The screenshots below showing a `/` prompt
+> are from `--classic`.
 
 ### 🔎 `/find` — a tool for a need you don't have yet
 
-Searches the 219 curated tools first, then the GitHub search API, and ranks the
+Searches the 294 curated tools first, then the GitHub search API, and ranks the
 results explainably. **Suggest-only** — it never clones, installs or runs anything —
 and it makes **zero model calls**.
 
@@ -383,7 +387,7 @@ tools carrying it; `/search <keyword>` matches names, descriptions and tags.
 <div align="center">
 <img src="images/screenshots/2.png" alt="noxentra /tags — every tag with its tool count" width="900">
 <br/>
-<sub><code>/tags</code> — 63 tags in use, with the number of tools behind each.</sub>
+<sub><code>/tags</code> — 64 tags in use, with the number of tools behind each.</sub>
 </div>
 
 ### ▶ Background panes (tmux)
@@ -415,20 +419,38 @@ guessing. Your API key is written only to `~/.noxentra/.env` (mode 600), never t
 `config.json`, and never printed back. `/config test` reports the real failure if a
 probe fails.
 
+### 🛰 `/engage` & `/report` — live pipelines, findings browser, and exports
+
+- **`/engage`** opens the interactive engagement workspace: create or select an
+  engagement (name, comma-separated targets, optional `scope_in` / `scope_out`
+  exclusions), see pre-flight tool readiness (`X/Y ready`) per pipeline (`recon`,
+  `full_recon`, `web_enum`, `dns_enum`, `web_deep`, `passive_urls`, `tls_recon`,
+  `cloud_scan`, `container_scan`, `iac_scan`, `k8s_scan`), and watch live streamed execution inside the TUI (`c` cancels mid-run). Findings from
+  multiple runs on the same engagement are merged, deduplicated, and diffed
+  (`+N new, M total`) in `findings.json`.
+- **`/report`** exports deterministic Markdown (`report.md`), self-contained HTML with
+  severity summary cards and live filtering (`report.html`), or SARIF v2.1.0
+  (`report.sarif.json`), and includes **Browse findings** to search findings by
+  severity, tool, target, or name and inspect raw details in-app.
+
 ### 📋 Headless engagements
 
-The same catalog drives a non-interactive orchestrator that normalizes tool output
-into one `findings.json`:
+The same catalog and pipeline orchestrator drive a non-interactive CLI that normalizes
+output from `nmap`, `subfinder`, `dnsx`, `tlsx`, `httpx`, `nuclei`, `gobuster`, `ffuf`,
+`feroxbuster`, `whatweb`, `gau`, `katana`, `trivy`, `grype`, `terrascan`, `kube-hunter`, and `cloudsplaining` into `findings.json`:
 
 ```bash
-noxentra --engagement acme --targets example.com --pipeline recon
-noxentra --engagement acme --report          # deterministic Markdown report
-noxentra --engagement acme --ai-summary      # opt-in triage of the REAL findings
-noxentra --engagement acme --ai-report       # opt-in narrative draft (report.draft.md)
+noxentra --list-pipelines
+noxentra --list-engagements
+noxentra --engagement acme --targets example.com,10.0.0.1 --scope-out admin.example.com --pipeline full_recon
+noxentra --engagement acme --report --format all   # report.md, report.html, report.sarif.json
+noxentra --engagement acme --ai-summary            # opt-in triage of the REAL findings
+noxentra --engagement acme --ai-report             # opt-in narrative draft (report.draft.md)
 ```
 
-Out-of-scope targets are flagged and logged before anything runs, and the AI passes
-only ever summarize findings that exist.
+`--targets` and `--scope-out` accept either comma-separated values or a file path (one
+entry per line). Out-of-scope targets are flagged and logged before anything runs, and
+the AI passes only ever summarize findings that exist.
 
 ---
 
@@ -440,3 +462,12 @@ only ever summarize findings that exist.
 | [Tool catalog](docs/TOOLS.md) | every tool, by category, with links and tags |
 | [Operator playbook](src/noxentra/skill/OPERATOR.md) | the charter and grounding rules the AI layer runs under (also `/skill`) |
 | [SECURITY.md](SECURITY.md) | disclosure policy, release verification, threat model |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | how to set up dev, add catalog tools, and run checks |
+
+---
+
+## License & Credits
+
+Released under the [MIT License](LICENSE).
+
+Noxentra builds upon the open-source foundation of [Z4nzu/hackingtool](https://github.com/Z4nzu/hackingtool) (MIT) with an interactive Textual TUI, YAML-first tool catalog, AI-guided workflows, and headless engagement orchestration.

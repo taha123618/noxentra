@@ -155,7 +155,7 @@ def test_run_step_survives_markup_in_output(monkeypatch, tmp_path):
 
 def test_run_skips_uninstalled_and_runs_installed(monkeypatch, tmp_path):
     calls = []
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "_workspace", lambda: tmp_path)
     monkeypatch.setattr(ai_goal, "plan", lambda obj, box: ai_goal.Plan("x.com", [
         ai_goal.Step("subfinder", ["subfinder", "-d", "x.com"], "d", installed=True),
@@ -172,7 +172,7 @@ def test_run_skips_uninstalled_and_runs_installed(monkeypatch, tmp_path):
 
 def test_run_aborts_when_target_not_authorized(monkeypatch, tmp_path):
     calls = []
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "plan", lambda obj, box: ai_goal.Plan("x.com", [
         ai_goal.Step("subfinder", ["subfinder"], "d", installed=True)]))
     monkeypatch.setattr(ai_goal.prompt, "simple", lambda *a, **k: "n")   # not authorized
@@ -184,9 +184,9 @@ def test_run_aborts_when_target_not_authorized(monkeypatch, tmp_path):
 
 def test_run_falls_back_to_recommend_when_no_model(monkeypatch):
     hit = {}
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "plan", lambda obj, box: None)   # no model
-    import noxentra.cli as cli
+    from noxentra import cli
     monkeypatch.setattr(cli, "recommend_tools", lambda intent: hit.setdefault("intent", intent))
     ai_goal.run("crack a hash")
     assert hit["intent"] == "crack a hash"
@@ -200,7 +200,7 @@ def test_print_plan_survives_markup_in_argv():
 def test_run_survives_markup_in_plan(monkeypatch, tmp_path):
     """Plan with bracket chars in argv and target should not raise MarkupError when prompting."""
     ran = []
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "_workspace", lambda: tmp_path)
     monkeypatch.setattr(ai_goal, "plan", lambda o, b: ai_goal.Plan(
         "[/evil].com", [ai_goal.Step("t", ["t", "[/api]"], "why [/b]", installed=True)]))
@@ -214,7 +214,7 @@ def test_run_survives_markup_in_plan(monkeypatch, tmp_path):
 def test_run_edit_with_unbalanced_quotes(monkeypatch, tmp_path):
     """Edit path with unbalanced quotes should not crash; step not run."""
     ran = []
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "_workspace", lambda: tmp_path)
     monkeypatch.setattr(ai_goal, "plan", lambda o, b: ai_goal.Plan("x.com", [
         ai_goal.Step("t", ["t", "x"], "why", installed=True)]))
@@ -229,7 +229,7 @@ def test_run_edit_with_unbalanced_quotes(monkeypatch, tmp_path):
 def test_run_edit_with_empty_input(monkeypatch, tmp_path):
     """Edit path with empty input should skip step."""
     ran = []
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "_workspace", lambda: tmp_path)
     monkeypatch.setattr(ai_goal, "plan", lambda o, b: ai_goal.Plan("x.com", [
         ai_goal.Step("t", ["t", "x"], "why", installed=True)]))
@@ -243,7 +243,7 @@ def test_run_edit_with_empty_input(monkeypatch, tmp_path):
 
 def test_run_edit_audits_the_edited_command(monkeypatch, tmp_path):
     """run.log must record the actually-run (edited) argv, not just the proposal."""
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "_workspace", lambda: tmp_path)
     monkeypatch.setattr(ai_goal, "plan", lambda o, b: ai_goal.Plan("x.com", [
         ai_goal.Step("echo", ["echo", "proposed"], "why", installed=True)]))
@@ -272,7 +272,7 @@ def test_goal_is_a_listed_command():
 
 
 def test_run_writes_audit_trail(monkeypatch, tmp_path):
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "_workspace", lambda: tmp_path)
     monkeypatch.setattr(ai_goal, "plan", lambda obj, box: ai_goal.Plan("x.com", [
         ai_goal.Step("echo", ["echo", "hi"], "d", installed=True)]))
@@ -293,7 +293,7 @@ def test_run_writes_audit_trail(monkeypatch, tmp_path):
 
 def test_run_q_aborts_before_first_step(monkeypatch, tmp_path):
     calls = []
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "_workspace", lambda: tmp_path)
     monkeypatch.setattr(ai_goal, "plan", lambda obj, box: ai_goal.Plan("x.com", [
         ai_goal.Step("a", ["a"], "d", installed=True),
@@ -315,7 +315,7 @@ def test_run_calls_model_exactly_once(monkeypatch, tmp_path):
         return ('{"target":"x.com","steps":['
                 '{"tool":"a","argv":["a"],"why":""}]}')
 
-    monkeypatch.setattr(ai_goal, "_toolbox", lambda: [])
+    monkeypatch.setattr(ai_goal, "_toolbox", list)
     monkeypatch.setattr(ai_goal, "_workspace", lambda: tmp_path)
     monkeypatch.setattr(ai_goal.shutil, "which", lambda b: "/usr/bin/a")
     monkeypatch.setattr(ai_goal.ai_recommend, "ask", fake_ask)

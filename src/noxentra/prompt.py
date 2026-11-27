@@ -60,12 +60,12 @@ def _box_bottom(w: int) -> str: return "╰" + "─" * (w - 2) + "╯"
 
 @lru_cache(maxsize=1)
 def _catalog():
-    """(tools_by_title, tag_index), built once from cli. Cached — the catalog is
+    """(tools_by_title, tag_index), built once from toolbox. Cached — the catalog is
     static for a session."""
-    import noxentra.cli as cli
+    from noxentra import toolbox
 
-    tag_index = cli._get_all_tags()
-    tools_by_title = {t.TITLE: t for t, _ in cli._collect_all_tools() if t.TITLE}
+    tag_index = toolbox.get_all_tags()
+    tools_by_title = {t.TITLE: t for t, _ in toolbox.collect_all_tools() if t.TITLE}
     return tools_by_title, tag_index
 
 
@@ -113,7 +113,7 @@ def _running_count():
 def dispatch(raw, ctx):
     """The ONE grammar. Returns CONTINUE | QUIT | BACK | Open. Never handles
     numbers — the menu owns its own numeric options (see core.show_options)."""
-    import noxentra.cli as cli
+    from noxentra import cli
 
     raw = raw.strip()
     if not raw:
@@ -168,6 +168,10 @@ def dispatch(raw, ctx):
         elif cmd in ("find", "discover"):
             from noxentra import discover
             discover.run(arg, ctx)
+        elif cmd == "engage":
+            _engage_command(arg)
+        elif cmd == "report":
+            _report_command(arg)
         elif cmd in ("clear", "cls"):
             _clear(ctx)
         elif cmd in ("uninstall", "remove"):
@@ -195,13 +199,102 @@ def dispatch(raw, ctx):
     return CONTINUE
 
 
+def _engage_command(arg: str) -> None:
+    """``/engage [name [pipeline] [targets]]`` — create/open an engagement and run a pipeline."""
+    from noxentra import cli, engagement, orchestrator
+    from noxentra.tui import data
+
+    parts = arg.split()
+    if parts and parts[0].lower() == "list":
+        cli._print_engagements()
+        return
+    if parts and parts[0].lower() == "pipelines":
+        cli._print_pipelines()
+        return
+
+    if parts:
+        name = parts[0]
+        pipeline = parts[1] if len(parts) > 1 else "recon"
+        targets = cli._load_list_arg(parts[2]) if len(parts) > 2 else None
+    else:
+        rows = data.engagements()
+        if rows:
+            cli.console.print("[bold cyan]Saved engagements:[/bold cyan]")
+            cli._print_engagements()
+        name = simple("Engagement name (new or existing): ").strip()
+        if not name:
+            return
+        existing = engagement.load(name)
+        targets = None
+        if existing is None or not existing.targets:
+            raw_t = simple("Targets (comma-separated): ").strip()
+            targets = cli._load_list_arg(raw_t) if raw_t else None
+        cli.console.print("[bold cyan]Pipelines:[/bold cyan]")
+        for p in orchestrator.list_pipelines():
+            checks = orchestrator.pipeline_preflight(p["name"])
+            ready = sum(1 for c in checks if c["installed"])
+            cli.console.print(f"  [cyan]{p['name']}[/cyan] ({ready}/{len(checks)} ready) — {p['description']}")
+        pipeline = simple("Pipeline [recon]: ", default="recon").strip() or "recon"
+
+    e = engagement.get_or_create(name, targets)
+    if not e.targets:
+        cli.console.print("[yellow]No targets set for this engagement.[/yellow]")
+        return
+    checks = orchestrator.pipeline_preflight(pipeline)
+    if checks and not any(c["installed"] for c in checks):
+        missing = ", ".join(str(c["tool"]) for c in checks)
+        cli.console.print(f"[yellow]No tools installed for '{pipeline}' (missing: {missing}).[/yellow]")
+        return
+    ans = simple(f"Run '{pipeline}' on {e.name} ({', '.join(e.targets)})? [y/N]: ").strip().lower()
+    if ans not in ("y", "yes"):
+        cli.console.print("[dim]Cancelled.[/dim]")
+        return
+    found = orchestrator.run_pipeline(e, pipeline, on_progress=cli.console.print)
+    new_n = e.runs[-1].get("new_findings", 0) if e.runs else 0
+    cli.console.print(f"[green]✔ +{new_n} new, {len(found)} total findings ->[/green] {e.findings_file}")
+
+
+def _report_command(arg: str) -> None:
+    """``/report [engagement] [md|html|sarif|all]`` — export findings report(s)."""
+    from noxentra import cli, engagement, report
+    from noxentra.tui import data
+
+    parts = arg.split()
+    name = parts[0] if parts else ""
+    fmt = parts[1].lower() if len(parts) > 1 else "md"
+    if not name:
+        rows = data.engagements()
+        if not rows:
+            cli.console.print("[dim]No engagements yet — run /engage first.[/dim]")
+            return
+        cli._print_engagements()
+        name = simple("Engagement name: ").strip()
+        if not name:
+            return
+        fmt = (simple("Format [md|html|sarif|all] (default md): ", default="md").strip().lower() or "md")
+
+    e = engagement.load(name)
+    if e is None:
+        cli.console.print(f"[yellow]Engagement '{name}' not found.[/yellow]")
+        return
+    if fmt not in ("md", "html", "sarif", "all"):
+        cli.console.print("[yellow]Unknown format. Use md, html, sarif, or all.[/yellow]")
+        return
+    if fmt in ("md", "all"):
+        cli.console.print(f"[green]Report ->[/green] {report.generate_report(e)}")
+    if fmt in ("html", "all"):
+        cli.console.print(f"[green]HTML report ->[/green] {report.generate_html_report(e)}")
+    if fmt in ("sarif", "all"):
+        cli.console.print(f"[green]SARIF report ->[/green] {report.generate_sarif_report(e)}")
+
+
 def _clear(ctx):
     """Clear the screen; at home reprint the banner so the console stays branded.
     In a tool menu the caller's loop redraws its own table, so a bare clear suffices."""
     from noxentra.core import clear_screen
     clear_screen()
     if ctx.mode == "home":
-        import noxentra.cli as cli
+        from noxentra import cli
         cli.console.print(cli._build_header())
 
 
@@ -244,8 +337,7 @@ def _print_panes(windows):
 def _run_command(arg, ctx):
     """``/run [tool] [args…] [&]`` — trailing ``&`` backgrounds via tmux (when
     enabled); otherwise opens the tool's foreground menu (unchanged slice 2a)."""
-    import noxentra.cli as cli
-    from noxentra import session
+    from noxentra import cli, session
 
     arg = arg.strip()
     bg = arg.endswith("&")
@@ -290,15 +382,13 @@ def _message(ctx):
 
 def _use_pt():
     """prompt_toolkit only on an interactive TTY and not forced classic."""
+    import importlib.util
+
     if FORCE_CLASSIC:
         return False
     if not (sys.stdin.isatty() and sys.stdout.isatty()):
         return False
-    try:
-        import prompt_toolkit  # noqa: F401
-    except ImportError:
-        return False
-    return True
+    return importlib.util.find_spec("prompt_toolkit") is not None
 
 
 @lru_cache(maxsize=1)
@@ -376,7 +466,7 @@ def simple(prompt, default=""):
     """Plain readline-backed line read (confirmations / Press-Enter). No grammar,
     no completer. EOF or Ctrl-C → SystemExit(0) (matches the old core.ask)."""
     try:
-        import readline  # noqa: F401 (side effect: enables libedit/readline editing)
+        import readline  # noqa: F401 - importing enables line editing in input()
     except ImportError:
         pass
     from rich.text import Text

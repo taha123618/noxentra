@@ -61,7 +61,7 @@ def test_enabled_off(monkeypatch):
 
 def test_run_creates_session_when_absent(rec, monkeypatch):
     monkeypatch.setattr(session, "_has_session", lambda: False)
-    monkeypatch.setattr(session, "windows", lambda: [])
+    monkeypatch.setattr(session, "windows", list)
     label = session.run("nmap", "/tools/nmap", command="nmap -sV h", banner="scan")
     assert label == "nmap"
     assert ["new-session", "-d", "-s", "noxentra", "-n", "nmap",
@@ -72,7 +72,7 @@ def test_run_creates_session_when_absent(rec, monkeypatch):
 
 def test_run_adds_window_when_present(rec, monkeypatch):
     monkeypatch.setattr(session, "_has_session", lambda: True)
-    monkeypatch.setattr(session, "windows", lambda: [])
+    monkeypatch.setattr(session, "windows", list)
     session.run("nuclei", "/tools/nuclei")
     assert ["new-window", "-t", "noxentra", "-n", "nuclei",
             "-c", "/tools/nuclei"] in rec.calls
@@ -127,7 +127,7 @@ def test_no_crash_when_tmux_binary_missing(monkeypatch):
     def boom(*a, **k):
         raise FileNotFoundError("tmux")
     monkeypatch.setattr(session.subprocess, "run", boom)
-    monkeypatch.setattr(session, "windows", lambda: [])
+    monkeypatch.setattr(session, "windows", list)
     # cleanup helpers still degrade silently
     session.kill("nmap")
     session.kill("all")

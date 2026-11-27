@@ -6,11 +6,19 @@ category:
   title: "Cloud Security (catalog)"
   merge_into: "Cloud Security Tools"
 
-# --- enrich existing Python-defined tools by title --------------------------
-overlay:
+overlay: []
+
+# --- migrated from tools/cloud_security.py + Checkov ------------------------
+tools:
   - title: "Prowler (Cloud Security Scanner)"
+    kind: install
     tags: [cloud, scanner, vuln-scan]
+    description: "Open-source security tool for AWS, Azure, GCP, and Kubernetes assessments."
+    supported_os: [linux, macos]
     system_pkgs: {which: prowler}
+    install: {pip: prowler}
+    run: ["prowler --help"]
+    project_url: "https://github.com/prowler-cloud/prowler"
     usage:
       - ["assess an AWS account", "prowler aws"]
       - ["assess Azure", "prowler azure"]
@@ -25,8 +33,14 @@ overlay:
       profile/region rather than a whole org.
 
   - title: "ScoutSuite (Multi-Cloud Auditing)"
+    kind: install
     tags: [cloud, scanner, enumeration]
+    description: "Multi-cloud security auditing tool for AWS, Azure, GCP, Alibaba, and Oracle."
+    supported_os: [linux, macos]
     system_pkgs: {which: scout}
+    install: {pip: scoutsuite}
+    run: ["scout --help"]
+    project_url: "https://github.com/nccgroup/ScoutSuite"
     usage:
       - ["audit an AWS account", "scout aws"]
       - ["audit AWS with a named profile", "scout aws --profile myprofile"]
@@ -38,8 +52,14 @@ overlay:
       the environment, but the API calls are logged. Review the report locally.
 
   - title: "Pacu (AWS Exploitation Framework)"
+    kind: install
     tags: [cloud, exploitation, post-exploitation]
+    description: "AWS exploitation framework for offensive security testing of AWS environments."
+    supported_os: [linux, macos]
     system_pkgs: {which: pacu}
+    install: {pip: pacu}
+    run: ["pacu --help"]
+    project_url: "https://github.com/RhinoSecurityLabs/pacu"
     usage:
       - ["launch the interactive framework", "pacu"]
     lab_safe_notes: >-
@@ -50,8 +70,16 @@ overlay:
       leave audit-log evidence.
 
   - title: "Trivy (Container/K8s Scanner)"
+    kind: install
     tags: [scanner, vuln-scan, cloud]
+    description: "Comprehensive vulnerability scanner for containers, Kubernetes, IaC, and code."
+    supported_os: [linux, macos]
     system_pkgs: {which: trivy, brew: trivy}
+    install:
+      commands:
+        - "curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin"
+    run: ["trivy --help"]
+    project_url: "https://github.com/aquasecurity/trivy"
     usage:
       - ["scan a container image", "trivy image nginx:latest"]
       - ["scan a project filesystem", "trivy fs ."]
@@ -62,9 +90,6 @@ overlay:
       Image/filesystem/config scans are fully local and read-only — safe to run anywhere.
       Trivy downloads its vulnerability DB on first run (needs network). Scan only images
       and repos you're authorized to assess.
-
-# --- genuinely-missing, widely-used cloud/IaC tool ---------------------------
-tools:
   - title: "Checkov (IaC Misconfig Scanner)"
     kind: install
     tags: [cloud, scanner, vuln-scan]
@@ -82,6 +107,163 @@ tools:
       Checkov reads your IaC files statically and never touches a live cloud account or
       makes API calls — completely safe and offline. Ideal in CI to catch insecure
       defaults (public buckets, open security groups) before they ship.
+
+  - title: "Grype (Container & SBOM Vuln Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan]
+    description: "Fast vulnerability scanner for container images, filesystems, and CycloneDX/SPDX SBOMs by Anchore."
+    system_pkgs: {which: grype, brew: grype}
+    install: {brew: grype}
+    run: ["grype version"]
+    project_url: "https://github.com/anchore/grype"
+    usage:
+      - ["scan a container image", "grype alpine:latest"]
+      - ["scan an SBOM file", "grype sbom:./sbom.cdx.json"]
+      - ["emit JSON findings", "grype dir:. -o json"]
+    lab_safe_notes: >-
+      Grype inspects image layers, filesystems, or SBOMs offline once its vuln DB is
+      cached — completely non-destructive and safe for local/CI auditing.
+
+  - title: "Syft (SBOM Generator)"
+    kind: install
+    tags: [cloud, scanner, enumeration]
+    description: "Generates CycloneDX and SPDX Software Bills of Materials (SBOMs) from container images and filesystems."
+    system_pkgs: {which: syft, brew: syft}
+    install: {brew: syft}
+    run: ["syft version"]
+    project_url: "https://github.com/anchore/syft"
+    usage:
+      - ["generate CycloneDX JSON SBOM for a repo", "syft dir:. -o cyclonedx-json=sbom.json"]
+      - ["generate SBOM from a container image", "syft alpine:latest -o spdx-json"]
+    lab_safe_notes: >-
+      Read-only inventory of packages and dependencies — feeds directly into Grype for
+      fast, repeatable vulnerability scanning.
+
+  - title: "Kubescape (Kubernetes Security Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan, enumeration]
+    description: "Kubernetes security platform for auditing manifests, Helm charts, RBAC, and live clusters against NSA/CISA and MITRE frameworks."
+    system_pkgs: {which: kubescape, brew: kubescape}
+    install: {brew: kubescape}
+    run: ["kubescape version"]
+    project_url: "https://github.com/kubescape/kubescape"
+    usage:
+      - ["scan local Kubernetes YAML/Helm manifests", "kubescape scan ./k8s/"]
+      - ["audit current kubeconfig cluster", "kubescape scan framework nsa"]
+    lab_safe_notes: >-
+      Scanning local manifests is completely offline. Cluster scans query the Kubernetes
+      API read-only — run only against clusters you are authorized to audit.
+
+  - title: "kube-bench (CIS Kubernetes Benchmark)"
+    kind: install
+    tags: [cloud, scanner, enumeration]
+    description: "Checks whether Kubernetes nodes and control-plane components are deployed securely according to the CIS Kubernetes Benchmark."
+    system_pkgs: {which: kube-bench, brew: kube-bench, go: "github.com/aquasecurity/kube-bench@latest"}
+    install: {go: "github.com/aquasecurity/kube-bench@latest"}
+    run: ["kube-bench version"]
+    project_url: "https://github.com/aquasecurity/kube-bench"
+    usage:
+      - ["run CIS benchmark checks on a node", "kube-bench run"]
+      - ["check only worker node controls", "kube-bench run --targets node"]
+    lab_safe_notes: >-
+      Audits local Kubernetes daemon flags and file permissions read-only — run only on
+      authorized cluster nodes.
+
+  - title: "Semgrep (Static Code Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan]
+    description: "Fast, lightweight static analysis (SAST) across 30+ languages with custom YAML rules for catching security bugs and hardcoded secrets."
+    system_pkgs: {which: semgrep, brew: semgrep}
+    install: {pip: semgrep}
+    run: ["semgrep --version"]
+    project_url: "https://github.com/semgrep/semgrep"
+    usage:
+      - ["scan a repo with auto security rules", "semgrep scan --config auto ."]
+      - ["emit SARIF output", "semgrep scan --config auto --sarif -o semgrep.sarif ."]
+    lab_safe_notes: >-
+      Reads source code statically without executing it — safe for local audits and CI
+      security gates.
+
+  - title: "OSV-Scanner (Dependency Vuln Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan]
+    description: "Google's vulnerability scanner that matches project lockfiles and SBOMs against the Open Source Vulnerabilities (OSV) database."
+    system_pkgs: {which: osv-scanner, brew: osv-scanner, go: "github.com/google/osv-scanner/cmd/osv-scanner@latest"}
+    install: {go: "github.com/google/osv-scanner/cmd/osv-scanner@latest"}
+    run: ["osv-scanner --version"]
+    project_url: "https://github.com/google/osv-scanner"
+    usage:
+      - ["scan lockfiles recursively in a repo", "osv-scanner scan -r ."]
+      - ["scan an SBOM file", "osv-scanner scan --sbom=sbom.cdx.json"]
+    lab_safe_notes: >-
+      Queries only dependency package names/versions against OSV — never uploads source
+      code.
+
+  - title: "Cosign (Sigstore Artifact Signing)"
+    kind: install
+    tags: [cloud, scanner, enumeration]
+    description: "Sigstore CLI for signing and verifying container images, SBOMs, and release artifacts using keyless OIDC or keys."
+    system_pkgs: {which: cosign, brew: cosign, go: "github.com/sigstore/cosign/v2/cmd/cosign@latest"}
+    install: {go: "github.com/sigstore/cosign/v2/cmd/cosign@latest"}
+    run: ["cosign version"]
+    project_url: "https://github.com/sigstore/cosign"
+    usage:
+      - ["verify a signed container image", "cosign verify ghcr.io/org/app:latest"]
+      - ["verify a blob attestation", "cosign verify-blob --bundle app.bundle dist.tar.gz"]
+    lab_safe_notes: >-
+      Verification is read-only; signing writes signatures/attestations to OCI registries
+      or transparency logs you authorize.
+
+  - title: "Cloudsplaining (AWS IAM Analyzer)"
+    kind: install
+    tags: [cloud, scanner, enumeration]
+    description: >-
+      Salesforce's AWS IAM security assessment tool that identifies least-privilege
+      violations, privilege escalation paths, and overly permissive policies.
+    system_pkgs: {which: cloudsplaining}
+    install: {pipx: cloudsplaining}
+    run: ["cloudsplaining --help"]
+    project_url: "https://github.com/salesforce/cloudsplaining"
+    usage:
+      - ["download IAM account authorization details", "cloudsplaining download --profile default"]
+      - ["scan downloaded IAM policy JSON", "cloudsplaining scan --input-file default.json"]
+    lab_safe_notes: >-
+      Policy analysis is local and read-only; `download` calls AWS IAM read APIs
+      (`GetAccountAuthorizationDetails`) against the account you specify.
+
+  - title: "kube-hunter (Kubernetes Pentest Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan]
+    description: >-
+      Aqua Security's Kubernetes penetration testing tool that hunts for security
+      weaknesses and exposed services across Kubernetes clusters.
+    system_pkgs: {which: kube-hunter}
+    install: {pipx: kube-hunter}
+    run: ["kube-hunter --help"]
+    project_url: "https://github.com/aquasecurity/kube-hunter"
+    usage:
+      - ["hunt a remote Kubernetes cluster passively", "kube-hunter --remote <cluster-host>"]
+      - ["scan a CIDR range for exposed K8s services", "kube-hunter --cidr 10.0.0.0/24"]
+    lab_safe_notes: >-
+      Pass `--active` only on authorized test clusters; default passive hunting
+      still probes cluster ports and API endpoints.
+
+  - title: "Terrascan (IaC Policy & Misconfig Scanner)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan]
+    description: >-
+      Static code analyzer for Infrastructure-as-Code (Terraform, Kubernetes, Helm,
+      Dockerfile, CloudFormation) with 500+ OPA-backed security policies.
+    system_pkgs: {which: terrascan, brew: terrascan}
+    install: {brew: terrascan}
+    run: ["terrascan --help"]
+    project_url: "https://github.com/tenable/terrascan"
+    usage:
+      - ["scan Terraform files in the current directory", "terrascan scan -i terraform -d ."]
+      - ["scan Kubernetes manifests", "terrascan scan -i k8s -d ./k8s"]
+    lab_safe_notes: >-
+      Runs offline static policy checks against local IaC templates and manifests
+      without touching live cloud resources.
 
 # --- high-value cloud-security references ------------------------------------
   - title: "HackTricks Cloud (cloud pentest playbook)"

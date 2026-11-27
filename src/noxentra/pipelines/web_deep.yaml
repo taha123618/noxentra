@@ -1,0 +1,24 @@
+# pipelines/web_deep.yaml
+name: web_deep
+description: Probe live URLs (httpx) -> fingerprint stack (whatweb) -> parallel content fuzzing (ffuf).
+steps:
+  - tool: httpx
+    args: ["-silent", "-json"]
+    input: targets
+    output: raw/httpx.jsonl
+    parser: httpx
+  - tool: whatweb
+    args: ["--quiet", "--log-json=-", "-i", "-"]
+    input: previous
+    fallback_to_targets: true
+    output: raw/whatweb.json
+    parser: whatweb
+  - tool: ffuf
+    args: ["-json", "-mc", "200,204,301,302,307,401,403", "-w", "{wordlist}"]
+    input: previous
+    fallback_to_targets: true
+    per_target_flag: "-u"
+    per_target_suffix: "/FUZZ"
+    workers: 2
+    output: raw/ffuf.json
+    parser: ffuf

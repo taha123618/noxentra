@@ -142,18 +142,24 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ruby ruby-dev build-essential
           sudo gem install --no-document fpm
-      - name: Build .deb from the sdist
+      - name: Build .deb from wheel (PEP 668 isolated venv under /opt/noxentra)
         run: |
-          sdist=$(ls dist/noxentra-*.tar.gz)
-          fpm -s python -t deb \
-            --python-bin python3 \
-            --python-pip "$(command -v pip3)" \
-            --python-package-name-prefix python3 \
+          whl=$(ls dist/noxentra-*.whl)
+          version=$(basename "$whl" | sed -E 's/^noxentra-([^-]+)-.*/\1/')
+          sudo mkdir -p /opt/noxentra
+          sudo chown "$(id -u):$(id -g)" /opt/noxentra
+          /usr/bin/python3 -m venv /opt/noxentra/venv
+          /opt/noxentra/venv/bin/pip install --upgrade pip
+          /opt/noxentra/venv/bin/pip install --no-cache-dir "$whl"
+          sudo ln -sf /opt/noxentra/venv/bin/noxentra /usr/local/bin/noxentra
+          fpm -s dir -t deb \
+            -n noxentra \
+            -v "$version" \
             --depends python3 \
             --maintainer "taha123618" \
             --description "Noxentra — AI-guided reconnaissance and security assessment platform" \
             --url "https://github.com/taha123618/noxentra" \
-            "$sdist"
+            /opt/noxentra /usr/local/bin/noxentra
       - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: |

@@ -36,7 +36,7 @@ _TOP = 5
 _DOCS_RE = re.compile(
     r"(^|[-_])awesome([-_]|$)|(^|[-_])(lists?|wordlists?|payloads?|dicts?)([-_]|$)"
     r"|cheat.?sheets?|tutorials?|courses?|roadmaps?|writeups?|(^|[-_])notes?$"
-    r"|learning|100.?days|interview", re.I)
+    r"|learning|100.?days|interview", re.IGNORECASE)
 
 _DOC_LANGS = {None, "", "Markdown", "HTML", "TeX"}
 
@@ -62,9 +62,9 @@ _REFUSALS: list[tuple[tuple[str, ...], str]] = [
     # contains it. "flood" is likewise safe now that the defensive guard runs
     # first: "detect a SYN flood" exits before this table is consulted.
     (("jamming", "jammer", "deauth flood"),
-     "Jamming is a denial-of-service attack and is out of scope. For authorized "
-     "work, wifi AUDITING tools test your own/scoped networks: aircrack-ng, "
-     "hcxtools, wifite (offline WPA/WPA2 handshake cracking)."),
+     ("Jamming is a denial-of-service attack and is out of scope. For authorized "
+      "work, wifi AUDITING tools test your own/scoped networks: aircrack-ng, "
+      "hcxtools, wifite (offline WPA/WPA2 handshake cracking).")),
     (("ddos", "dos attack", "flood", "take down", "take it down", "knock offline",
       "stress the server", "booter", "stresser"),
      "Denial-of-service / flooding is destructive and out of scope."),
@@ -576,7 +576,7 @@ def _catalog_matches(tag_names: list[str]) -> list:
         wanted = set(tag_names)
         return [t for c in registry.load().categories for t in c.tools
                 if wanted & set(getattr(t, "TAGS", []) or [])][:5]
-    except Exception:
+    except (OSError, ValueError, RuntimeError):
         return []
 
 
@@ -787,5 +787,5 @@ def check_token() -> tuple[bool, str]:
         return False, f"GitHub returned an error (HTTP {exc.code})"
     except (urllib.error.URLError, OSError):
         return False, "could not reach GitHub — check your network, not the token"
-    except Exception as exc:
+    except (ValueError, KeyError, TypeError) as exc:
         return False, f"token rejected ({type(exc).__name__})"

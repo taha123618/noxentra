@@ -7,10 +7,21 @@ category:
   title: "Mobile Security (catalog)"
   merge_into: "Mobile Security Tools"
 
-# --- enrich existing Python-defined tools by title --------------------------
-overlay:
+overlay: []
+
+# --- migrated from tools/mobile_security.py + missing Android staple --------
+tools:
   - title: "MobSF (Mobile Security Framework)"
+    kind: install
     tags: [mobile, apk, vuln-scan, scanner, malware-analysis]
+    description: "All-in-one mobile app pentesting, malware analysis, and security assessment."
+    supported_os: [linux, macos]
+    install:
+      commands:
+        - "git clone https://github.com/MobSF/Mobile-Security-Framework-MobSF.git"
+        - "cd Mobile-Security-Framework-MobSF && ./setup.sh"
+    run: ["cd Mobile-Security-Framework-MobSF && ./run.sh"]
+    project_url: "https://github.com/MobSF/Mobile-Security-Framework-MobSF"
     usage:
       - ["start the web UI (from the cloned repo)", "./run.sh 127.0.0.1:8000"]
       - ["run the whole stack via Docker", "docker run -it --rm -p 8000:8000 opensecurity/mobile-security-framework-mobsf:latest"]
@@ -21,8 +32,14 @@ overlay:
       authorized to assess.
 
   - title: "Frida (Dynamic Instrumentation)"
+    kind: install
     tags: [mobile, reversing, malware-analysis]
+    description: "Dynamic instrumentation toolkit for runtime hooking on Android, iOS, Windows, macOS, Linux."
+    supported_os: [linux, macos]
     system_pkgs: {which: frida, pip: frida-tools}
+    install: {pip: frida-tools}
+    run: ["frida --help"]
+    project_url: "https://github.com/frida/frida"
     usage:
       - ["list running apps on the USB device", "frida-ps -U"]
       - ["list installed apps", "frida-ps -U -a -i"]
@@ -34,8 +51,14 @@ overlay:
       USB). Only hook apps you own or are explicitly authorized to test.
 
   - title: "Objection (Mobile Runtime Exploration)"
+    kind: install
     tags: [mobile, reversing]
+    description: "Runtime mobile exploration toolkit powered by Frida — no jailbreak/root required."
+    supported_os: [linux, macos]
     system_pkgs: {which: objection, pip: objection}
+    install: {pip: objection}
+    run: ["objection --help"]
+    project_url: "https://github.com/sensepost/objection"
     usage:
       - ["explore a running app (interactive REPL)", "objection -g com.example.app explore"]
       - ["explore with SSL pinning disabled at start", "objection -g com.example.app explore --startup-command 'android sslpinning disable'"]
@@ -45,9 +68,6 @@ overlay:
       rooted/jailbroken device or emulator; `patchapk` embeds the gadget so a
       non-rooted device works instead. Runtime changes (pinning/root bypass) are
       per-session and non-persistent. Authorized apps only.
-
-# --- genuinely-missing Android staple ---------------------------------------
-tools:
   - title: "adb (Android Debug Bridge)"
     kind: install
     tags: [mobile, apk]
@@ -68,6 +88,49 @@ tools:
       devices/emulators and apps you own or are authorized to assess. `adb shell`
       runs as the shell user (not root) unless the device is rooted — no blanket
       privilege is required for install/pull/logcat.
+
+  - title: "apkleaks (APK URI & Secret Scanner)"
+    kind: install
+    tags: [mobile, apk, scanner, credentials]
+    description: "Scans Android APK files for hardcoded URIs, endpoints, API keys, and secrets using jadx decompilation."
+    system_pkgs: {which: apkleaks}
+    install: {pip: apkleaks}
+    run: ["apkleaks --help"]
+    project_url: "https://github.com/dwisiswant0/apkleaks"
+    usage:
+      - ["scan an APK for endpoints and secrets", "apkleaks -f app.apk"]
+      - ["save results as JSON", "apkleaks -f app.apk -o results.json --json"]
+    lab_safe_notes: >-
+      Completely static and offline analysis of the APK file — sends zero network
+      requests to any backend.
+
+  - title: "mobsfscan (Mobile Static Code Analyzer)"
+    kind: install
+    tags: [mobile, scanner, vuln-scan]
+    description: "Static analysis scanner for Android (Java/Kotlin) and iOS (Swift/Objective-C) source code based on MobSF rules."
+    system_pkgs: {which: mobsfscan}
+    install: {pip: mobsfscan}
+    run: ["mobsfscan --help"]
+    project_url: "https://github.com/MobSF/mobsfscan"
+    usage:
+      - ["scan a mobile source directory", "mobsfscan ./app-src/"]
+      - ["emit SARIF output for CI", "mobsfscan --sarif -o results.sarif ./app-src/"]
+    lab_safe_notes: >-
+      Reads mobile source code statically and offline — safe for CI/CD and local audits.
+
+  - title: "reFlutter (Flutter RE & SSL Bypass)"
+    kind: install
+    tags: [mobile, reversing, apk]
+    description: "Reverse-engineering helper for Flutter Android/iOS apps that patches snapshot binaries to enable traffic interception and function dumping."
+    system_pkgs: {which: reflutter}
+    install: {pip: reflutter}
+    run: ["reflutter --help"]
+    project_url: "https://github.com/ptswarm/reFlutter"
+    usage:
+      - ["patch a Flutter APK for Burp/mitmproxy traffic interception", "reflutter app.apk"]
+    lab_safe_notes: >-
+      Produces a patched APK locally for dynamic analysis in your own emulator/test
+      device — use only on apps you are authorized to test.
 
 # --- high-value mobile-security references -----------------------------------
   - title: "OWASP MAS (Mobile App Security)"

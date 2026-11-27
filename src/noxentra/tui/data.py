@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 @dataclass
 class CatRow:
-    index: int        # position in cli.all_tools
+    index: int        # position in toolbox.all_tools
     title: str
     icon: str
     label: str
@@ -22,8 +22,8 @@ class ToolRow:
 
 
 def _engine():
-    import noxentra.cli as cli
-    return cli.all_tools, cli.tool_definitions
+    from noxentra import toolbox
+    return toolbox.all_tools, toolbox.tool_definitions
 
 
 def categories() -> list[CatRow]:
@@ -41,13 +41,15 @@ def _active_tools(cat_index: int) -> list:
     return coll._active_tools() if hasattr(coll, "_active_tools") else list(coll.TOOLS)
 
 
-def tools_in(cat_index: int) -> list[ToolRow]:
+def tools_in(cat_index: int, probe: bool = True) -> list[ToolRow]:
     rows = []
     for j, t in enumerate(_active_tools(cat_index)):
-        try:
-            installed = bool(t.is_installed())
-        except Exception:
-            installed = False
+        installed = False
+        if probe:
+            try:
+                installed = bool(t.is_installed())
+            except (OSError, RuntimeError, ValueError, AttributeError, TypeError):
+                installed = False
         rows.append(ToolRow(
             index=j,
             title=getattr(t, "TITLE", "?"),
@@ -59,8 +61,31 @@ def tools_in(cat_index: int) -> list[ToolRow]:
     return rows
 
 
+def probe_installed(rows: list[ToolRow]) -> list[bool]:
+    """Check install state for `rows` (safe to call off the UI thread)."""
+    out: list[bool] = []
+    for r in rows:
+        try:
+            out.append(bool(r.obj.is_installed()))
+        except (OSError, RuntimeError, ValueError, AttributeError, TypeError):
+            out.append(False)
+    return out
+
+
 def tool_at(cat_index: int, tool_index: int) -> ToolRow:
-    return tools_in(cat_index)[tool_index]
+    t = _active_tools(cat_index)[tool_index]
+    try:
+        installed = bool(t.is_installed())
+    except (OSError, RuntimeError, ValueError, AttributeError, TypeError):
+        installed = False
+    return ToolRow(
+        index=tool_index,
+        title=getattr(t, "TITLE", "?"),
+        description=getattr(t, "DESCRIPTION", "") or "",
+        url=getattr(t, "PROJECT_URL", "") or "",
+        installed=installed,
+        obj=t,
+    )
 
 
 @dataclass
@@ -85,3 +110,82 @@ def search_tools(needle: str) -> list[ToolHit]:
             if cat_hit or n in title.lower():
                 hits.append(ToolHit(cat.index, j, title, cat.label))
     return hits
+
+
+@dataclass
+class EngagementRow:
+    name: str
+    targets_count: int
+    findings_count: int
+    created: str
+    obj: object
+
+
+def recommend_tools(intent: str) -> tuple[list[str], list[ToolHit]]:
+    """Resolve free-text intent -> (matched_tags, matching ToolHits)."""
+    import difflib
+
+    from noxentra import ai_recommend, toolbox
+
+    q = intent.strip()
+    if not q:
+        return [], []
+
+    cats = categories()
+    all_tags: set[str] = set()
+    tool_rows: list[tuple[ToolHit, set[str]]] = []
+    for cat in cats:
+        for j, t in enumerate(_active_tools(cat.index)):
+            tags = {str(tg).lower() for tg in getattr(t, "TAGS", ()) or ()}
+            all_tags.update(tags)
+            tool_rows.append((ToolHit(cat.index, j, getattr(t, "TITLE", "?"), cat.label), tags))
+
+    close = difflib.get_close_matches(q.lower(), toolbox.RECOMMENDATIONS, n=1, cutoff=0.6)
+    if close:
+        tag_names = list(toolbox.RECOMMENDATIONS[close[0]])
+    else:
+        tag_names = ai_recommend.resolve(q, sorted(all_tags))
+
+    wanted = {tg.lower() for tg in tag_names}
+    hits = [hit for hit, tags in tool_rows if tags & wanted]
+    return tag_names, hits
+
+
+def engagements() -> list[EngagementRow]:
+    """List persisted engagements under ENGAGEMENTS_ROOT, newest first."""
+    from noxentra import engagement, findings
+
+    root = engagement.ENGAGEMENTS_ROOT
+    if not root.exists():
+        return []
+    rows: list[EngagementRow] = []
+    for entry in root.iterdir():
+        if not entry.is_dir():
+            continue
+        try:
+            e = engagement.load(entry.name)
+        except (ValueError, OSError):
+            continue
+        if e is None:
+            continue
+        found = findings.load_findings(e.findings_file)
+        rows.append(EngagementRow(
+            name=e.name,
+            targets_count=len(e.targets),
+            findings_count=len(found),
+            created=e.created,
+            obj=e,
+        ))
+    rows.sort(key=lambda r: r.created, reverse=True)
+    return rows
+
+
+def tags_summary() -> list[tuple[str, list[ToolHit]]]:
+    """Return (tag, [ToolHit, ...]) sorted by descending tool count then tag name."""
+    by_tag: dict[str, list[ToolHit]] = {}
+    for cat in categories():
+        for j, t in enumerate(_active_tools(cat.index)):
+            hit = ToolHit(cat.index, j, getattr(t, "TITLE", "?"), cat.label)
+            for tg in getattr(t, "TAGS", ()) or ():
+                by_tag.setdefault(str(tg).lower(), []).append(hit)
+    return sorted(by_tag.items(), key=lambda kv: (-len(kv[1]), kv[0]))

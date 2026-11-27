@@ -1,3 +1,4 @@
+from typing import ClassVar
 
 from rich.panel import Panel
 from rich.prompt import Prompt
@@ -6,34 +7,11 @@ from rich.text import Text
 from noxentra.core import Noxentra, NoxentraCollection, console
 
 
-class Autopsy(Noxentra):
-    TITLE = "Autopsy"
-    DESCRIPTION = "Autopsy is a platform that is used by Cyber Investigators.\n" \
-                  "[!] Works in any OS\n" \
-                  "[!] Recover Deleted Files from any OS & Media \n" \
-                  "[!] Extract Image Metadata"
-    RUN_COMMANDS = ["sudo autopsy"]
-
-    def __init__(self):
-        super().__init__(installable=False)
-
-
-class Wireshark(Noxentra):
-    TITLE = "Wireshark"
-    DESCRIPTION = "Wireshark is a network capture and analyzer \n" \
-                  "tool to see what’s happening in your network.\n " \
-                  "And also investigate Network related incident"
-    RUN_COMMANDS = ["sudo wireshark"]
-
-    def __init__(self):
-        super().__init__(installable=False)
-
-
 class BulkExtractor(Noxentra):
     TITLE = "Bulk extractor"
     DESCRIPTION = "Extract useful information without parsing the file system"
     PROJECT_URL = "https://github.com/simsong/bulk_extractor"
-    SUPPORTED_OS = ["linux"]
+    SUPPORTED_OS: ClassVar = ["linux"]
 
     def __init__(self):
         super().__init__([
@@ -49,9 +27,9 @@ class BulkExtractor(Noxentra):
         console.print("[bold magenta]Cloning repository and attempting to run GUI...[/]")
         tools_dir = get_tools_dir()
         subprocess.run(["git", "clone", "https://github.com/simsong/bulk_extractor.git"],
-                       cwd=str(tools_dir))
+                       cwd=str(tools_dir), check=False)
         be_dir = tools_dir / "bulk_extractor"
-        subprocess.run(["./BEViewer"], cwd=str(be_dir / "java_gui"))
+        subprocess.run(["./BEViewer"], cwd=str(be_dir / "java_gui"), check=False)
         console.print(
             "[magenta]If you get an error after clone go to /java_gui/src/ and compile the .jar file && run ./BEViewer[/]")
         console.print(
@@ -60,35 +38,9 @@ class BulkExtractor(Noxentra):
     def cli_mode(self):
         import subprocess
         console.print(Panel(Text(self.TITLE + " - CLI Mode", justify="center"), style="bold magenta"))
-        subprocess.run(["sudo", "apt", "install", "-y", "bulk-extractor"])
+        subprocess.run(["sudo", "apt", "install", "-y", "bulk-extractor"], check=False)
         console.print("[magenta]bulk_extractor [options] imagefile[/]")
-        subprocess.run(["bulk_extractor", "-h"])
-
-
-class Guymager(Noxentra):
-    TITLE = "Disk Clone and ISO Image Acquire"
-    DESCRIPTION = "Guymager is a free forensic imager for media acquisition."
-    SUPPORTED_OS = ["linux"]
-    INSTALL_COMMANDS = ["sudo apt install guymager"]
-    RUN_COMMANDS = ["sudo guymager"]
-    PROJECT_URL = "https://guymager.sourceforge.io/"
-
-
-
-class Toolsley(Noxentra):
-    TITLE = "Toolsley"
-    DESCRIPTION = "Toolsley got more than ten useful tools for investigation.\n" \
-                  "[+]File signature verifier\n" \
-                  "[+]File identifier \n" \
-                  "[+]Hash & Validate \n" \
-                  "[+]Binary inspector \n " \
-                  "[+]Encode text \n" \
-                  "[+]Data URI generator \n" \
-                  "[+]Password generator"
-    PROJECT_URL = "https://www.toolsley.com/"
-
-    def __init__(self):
-        super().__init__(installable=False, runnable=False)
+        subprocess.run(["bulk_extractor", "-h"], check=False)
 
 
 class Volatility3(Noxentra):
@@ -97,7 +49,7 @@ class Volatility3(Noxentra):
         "The world's most widely used memory forensics framework.\n"
         "Usage: python3 vol.py -f memory.dmp windows.pslist"
     )
-    INSTALL_COMMANDS = [
+    INSTALL_COMMANDS: ClassVar = [
         "git clone https://github.com/volatilityfoundation/volatility3.git",
         "cd volatility3 && pip install --user -r requirements.txt",
     ]
@@ -112,43 +64,15 @@ class Volatility3(Noxentra):
         subprocess.run(
             ["python3", "vol.py", "-f", dump, plugin],
             cwd=str(get_tools_dir() / "volatility3"),
+            check=False,
         )
-
-
-class Binwalk(Noxentra):
-    TITLE = "Binwalk (Firmware Analysis)"
-    DESCRIPTION = (
-        "Analyze, reverse engineer, and extract firmware images.\n"
-        "Usage: binwalk -e firmware.bin"
-    )
-    INSTALL_COMMANDS = ["pip install --user binwalk"]
-    RUN_COMMANDS = ["binwalk --help"]
-    PROJECT_URL = "https://github.com/ReFirmLabs/binwalk"
-
-
-class Pspy(Noxentra):
-    TITLE = "pspy (Process Monitor — No Root)"
-    DESCRIPTION = "Monitor Linux processes without root — detects cron jobs, scheduled tasks, other users' commands."
-    INSTALL_COMMANDS = [
-        "curl -sSL https://github.com/DominicBreuker/pspy/releases/latest/download/pspy64 -o pspy",
-        "chmod +x pspy",
-    ]
-    RUN_COMMANDS = ["./pspy --help"]
-    PROJECT_URL = "https://github.com/DominicBreuker/pspy"
-    SUPPORTED_OS = ["linux"]
 
 
 class ForensicTools(NoxentraCollection):
     TITLE = "Forensic tools"
-    TOOLS = [
-        Autopsy(),
-        Wireshark(),
+    TOOLS: ClassVar = [
         BulkExtractor(),
-        Guymager(),
-        Toolsley(),
         Volatility3(),
-        Binwalk(),
-        Pspy(),
     ]
 
 if __name__ == "__main__":

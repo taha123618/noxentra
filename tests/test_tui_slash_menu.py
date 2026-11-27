@@ -22,8 +22,9 @@ def _ids(pal: CommandPalette) -> list[str]:
 def test_empty_needle_shows_all_commands():
     pal = CommandPalette()
     opts = pal._opts("")
-    assert len(opts) == len(COMMANDS) == 6
+    assert len(opts) == len(COMMANDS) == 11
     assert "/config" in [o.id for o in opts]
+    assert "/engage" in [o.id for o in opts]
     assert "/update" in [o.id for o in opts]
     assert "/search" not in [o.id for o in opts]   # type-to-filter replaces it
 

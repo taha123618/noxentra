@@ -13,6 +13,10 @@ class Header(Static):
         self._count = tool_count
         super().__init__(id="nx-header")
 
+    def set_status(self, status: str) -> None:
+        self._status = status
+        self.refresh()
+
     def render(self) -> Text:
         t = Text()
         t.append(f" {self._title}   ")

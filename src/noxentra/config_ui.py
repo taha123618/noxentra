@@ -225,7 +225,7 @@ def open_editor() -> None:
             try:
                 ok, detail = ai_recommend.test_connection()
                 msg = ("✓ " if ok else "✗ ") + (detail[:70] + "…" if len(detail) > 70 else detail)
-            except Exception as exc:
+            except (OSError, ValueError, RuntimeError) as exc:
                 msg = f"✗ probe error: {exc}"
 
             def done():

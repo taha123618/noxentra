@@ -6,32 +6,8 @@ category:
   title: "Forensics (catalog)"
   merge_into: "Forensic tools"
 
-# --- enrich existing Python-defined tools by title --------------------------
+# --- enrich remaining Python-defined tools by title -------------------------
 overlay:
-  - title: "Autopsy"
-    tags: [forensics, metadata]
-    usage:
-      - ["launch the GUI", "autopsy"]
-    lab_safe_notes: >-
-      Autopsy analyzes a copy of a disk image read-only — it recovers deleted files,
-      timelines and metadata without touching the original evidence. Work from a
-      forensic image (dd/E01), never the live disk.
-
-  - title: "Wireshark"
-    tags: [network, forensics, sniffing, pcap]
-    system_pkgs: {which: wireshark, apt: wireshark}
-    usage:
-      - ["open the GUI", "wireshark"]
-      - ["read a capture on the CLI", "tshark -r capture.pcap"]
-      - ["capture live to a file", "tshark -i eth0 -w out.pcap"]
-      - ["keep only HTTP requests", "tshark -r capture.pcap -Y 'http.request'"]
-      - ["extract fields (src IP + DNS query)", "tshark -r capture.pcap -T fields -e ip.src -e dns.qry.name"]
-      - ["follow a TCP stream", "tshark -r capture.pcap -z follow,tcp,ascii,0"]
-    lab_safe_notes: >-
-      Analyzing a provided .pcap is completely passive and safe. Live capture needs
-      privileges and only sees traffic on networks you're authorized to monitor. tshark
-      is the CLI twin — great for scripting the same display filters as the GUI.
-
   - title: "Bulk extractor"
     tags: [forensics, memory-dump, metadata]
     system_pkgs: {which: bulk_extractor, apt: bulk-extractor}
@@ -58,8 +34,64 @@ overlay:
       (windows.* / linux.* / mac.*); run `vol.py -f dump windows.info` first to confirm
       the profile.
 
+# --- migrated from tools/forensics.py + missing forensics tools -------------
+tools:
+  - title: "Autopsy"
+    kind: install
+    tags: [forensics, metadata]
+    description: "Autopsy is a platform used by Cyber Investigators to recover deleted files and extract metadata."
+    system_pkgs: {which: autopsy, apt: autopsy}
+    run: ["sudo autopsy"]
+    usage:
+      - ["launch the GUI", "autopsy"]
+    lab_safe_notes: >-
+      Autopsy analyzes a copy of a disk image read-only — it recovers deleted files,
+      timelines and metadata without touching the original evidence. Work from a
+      forensic image (dd/E01), never the live disk.
+
+  - title: "Wireshark"
+    kind: install
+    tags: [network, forensics, sniffing, pcap]
+    description: "Wireshark is a network capture and analyzer tool to investigate network incidents."
+    system_pkgs: {which: wireshark, apt: wireshark}
+    run: ["sudo wireshark"]
+    usage:
+      - ["open the GUI", "wireshark"]
+      - ["read a capture on the CLI", "tshark -r capture.pcap"]
+      - ["capture live to a file", "tshark -i eth0 -w out.pcap"]
+      - ["keep only HTTP requests", "tshark -r capture.pcap -Y 'http.request'"]
+      - ["extract fields (src IP + DNS query)", "tshark -r capture.pcap -T fields -e ip.src -e dns.qry.name"]
+      - ["follow a TCP stream", "tshark -r capture.pcap -z follow,tcp,ascii,0"]
+    lab_safe_notes: >-
+      Analyzing a provided .pcap is completely passive and safe. Live capture needs
+      privileges and only sees traffic on networks you're authorized to monitor. tshark
+      is the CLI twin — great for scripting the same display filters as the GUI.
+
+  - title: "Disk Clone and ISO Image Acquire"
+    kind: install
+    tags: [forensics, metadata]
+    description: "Guymager is a free forensic imager for media acquisition."
+    supported_os: [linux]
+    install:
+      commands: ["sudo apt install guymager"]
+    run: ["sudo guymager"]
+    project_url: "https://guymager.sourceforge.io/"
+    usage:
+      - ["launch Guymager", "sudo guymager"]
+
+  - title: "Toolsley"
+    kind: resource
+    tags: [reference, online-service, forensics]
+    description: "Toolsley — web utilities for file signature verification, hashing, and binary inspection."
+    url: "https://www.toolsley.com/"
+
   - title: "Binwalk (Firmware Analysis)"
+    kind: install
     tags: [forensics, binary, reversing]
+    description: "Analyze, reverse engineer, and extract firmware images."
+    install: {pip: binwalk}
+    run: ["binwalk --help"]
+    project_url: "https://github.com/ReFirmLabs/binwalk"
     usage:
       - ["scan a firmware image", "binwalk firmware.bin"]
       - ["extract embedded files", "binwalk -e firmware.bin"]
@@ -71,7 +103,16 @@ overlay:
       pulling filesystems and configs out of router/IoT firmware.
 
   - title: "pspy (Process Monitor — No Root)"
+    kind: install
     tags: [forensics, post-exploitation, enumeration]
+    description: "Monitor Linux processes without root — detects cron jobs, scheduled tasks, other users' commands."
+    supported_os: [linux]
+    install:
+      commands:
+        - "curl -sSL https://github.com/DominicBreuker/pspy/releases/latest/download/pspy64 -o pspy"
+        - "chmod +x pspy"
+    run: ["./pspy --help"]
+    project_url: "https://github.com/DominicBreuker/pspy"
     usage:
       - ["watch processes + file events", "./pspy64"]
       - ["set the scan interval (ms)", "./pspy64 -i 1000"]
@@ -80,12 +121,6 @@ overlay:
       pspy is passive — it snapshots /proc to reveal cron jobs and commands run by other
       users without needing root, and changes nothing on the host. Ideal on a box you
       already have a foothold on to catch privileged scheduled tasks.
-
-  - title: "Toolsley"
-    tags: [reference, online-service, forensics]
-
-# --- genuinely-missing, widely-used forensics tools --------------------------
-tools:
   - title: "ExifTool (Metadata)"
     kind: install
     tags: [forensics, metadata, image, document]
@@ -121,6 +156,80 @@ tools:
       Foremost only reads the input image and writes recovered files to -o (which must
       not already exist) — non-destructive on the evidence. Handy for recovering deleted
       files in disk-forensics and CTF challenges.
+
+  - title: "YARA (Malware Pattern Matcher)"
+    kind: install
+    tags: [forensics, malware-analysis, binary, scanner]
+    description: "The standard rule-based pattern matching engine for identifying and classifying malware families, IOCs, and suspicious artifacts."
+    system_pkgs: {which: yara, apt: yara, brew: yara}
+    install: {apt: yara}
+    run: ["yara --version"]
+    project_url: "https://github.com/VirusTotal/yara"
+    usage:
+      - ["scan a directory recursively with a rule file", "yara -r rules.yar ./samples/"]
+      - ["print matching strings and offsets", "yara -s rules.yar ./sample.bin"]
+    lab_safe_notes: >-
+      YARA reads files statically against rule signatures and never executes samples —
+      safe for DFIR, malware triage, and threat hunting.
+
+  - title: "Zeek (Network Security Monitor)"
+    kind: install
+    tags: [forensics, pcap, network, scanner]
+    description: "Powerful passive network analysis framework that turns packet captures or live traffic into structured protocol logs (conn, dns, http, ssl)."
+    system_pkgs: {which: zeek, apt: zeek, brew: zeek}
+    install: {apt: zeek}
+    run: ["zeek --version"]
+    project_url: "https://github.com/zeek/zeek"
+    usage:
+      - ["analyze an offline pcap into structured logs", "zeek -r capture.pcap"]
+      - ["analyze pcap with JSON log output", "zeek -r capture.pcap LogAscii::use_json=T"]
+    lab_safe_notes: >-
+      Offline pcap analysis (`zeek -r`) is completely passive and safe on any capture.
+      Live interface capture should only run on networks you are authorized to monitor.
+
+  - title: "osquery (SQL Endpoint Visibility)"
+    kind: install
+    tags: [forensics, enumeration, scanner]
+    description: "Exposes an operating system as a relational database so DFIR analysts can query processes, sockets, users, and persistence via SQL."
+    system_pkgs: {which: osqueryi, apt: osquery, brew: osquery}
+    install: {apt: osquery}
+    run: ["osqueryi --version"]
+    project_url: "https://github.com/osquery/osquery"
+    usage:
+      - ["open an interactive SQL shell", "osqueryi"]
+      - ["query listening ports and processes", "osqueryi 'SELECT pid, port, address FROM listening_ports;'"]
+    lab_safe_notes: >-
+      Read-only host telemetry queries — safe for incident response and live forensics on
+      systems you own or are authorized to inspect.
+
+  - title: "Chainsaw (EVTX Threat Hunting)"
+    kind: install
+    tags: [forensics, malware-analysis, scanner]
+    description: "Fast Rust DFIR tool for hunting Windows Event Logs (EVTX) and MFT/SRUM artifacts using Sigma rules and built-in detections."
+    system_pkgs: {which: chainsaw, brew: chainsaw}
+    install: {brew: chainsaw}
+    run: ["chainsaw --version"]
+    project_url: "https://github.com/WithSecureLabs/chainsaw"
+    usage:
+      - ["hunt EVTX logs with built-in detections", "chainsaw hunt ./evtx/ --local"]
+      - ["hunt EVTX logs using Sigma rules", "chainsaw hunt ./evtx/ -s ./sigma/ --mapping mappings/sigma-event-logs-all.yml"]
+    lab_safe_notes: >-
+      Offline artifact analysis over collected EVTX files — completely non-destructive.
+
+  - title: "Velociraptor (DFIR Endpoint Visibility)"
+    kind: install
+    tags: [forensics, enumeration, malware-analysis]
+    description: "Advanced open-source endpoint monitoring, digital forensics, and cyber response platform powered by VQL queries."
+    system_pkgs: {which: velociraptor, brew: velociraptor}
+    install: {brew: velociraptor}
+    run: ["velociraptor version"]
+    project_url: "https://github.com/Velocidex/velociraptor"
+    usage:
+      - ["run a local VQL query interactively", "velociraptor query 'SELECT * FROM pslist()'"]
+      - ["start standalone local GUI", "velociraptor gui"]
+    lab_safe_notes: >-
+      Local VQL triage is read-only; deploy agents only on endpoints you own or are
+      authorized to investigate.
 
 # --- high-value DFIR references ----------------------------------------------
   - title: "Eric Zimmerman's Tools"

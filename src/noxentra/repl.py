@@ -25,6 +25,8 @@ _COMMANDS = {
     "/ai": "recommend tools for a goal",
     "/goal": "AI-plan & run an objective (per-step confirm)",
     "/find": "find tools for a need (catalog + GitHub)",
+    "/engage": "manage engagements & run live pipelines",
+    "/report": "export Markdown / HTML / SARIF reports",
     "/panes": "list background panes",
     "/attach": "attach to background panes (Ctrl-b d to return)",
     "/kill": "kill a background pane (/kill <label|all>)",
@@ -112,7 +114,7 @@ def _run_tool(tool):
 
 def _open_mention(raw, tag_index, tools_by_title):
     """Handle an ``@…`` token: ``@tag:<t>`` filters, ``@<tool>`` opens."""
-    import noxentra.cli as cli
+    from noxentra import cli
     from noxentra.core import console
 
     if raw.startswith("@tag:"):
@@ -125,7 +127,7 @@ def _open_mention(raw, tag_index, tools_by_title):
         cli._pick_tool(matches)
         return
 
-    name = raw[1:] if raw.startswith("@") else raw
+    name = raw.removeprefix("@")
     tool = _resolve(name, tools_by_title)
     if tool is None:
         console.print(f"[dim]No tool matches '{name}'. Try /search or /tags.[/dim]")
@@ -185,25 +187,21 @@ def _dispatch(raw, tag_index=None, tools_by_title=None):
 
 def _use_repl(force_classic: bool) -> bool:
     """REPL only on an interactive TTY with prompt_toolkit importable."""
+    import importlib.util
     import sys
 
     if force_classic:
         return False
     if not (sys.stdin.isatty() and sys.stdout.isatty()):
         return False
-    try:
-        import prompt_toolkit  # noqa: F401
-    except ImportError:
-        return False
-    return True
+    return importlib.util.find_spec("prompt_toolkit") is not None
 
 
 def run_repl():
     """Launch the inline REPL over the shared input surface (prompt.read_line +
     prompt.dispatch), so home and nested tool menus share ONE line editor,
     history, and grammar. Fallback selection is the caller's job (`_use_repl`)."""
-    import noxentra.cli as cli
-    from noxentra import prompt
+    from noxentra import cli, prompt
     from noxentra.core import console
 
     console.print(cli._build_header())

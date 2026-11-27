@@ -1,5 +1,5 @@
 """AI2 build_command: curated-first, AI-gap fill, anti-fabrication binary guard."""
-import noxentra.ai_command as ai_command
+from noxentra import ai_command
 
 USAGE = [
     ("crack MD5 with a wordlist", "hashcat -m 0 -a 0 hash.txt rockyou.txt"),
