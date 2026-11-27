@@ -222,6 +222,33 @@ tools:
       Offline static binary analysis — standard tool for binary exploitation CTFs and
       vulnerability research.
 
+  - title: "ropr (Fast Rust ROP Gadget Finder)"
+    kind: install
+    tags: [reversing, binary, exploitation]
+    description: "Blazing-fast multithreaded Rust ROP gadget finder supporting x86/x64, ARM, and ARM64 ELF/PE/Mach-O binaries."
+    system_pkgs: {which: ropr}
+    install: {commands: ["cargo install ropr"]}
+    run: ["ropr --help"]
+    project_url: "https://github.com/Ben-Lichtman/ropr"
+    usage:
+      - ["find ROP gadgets in an ELF binary", "ropr ./vuln"]
+      - ["filter gadgets with a regex pattern", "ropr -R 'pop rdi.*ret' ./vuln"]
+    lab_safe_notes: >-
+      Purely offline static binary gadget search — never executes the binary.
+
+  - title: "pwninit (CTF Binary Setup Automator)"
+    kind: install
+    tags: [reversing, binary, exploitation]
+    description: "Automates CTF pwn challenge setup by patching ELF binaries to use a supplied libc/ld-linux and generating a pwntools solve template."
+    system_pkgs: {which: pwninit}
+    install: {commands: ["cargo install pwninit"]}
+    run: ["pwninit --help"]
+    project_url: "https://github.com/io12/pwninit"
+    usage:
+      - ["initialize exploit workspace for a challenge binary", "pwninit --bin ./chall --libc ./libc.so.6"]
+    lab_safe_notes: >-
+      Patches local challenge binaries for isolated CTF/lab debugging only.
+
 # --- RE learning references --------------------------------------------------
   - title: "crackmes.one (RE Practice)"
     kind: resource

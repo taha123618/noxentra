@@ -320,3 +320,42 @@ def test_parse_kube_linter():
     assert fs[0].source_tool == "kube-linter"
     assert "run-as-non-root" in fs[0].name
     assert targets == ["k8s/deploy.yaml"]
+
+
+def test_parse_gitleaks():
+    from noxentra.findings import parse_gitleaks
+
+    raw = json.dumps([{
+        "RuleID": "aws-access-token",
+        "Description": "AWS Access Key",
+        "File": "config.py",
+        "StartLine": 14,
+        "Commit": "abc123",
+    }])
+    fs, targets = parse_gitleaks(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].kind == "secret"
+    assert fs[0].target == "config.py:14"
+    assert fs[0].severity == "high"
+    assert fs[0].source_tool == "gitleaks"
+    assert targets == ["config.py"]
+
+
+def test_parse_semgrep():
+    from noxentra.findings import parse_semgrep
+
+    raw = json.dumps({
+        "results": [{
+            "check_id": "python.lang.security.audit.exec-detected",
+            "path": "app.py",
+            "start": {"line": 42},
+            "extra": {"severity": "ERROR", "message": "Avoid exec()"},
+        }]
+    })
+    fs, targets = parse_semgrep(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].kind == "vulnerability"
+    assert fs[0].target == "app.py:42"
+    assert fs[0].severity == "high"
+    assert fs[0].source_tool == "semgrep"
+    assert targets == ["app.py"]

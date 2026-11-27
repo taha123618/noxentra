@@ -54,9 +54,9 @@ and something you get back — no prior knowledge of the codebase needed.
    | `~/.noxentra/history` | your `↑`/`↓` command history |
 
 4. You land on the banner + prompt. The header line tells you what you have:
-   OS, IP, and `22 categories · 302 active · 44 archived` (that count includes
+   OS, IP, and `22 categories · 308 active · 44 archived` (that count includes
    the built-in Update/Uninstall menu; the tool catalog itself is
-   [21 categories / 300 tools](TOOLS.md)).
+   [21 categories / 306 tools](TOOLS.md)).
 
 5. Type `/help` for the command card, and `q` (or `/quit`, `Ctrl-D`) to leave.
 
@@ -116,7 +116,7 @@ metapackages), noxentra reuses that binary instead of re-cloning it.
 
 ## 4. Find a tool that isn't in the catalog (`/find`)
 
-`/find` answers "what should I use for X?" — first from the 300 curated tools,
+`/find` answers "what should I use for X?" — first from the 306 curated tools,
 then from the GitHub search API, ranked with a reason for each hit. It is
 **suggest-only**: it never clones, installs or runs anything, and it makes **zero
 model calls**.
@@ -350,7 +350,7 @@ Turn backgrounding off entirely with `/config background_runner off`.
    comma-separated targets (e.g. `75.2.60.5, https://devteampro.com/`), and optional
    `scope_in` / `scope_out` globs.
 3. Pick a pipeline (`recon`, `full_recon`, `web_enum`, `dns_enum`, `web_deep`,
-   `passive_urls`, `tls_recon`, `cloud_scan`, `container_scan`, `iac_scan`, `k8s_scan`). Each row shows its
+   `passive_urls`, `tls_recon`, `cloud_scan`, `container_scan`, `iac_scan`, `k8s_scan`, `secret_scan`, `sast_scan`). Each row shows its
    pre-flight readiness (`X/Y ready` on `PATH`); pipelines with `0` installed tools are
    flagged before launch.
 4. Confirm authorization, then watch live streamed output in the panel (`c` cancels

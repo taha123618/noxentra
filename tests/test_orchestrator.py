@@ -162,7 +162,7 @@ def test_list_pipelines_includes_web_enum():
     assert {
         "recon", "full_recon", "web_enum", "dns_enum",
         "web_deep", "passive_urls", "tls_recon", "cloud_scan", "container_scan",
-        "iac_scan", "k8s_scan",
+        "iac_scan", "k8s_scan", "secret_scan", "sast_scan",
     } <= set(names)
     expanded = orchestrator._expand_args(["dir", "-w", "{wordlist}"])
     assert "{wordlist}" not in expanded[2]

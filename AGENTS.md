@@ -14,7 +14,7 @@ Noxentra (`src/noxentra/`) is a Python >=3.10 CLI/TUI security & reconnaissance 
 - **Entry & UI**: `cli.py` (classic REPL + headless flags) and `tui/` (`NoxentraApp` Textual TUI, `app.tcss`, screens, widgets).
 - **Catalog & Tools**: `toolbox.py` owns `all_tools`, `tool_definitions`, and `RECOMMENDATIONS`; YAML-first entries in `src/noxentra/catalog/*.yaml` loaded by `registry.py` (`CatalogTool`) merge with legacy Python classes in `src/noxentra/tools/*.py`. Tags must come from `TAXONOMY` in `src/noxentra/tags.py`.
 - **AI Layer**: `ai_recommend.py`, `ai_command.py`, `ai_goal.py`, `ai_summary.py`, `ai_report.py`, governed by `skill.py` and `skill/OPERATOR.md`.
-- **Headless Orchestrator**: `orchestrator.py`, `engagement.py`, `findings.py` (18 normalized parsers + `diff_findings`), `report.py` (Markdown, HTML, SARIF v2.1.0), and `pipelines/*.yaml` (`recon`, `full_recon`, `web_enum`, `dns_enum`, `web_deep`, `passive_urls`, `tls_recon`, `cloud_scan`, `container_scan`, `iac_scan`, `k8s_scan`).
+- **Headless Orchestrator**: `orchestrator.py`, `engagement.py`, `findings.py` (20 normalized parsers + `diff_findings`), `report.py` (Markdown, HTML, SARIF v2.1.0), and `pipelines/*.yaml` (`recon`, `full_recon`, `web_enum`, `dns_enum`, `web_deep`, `passive_urls`, `tls_recon`, `cloud_scan`, `container_scan`, `iac_scan`, `k8s_scan`, `secret_scan`, `sast_scan`).
 
 ## Invariants
 

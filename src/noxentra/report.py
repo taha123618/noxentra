@@ -13,6 +13,7 @@ _KIND_TITLES = {
     "vulnerability": "Vulnerabilities",
     "misconfiguration": "Misconfigurations",
     "iam-risk": "IAM Risks",
+    "secret": "Leaked Secrets",
 }
 _SEV_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4, "unknown": 5}
 _SARIF_LEVEL = {"critical": "error", "high": "error", "medium": "warning",

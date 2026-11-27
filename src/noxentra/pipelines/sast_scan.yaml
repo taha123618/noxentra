@@ -1,0 +1,11 @@
+# pipelines/sast_scan.yaml
+name: sast_scan
+description: Static application security analysis (semgrep).
+steps:
+  - tool: semgrep
+    args: ["scan", "--config", "auto", "--json", "--quiet"]
+    input: targets
+    per_target_positional: true
+    workers: 2
+    output: raw/semgrep.json
+    parser: semgrep

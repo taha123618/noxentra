@@ -567,6 +567,64 @@ def parse_kube_linter(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     return findings, targets
 
 
+def parse_gitleaks(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `gitleaks detect --report-format json` array into secret Findings."""
+    findings: list[Finding] = []
+    targets: list[str] = []
+    text = raw.strip()
+    if not text:
+        return findings, targets
+    try:
+        items = json.loads(text)
+    except json.JSONDecodeError:
+        return findings, targets
+    if not isinstance(items, list):
+        return findings, targets
+
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        rule = str(item.get("RuleID") or item.get("Description") or "leaked-secret")
+        fpath = str(item.get("File") or "repo")
+        line = item.get("StartLine")
+        loc = f"{fpath}:{line}" if line else fpath
+        details = {
+            "rule_id": item.get("RuleID"),
+            "description": item.get("Description"),
+            "commit": item.get("Commit"),
+        }
+        findings.append(Finding("secret", loc, rule, "high", "gitleaks", details, json.dumps(item), ts))
+        if fpath not in targets:
+            targets.append(fpath)
+    return findings, targets
+
+
+def parse_semgrep(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `semgrep scan --json` output into vulnerability Findings."""
+    findings: list[Finding] = []
+    targets: list[str] = []
+    top = _load_json_dict(raw)
+    if not top:
+        return findings, targets
+
+    sev_map = {"ERROR": "high", "WARNING": "medium", "INFO": "info"}
+    for res in top.get("results") or []:
+        if not isinstance(res, dict):
+            continue
+        check_id = str(res.get("check_id") or "semgrep-rule")
+        fpath = str(res.get("path") or "src")
+        start = res.get("start") if isinstance(res.get("start"), dict) else {}
+        line = start.get("line")
+        loc = f"{fpath}:{line}" if line else fpath
+        extra = res.get("extra") if isinstance(res.get("extra"), dict) else {}
+        sev = sev_map.get(str(extra.get("severity") or "").upper(), "medium")
+        details = {"check_id": check_id, "message": extra.get("message")}
+        findings.append(Finding("vulnerability", loc, check_id, sev, "semgrep", details, json.dumps(res), ts))
+        if fpath not in targets:
+            targets.append(fpath)
+    return findings, targets
+
+
 PARSERS = {
     "subfinder": parse_subfinder,
     "httpx": parse_httpx,
@@ -586,6 +644,8 @@ PARSERS = {
     "kube-hunter": parse_kube_hunter,
     "cloudsplaining": parse_cloudsplaining,
     "kube-linter": parse_kube_linter,
+    "gitleaks": parse_gitleaks,
+    "semgrep": parse_semgrep,
 }
 
 

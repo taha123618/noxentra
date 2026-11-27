@@ -111,6 +111,34 @@ tools:
       Sends live authentication attempts over the network — throttle threads (-t) and
       target strictly authorized lab or scoped systems.
 
+  - title: "Crowbar (Key/Token Brute-Forcer)"
+    kind: install
+    tags: [password-attack, credentials, bruteforce, network]
+    description: "Brute-forcing tool supporting OpenVPN, RDP, SSH private keys, and VNC authentication — scenarios where standard login tools fall short."
+    system_pkgs: {which: crowbar, apt: crowbar}
+    install: {pipx: crowbar}
+    run: ["crowbar --help"]
+    project_url: "https://github.com/galkan/crowbar"
+    usage:
+      - ["test SSH private keys against a host", "crowbar -b sshkey -s 10.10.10.5/32 -u admin -k ~/.ssh/id_rsa"]
+    lab_safe_notes: >-
+      Performs live authentication attempts — use strictly within authorized
+      penetration-testing scope.
+
+  - title: "Patator (Multi-Purpose Brute-Forcer)"
+    kind: install
+    tags: [password-attack, credentials, bruteforce, network]
+    description: "Modular multi-threaded brute-forcer for SSH, FTP, HTTP, SMB, LDAP, DNS, and database protocols with flexible condition matching."
+    system_pkgs: {which: patator, apt: patator}
+    install: {pipx: patator}
+    run: ["patator --help"]
+    project_url: "https://github.com/lanjelot/patator"
+    usage:
+      - ["test HTTP form logins", "patator http_fuzz url=https://target/login method=POST body='u=FILE0&p=FILE1' 0=users.txt 1=pass.txt"]
+    lab_safe_notes: >-
+      Sends high-rate authentication requests — throttle threads and target only
+      authorized lab or scoped systems.
+
   - title: "CrackStation (online lookup)"
     kind: resource
     tags: [hash-crack, online-service, lookup]

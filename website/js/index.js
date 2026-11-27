@@ -40,7 +40,7 @@ const SHOTS = {
   1: {
     src: "assets/screenshots/1.png",
     alt: "Noxentra interactive console showing categories and live search",
-    cap: "Main console: 21 tool categories, live search across 300 active tools, and `/` command palette.",
+    cap: "Main console: 21 tool categories, live search across 306 active tools, and `/` command palette.",
   },
   2: {
     src: "assets/screenshots/2.png",

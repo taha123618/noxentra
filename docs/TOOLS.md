@@ -1,6 +1,6 @@
 # Tool catalog
 
-Every tool noxentra can install, launch, or point you at — **300 active tools
+Every tool noxentra can install, launch, or point you at — **306 active tools
 across 21 categories**, plus 44 archived entries kept out of this list (they are
 unmaintained or dead upstream and are hidden in the app unless you set
 `show_archived true` via `/config`).
@@ -231,6 +231,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [SearchSploit (Exploit-DB CLI)](https://gitlab.com/exploit-database/exploitdb) — <sub>exploitation, recon, reference</sub>
 - [cvemap (CVE & KEV Explorer)](https://github.com/projectdiscovery/cvemap) — <sub>exploitation, recon, vuln-scan, reference</sub>
 - [SploitScan (CVE, EPSS & PoC Lookup)](https://github.com/xaitax/SploitScan) — <sub>exploitation, recon, vuln-scan, reference</sub>
+- [cve-bin-tool (Binary CVE & SBOM Scanner)](https://github.com/intel/cve-bin-tool) — <sub>vuln-scan, scanner, binary, cloud</sub>
+- [searchsploit (Exploit-DB Offline CLI)](https://gitlab.com/exploit-database/exploitdb) — <sub>exploitation, recon, reference</sub>
 - [Exploit-DB (Online Archive)](https://www.exploit-db.com/) — <sub>online-service, reference, exploitation</sub>
 - [Metasploit Unleashed (Free Course)](https://www.offsec.com/metasploit-unleashed/) — <sub>learning, reference, exploitation</sub>
 
@@ -248,6 +250,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [Rizin (Reverse Engineering Framework)](https://github.com/rizinorg/rizin) — <sub>reversing, binary, malware-analysis</sub>
 - [checksec (Binary Mitigation Checker)](https://github.com/slimm609/checksec.sh) — <sub>reversing, binary, scanner</sub>
 - [ROPgadget (ROP Chain Gadget Finder)](https://github.com/JonathanSalwan/ROPgadget) — <sub>reversing, binary, exploitation</sub>
+- [ropr (Fast Rust ROP Gadget Finder)](https://github.com/Ben-Lichtman/ropr) — <sub>reversing, binary, exploitation</sub>
+- [pwninit (CTF Binary Setup Automator)](https://github.com/io12/pwninit) — <sub>reversing, binary, exploitation</sub>
 - [crackmes.one (RE Practice)](https://crackmes.one/) — <sub>reference, learning, reversing</sub>
 - [Malware Unicorn RE101 (Workshop)](https://malwareunicorn.org/workshops/re101.html) — <sub>reference, learning, reversing, malware-analysis</sub>
 
@@ -378,6 +382,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [haiti (Hash Type Identifier)](https://github.com/noraj/haiti) — <sub>hash-crack, enumeration, lookup, reference</sub>
 - [Name-That-Hash (nth)](https://github.com/HashPals/Name-That-Hash) — <sub>hash-crack, enumeration</sub>
 - [Medusa (Parallel Login Brute-Forcer)](https://github.com/jmk-foofus/medusa) — <sub>password-attack, credentials, bruteforce, network</sub>
+- [Crowbar (Key/Token Brute-Forcer)](https://github.com/galkan/crowbar) — <sub>password-attack, credentials, bruteforce, network</sub>
+- [Patator (Multi-Purpose Brute-Forcer)](https://github.com/lanjelot/patator) — <sub>password-attack, credentials, bruteforce, network</sub>
 - [CrackStation (online lookup)](https://crackstation.net/) — <sub>hash-crack, online-service, lookup</sub>
 - [hashes.com (hash identifier + lookup)](https://hashes.com/en/tools/hash_identifier) — <sub>hash-crack, online-service, lookup</sub>
 - [CyberChef (the cyber swiss-army knife)](https://gchq.github.io/CyberChef/) — <sub>online-service, reference</sub>
