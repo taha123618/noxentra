@@ -424,8 +424,8 @@ probe fails.
 - **`/engage`** opens the interactive engagement workspace: create or select an
   engagement (name, comma-separated targets, optional `scope_in` / `scope_out`
   exclusions), see pre-flight tool readiness (`X/Y ready`) per pipeline (`recon`,
-  `full_recon`, `web_enum`, `dns_enum`, `web_deep`, `passive_urls`, `tls_recon`), and
-  watch live streamed execution inside the TUI (`c` cancels mid-run). Findings from
+  `full_recon`, `web_enum`, `dns_enum`, `web_deep`, `passive_urls`, `tls_recon`,
+  `cloud_scan`, `container_scan`), and watch live streamed execution inside the TUI (`c` cancels mid-run). Findings from
   multiple runs on the same engagement are merged, deduplicated, and diffed
   (`+N new, M total`) in `findings.json`.
 - **`/report`** exports deterministic Markdown (`report.md`), self-contained HTML with

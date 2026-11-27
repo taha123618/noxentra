@@ -159,10 +159,40 @@ def test_run_pipeline_per_target_flag_fans_out(tmp_path, monkeypatch):
 
 def test_list_pipelines_includes_web_enum():
     names = [p["name"] for p in orchestrator.list_pipelines()]
-    assert {"recon", "full_recon", "web_enum", "dns_enum", "web_deep", "passive_urls", "tls_recon"} <= set(names)
+    assert {
+        "recon", "full_recon", "web_enum", "dns_enum",
+        "web_deep", "passive_urls", "tls_recon", "cloud_scan", "container_scan",
+    } <= set(names)
     expanded = orchestrator._expand_args(["dir", "-w", "{wordlist}"])
     assert "{wordlist}" not in expanded[2]
     assert expanded[2].endswith(".txt")
+
+
+def test_run_pipeline_per_target_positional_wires_cloud_scan(tmp_path, monkeypatch):
+    _root(tmp_path, monkeypatch)
+    e = engagement.create("acme", targets=["."])
+    monkeypatch.setattr(orchestrator.shutil, "which", lambda t: "/usr/bin/" + t if t == "trivy" else None)
+    seen: list[list[str]] = []
+
+    def fake_run(cmd, input=None, **kwargs):
+        seen.append(list(cmd))
+        return subprocess.CompletedProcess(
+            cmd,
+            0,
+            stdout=json.dumps({
+                "ArtifactName": ".",
+                "Results": [{
+                    "Target": "pyproject.toml",
+                    "Vulnerabilities": [{"VulnerabilityID": "CVE-2025-1", "PkgName": "pkg", "Severity": "HIGH"}],
+                }],
+            }),
+            stderr="",
+        )
+
+    monkeypatch.setattr(orchestrator.subprocess, "run", fake_run)
+    findings = orchestrator.run_pipeline(e, "cloud_scan")
+    assert seen == [["trivy", "fs", "--quiet", "--format", "json", "."]]
+    assert len(findings) == 1 and findings[0].source_tool == "trivy"
 
 
 def test_run_pipeline_per_target_suffix_wires_ffuf_fuzz_url(tmp_path, monkeypatch):

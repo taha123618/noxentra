@@ -1,0 +1,18 @@
+# pipelines/container_scan.yaml
+name: container_scan
+description: Container image vulnerability scan (trivy image) -> cross-check (grype).
+steps:
+  - tool: trivy
+    args: ["image", "--quiet", "--format", "json"]
+    input: targets
+    per_target_positional: true
+    workers: 2
+    output: raw/trivy_image.json
+    parser: trivy
+  - tool: grype
+    args: ["--quiet", "-o", "json"]
+    input: targets
+    per_target_positional: true
+    workers: 2
+    output: raw/grype_image.json
+    parser: grype

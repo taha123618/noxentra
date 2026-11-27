@@ -350,8 +350,9 @@ Turn backgrounding off entirely with `/config background_runner off`.
    comma-separated targets (e.g. `75.2.60.5, https://devteampro.com/`), and optional
    `scope_in` / `scope_out` globs.
 3. Pick a pipeline (`recon`, `full_recon`, `web_enum`, `dns_enum`, `web_deep`,
-   `passive_urls`, `tls_recon`). Each row shows its pre-flight readiness (`X/Y ready`
-   on `PATH`); pipelines with `0` installed tools are flagged before launch.
+   `passive_urls`, `tls_recon`, `cloud_scan`, `container_scan`). Each row shows its
+   pre-flight readiness (`X/Y ready` on `PATH`); pipelines with `0` installed tools are
+   flagged before launch.
 4. Confirm authorization, then watch live streamed output in the panel (`c` cancels
    mid-run). Re-running or chaining pipelines merges, deduplicates, and diffs findings
    (`+N new, M total`) into `findings.json`.

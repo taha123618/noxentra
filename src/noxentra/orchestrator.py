@@ -238,29 +238,18 @@ def run_pipeline(
                 items = list(e.targets)
         step_args = _expand_args(step["args"])
         per_flag = step.get("per_target_flag")
+        per_pos = bool(step.get("per_target_positional"))
         per_suffix = step.get("per_target_suffix", "")
         try:
-            if per_flag and items:
+            if (per_flag or per_pos) and items:
                 workers = max(1, min(int(step.get("workers", 4)), len(items)))
                 raw_chunks: list[str] = []
                 with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
-                    futs = [
-                        pool.submit(
-                            _exec_cmd,
-                            [
-                                tool,
-                                *step_args,
-                                per_flag,
-                                f"{item.rstrip('/')}{per_suffix}" if per_suffix else item,
-                            ],
-                            "",
-                            tool,
-                            _emit,
-                            cb is not None,
-                            stop_event,
-                        )
-                        for item in items
-                    ]
+                    futs = []
+                    for item in items:
+                        val = f"{item.rstrip('/')}{per_suffix}" if per_suffix else item
+                        cmd = [tool, *step_args, *( [per_flag, val] if per_flag else [val] )]
+                        futs.append(pool.submit(_exec_cmd, cmd, "", tool, _emit, cb is not None, stop_event))
                     for fut in concurrent.futures.as_completed(futs):
                         proc = fut.result()
                         if proc.stdout:
