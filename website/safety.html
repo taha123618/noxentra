@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security &amp; Trust Architecture — Noxentra</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <meta name="description" content="Noxentra security invariants: list-form subprocess execution, zero auto-exec, grounded AI with scan_data isolation, and local 0600 secrets." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style/safety.css" />
+  <link rel="stylesheet" href="style/layout.css" />
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main>
+    <section class="hero-sm">
+      <div class="wrap">
+        <h1>Security &amp; Trust Architecture</h1>
+        <p class="sub">Noxentra is engineered so operators stay in control of every binary, every network target, and every AI-assisted step.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="matrix">
+          <div class="cell">
+            <h2>1. List-form subprocesses only</h2>
+            <p>All tool execution uses explicit argument arrays. <code>shell=True</code> is prohibited and <code>curl | bash</code> install patterns are blocked by repo conformance tests.</p>
+          </div>
+          <div class="cell">
+            <h2>2. Zero auto-execution</h2>
+            <p>AI-generated plans (<code>/goal</code>) and command suggestions (<code>c</code>) never execute automatically. Every step pauses for explicit <code>[y]</code>/<code>[e]</code>/<code>[s]</code>/<code>[q]</code> operator confirmation.</p>
+          </div>
+          <div class="cell">
+            <h2>3. Grounded AI &amp; &lt;scan_data&gt; isolation</h2>
+            <p>Recommendations map strictly to the 64-tag taxonomy in <code>tags.py</code>. Untrusted tool output passed to <code>--ai-summary</code> is isolated inside <code>&lt;scan_data&gt;</code> delimiters.</p>
+          </div>
+          <div class="cell">
+            <h2>4. Local-first secrets (0600)</h2>
+            <p>Optional LLM and GitHub API tokens are written exclusively to <code>~/.noxentra/.env</code> with mode <code>0600</code>, never committed or printed back to logs.</p>
+          </div>
+          <div class="cell">
+            <h2>5. Scope exclusions (--scope-out)</h2>
+            <p>Targets matching <code>--scope-out</code> globs or exclusion files are filtered and logged before any pipeline step runs.</p>
+          </div>
+          <div class="cell">
+            <h2>6. Suggest-only /find discovery</h2>
+            <p><code>/find</code> ranks vetted catalog tools first, then GitHub repositories with zero model calls. Bookmarked repos save to <code>~/.noxentra/found.yaml</code> without executable commands.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+  <script src="js/safety.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports &amp; SARIF Exports — Noxentra</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <meta name="description" content="Normalized Markdown, interactive HTML, and SARIF v2.1.0 engagement reports generated deterministically from findings.json." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style/reports.css" />
+  <link rel="stylesheet" href="style/layout.css" />
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main>
+    <section class="hero-sm">
+      <div class="wrap">
+        <h1>Normalized Reports &amp; Exports</h1>
+        <p class="sub">Every engagement merges findings into <code>findings.json</code> and exports deterministic Markdown, standalone HTML, and SARIF v2.1.0.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="fmt-tabs" role="group" aria-label="Report format previews">
+          <button class="fmt-btn" type="button" aria-pressed="true" data-fmt="md">report.md</button>
+          <button class="fmt-btn" type="button" aria-pressed="false" data-fmt="sarif">report.sarif.json</button>
+          <button class="fmt-btn" type="button" aria-pressed="false" data-fmt="ci">GitHub Code Scanning CI</button>
+        </div>
+        <div class="preview" id="fmt-preview"># Engagement: acme
+
+- **Targets:** ./terraform, 10.0.0.5
+- **Scope out:** admin.example.com
+- **Total findings:** 3
+
+## Misconfigurations (1)
+
+| Severity | Name | Target | Tool |
+|---|---|---|---|
+| high | AC_AWS_0207: s3BucketEncryption | main.tf:12 | terrascan |
+
+## Vulnerabilities (1)
+
+| Severity | Name | Target | Tool |
+|---|---|---|---|
+| medium | Kubelet API Read-Only Port | 10.0.0.5:10255 | kube-hunter |</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="matrix">
+          <div class="cell">
+            <h2>Deterministic facts</h2>
+            <p><code>render_report</code>, <code>render_html</code>, and <code>render_sarif</code> read directly from <code>findings.json</code> with zero LLM involvement.</p>
+          </div>
+          <div class="cell">
+            <h2>Run-over-run diffing</h2>
+            <p><code>diff_findings</code> deduplicates by <code>(kind, target, name, source_tool)</code> and reports exact <code>+N new</code> deltas across re-scans.</p>
+          </div>
+          <div class="cell">
+            <h2>Opt-in AI narrative</h2>
+            <p><code>--ai-summary</code> and <code>--ai-report</code> summarize only real findings wrapped in <code>&lt;scan_data&gt;</code> delimiters.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/reports.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

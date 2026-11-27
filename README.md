@@ -19,7 +19,7 @@ students — all working **legally, on systems they own or are authorised to tes
 
 <br/>
 
-<a href="#installation"><img src="https://img.shields.io/badge/Install_Now-7B61FF?style=for-the-badge&logo=rocket&logoColor=white" alt="Install Now"></a>&nbsp; <a href="docs/HOW-TO-USE.md"><img src="https://img.shields.io/badge/How_to_Use-30363D?style=for-the-badge&logo=gnometerminal&logoColor=white" alt="How to Use"></a>&nbsp; <a href="docs/TOOLS.md"><img src="https://img.shields.io/badge/Tool_Catalog-30363D?style=for-the-badge&logo=github&logoColor=white" alt="Tool Catalog"></a>
+<a href="#installation"><img src="https://img.shields.io/badge/Install_Now-7B61FF?style=for-the-badge&logo=rocket&logoColor=white" alt="Install Now"></a>&nbsp; <a href="website/index.html"><img src="https://img.shields.io/badge/Website-30363D?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website"></a>&nbsp; <a href="docs/HOW-TO-USE.md"><img src="https://img.shields.io/badge/How_to_Use-30363D?style=for-the-badge&logo=gnometerminal&logoColor=white" alt="How to Use"></a>&nbsp; <a href="docs/TOOLS.md"><img src="https://img.shields.io/badge/Tool_Catalog-30363D?style=for-the-badge&logo=github&logoColor=white" alt="Tool Catalog"></a>
 
 </div>
 
@@ -458,6 +458,7 @@ the AI passes only ever summarize findings that exist.
 
 | Document | What's in it |
 |---|---|
+| [Website & Interactive Docs](website/index.html) | multi-page static site (`website/`): interactive catalog, pipeline builder, workflows, reports, safety, and docs |
 | [How to use noxentra](docs/HOW-TO-USE.md) | numbered walkthroughs: first run, `/find`, `/goal`, `/config`, background panes, headless mode |
 | [Tool catalog](docs/TOOLS.md) | every tool, by category, with links and tags |
 | [Operator playbook](src/noxentra/skill/OPERATOR.md) | the charter and grounding rules the AI layer runs under (also `/skill`) |

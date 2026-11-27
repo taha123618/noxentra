@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Workflows &amp; Commands — Noxentra</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <meta name="description" content="Explore Noxentra's /goal planner, /ai intent recommender, /find discovery, and /config local-first setup." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style/workflows.css" />
+  <link rel="stylesheet" href="style/layout.css" />
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main>
+    <section class="hero-sm">
+      <div class="wrap">
+        <h1>AI Workflows &amp; Interactive Console</h1>
+        <p class="sub">Opt-in AI planning and discovery with deterministic offline fallbacks. Nothing auto-executes, and every recommendation resolves to vetted tools.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="wf-tabs" role="group" aria-label="Workflow modes">
+          <button class="wf-btn" type="button" aria-pressed="true" data-wf="goal">/goal Planner</button>
+          <button class="wf-btn" type="button" aria-pressed="false" data-wf="ai">/ai Recommender</button>
+          <button class="wf-btn" type="button" aria-pressed="false" data-wf="find">/find Discovery</button>
+          <button class="wf-btn" type="button" aria-pressed="false" data-wf="config">/config &amp; Ollama</button>
+        </div>
+
+        <div class="wf-box">
+          <div>
+            <h2 id="wf-title">/goal — Step-by-step objective planner</h2>
+            <p id="wf-desc">Calls the configured model once to draft a concrete plan, asks for target authorization, and pauses before every command.</p>
+            <ul class="wf-list" id="wf-points">
+              <li>Workspace saved under <code>~/.noxentra/goals/</code> with <code>plan.json</code> and <code>run.log</code></li>
+              <li>Every step runs list-form (<code>shell=False</code>)</li>
+              <li>Degrades to tool recommendations if no model is configured</li>
+            </ul>
+          </div>
+          <div class="wf-term" id="wf-term">noxentra &gt; /goal audit terraform and kubernetes manifests
+
+Scope confirmation required for: ./infra
+[1] terrascan scan -i terraform -d ./infra
+[2] trivy fs --quiet ./infra
+
+Run step 1? [y] run · [e] edit · [s] skip · [q] abort</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="cmd-grid">
+          <div class="cmd-cell">
+            <h3>@tool</h3>
+            <p>Jump straight to any tool card with fuzzy fallback (e.g. <code>@nuclei</code>, <code>@terrascan</code>).</p>
+          </div>
+          <div class="cmd-cell">
+            <h3>@tag:&lt;name&gt;</h3>
+            <p>Filter the catalog across 64 canonical taxonomy tags (e.g. <code>@tag:cloud</code>, <code>@tag:tunneling</code>).</p>
+          </div>
+          <div class="cmd-cell">
+            <h3>/run &lt;cmd&gt; &amp;</h3>
+            <p>Launch long-running scans in detached tmux windows and inspect with <code>/panes</code> and <code>/attach</code>.</p>
+          </div>
+          <div class="cmd-cell">
+            <h3>/engage</h3>
+            <p>Create engagements, inspect <code>X/Y ready</code> pipeline preflight, and stream output live.</p>
+          </div>
+          <div class="cmd-cell">
+            <h3>/report</h3>
+            <p>Browse normalized findings by severity, kind, or tool and export MD, HTML, or SARIF.</p>
+          </div>
+          <div class="cmd-cell">
+            <h3>/skill</h3>
+            <p>Read the operator playbook and grounding charter governing all AI modules.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/workflows.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>
