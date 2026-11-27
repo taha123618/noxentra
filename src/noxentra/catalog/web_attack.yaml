@@ -962,6 +962,55 @@ tools:
   - - generate an OpenAPI spec from a HAR capture
     - mitmproxy2swagger -i flows.har -o openapi.yml -p https://api.target.com
   lab_safe_notes: Purely offline conversion of your own captured traffic logs.
+- title: cariddi (Endpoint, Secret & API Crawler)
+  kind: install
+  tags:
+  - web
+  - recon
+  - scanner
+  description: Fast Go web crawler that takes URLs from stdin and hunts for endpoints,
+    secrets, API keys, file extensions, and error patterns.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: cariddi
+    go: github.com/edoardottt/cariddi/cmd/cariddi@latest
+  install:
+    go: github.com/edoardottt/cariddi/cmd/cariddi@latest
+  run:
+  - cariddi -h
+  project_url: https://github.com/edoardottt/cariddi
+  usage:
+  - - crawl URLs for endpoints and secrets
+    - cat urls.txt | cariddi -s -e
+  - - hunt for interesting extensions and errors
+    - echo https://target.example | cariddi -ext 2 -err
+  lab_safe_notes: Crawls HTTP responses on the supplied targets — run only against
+    domains within written scope.
+- title: waymore (Comprehensive Archive URL Finder)
+  kind: install
+  tags:
+  - web
+  - osint
+  - recon
+  description: Queries Wayback Machine, Common Crawl, AlienVault OTX, URLScan, and
+    VirusTotal to gather historical URLs and archived responses.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: waymore
+  install:
+    pipx: waymore
+  run:
+  - waymore --help
+  project_url: https://github.com/xnl-h4ck3r/waymore
+  usage:
+  - - collect passive historical URLs for a domain
+    - waymore -i example.com -mode U -oU waymore_urls.txt
+  lab_safe_notes: Passive archive queries by default (`-mode U`); avoid `-mode R`
+    downloading third-party responses outside authorized scope.
 - title: PortSwigger Web Security Academy
   kind: resource
   tags:

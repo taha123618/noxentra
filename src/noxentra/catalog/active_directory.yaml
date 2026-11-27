@@ -230,6 +230,38 @@ tools:
       Actively modifies AD DNS or relays Kerberos tickets — run only inside authorized
       AD labs or scoped penetration tests.
 
+  - title: "RustHound (Fast AD BloodHound Collector)"
+    kind: install
+    tags: [active-directory, enumeration, recon]
+    description: >-
+      High-speed Rust-based Active Directory enumerator that collects users, groups,
+      computers, ACLs, and GPOs into BloodHound JSON files.
+    system_pkgs: {which: rusthound}
+    install: {commands: ["cargo install rusthound"]}
+    run: ["rusthound --help"]
+    project_url: "https://github.com/g0h4n/RustHound"
+    usage:
+      - ["collect AD data for BloodHound via LDAP", "rusthound -d corp.local -u user -p pass -o ./bh"]
+    lab_safe_notes: >-
+      Performs LDAP/SMB queries against Domain Controllers — run only in authorized
+      AD labs or scoped internal assessments.
+
+  - title: "adidnsdump (AD Integrated DNS Dumper)"
+    kind: install
+    tags: [active-directory, dns, enumeration]
+    description: >-
+      Enumerates and dumps Active Directory-integrated DNS zones and records over
+      LDAP using standard authenticated domain credentials.
+    system_pkgs: {which: adidnsdump}
+    install: {pipx: adidnsdump}
+    run: ["adidnsdump --help"]
+    project_url: "https://github.com/dirkjanm/adidnsdump"
+    usage:
+      - ["dump AD-integrated DNS records over LDAP", "adidnsdump -u 'CORP\\user' -p pass ldap://dc01.corp.local"]
+    lab_safe_notes: >-
+      Read-only LDAP DNS enumeration by default; never modify records outside an
+      explicitly authorized engagement.
+
 # --- high-value AD attack reference -----------------------------------------
   - title: "The Hacker Recipes (AD)"
     kind: resource

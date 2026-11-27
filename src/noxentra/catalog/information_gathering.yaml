@@ -931,3 +931,57 @@ tools:
     - fping -a -g 10.0.0.0/24 2>/dev/null
   lab_safe_notes: Sends ICMP echo probes across specified IP ranges — scope strictly
     to authorized subnets.
+- title: puredns (Fast Domain Resolver & Wildcard Filter)
+  kind: install
+  tags:
+  - dns
+  - recon
+  - enumeration
+  description: Fast domain resolver and DNS bruteforcing wrapper around massdns with
+    automatic wildcard filtering.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: puredns
+    go: github.com/d3mondev/puredns/v2@latest
+  install:
+    go: github.com/d3mondev/puredns/v2@latest
+  run:
+  - puredns --help
+  project_url: https://github.com/d3mondev/puredns
+  usage:
+  - - resolve subdomains and filter DNS wildcards
+    - puredns resolve subs.txt -r resolvers.txt -w resolved.txt
+  - - bruteforce subdomains with a wordlist
+    - puredns bruteforce wordlist.txt example.com -r resolvers.txt
+  lab_safe_notes: Queries public DNS resolvers rather than the target directly; keep
+    rate limits reasonable and test only authorized domains.
+- title: asnmap (ASN & CIDR Network Mapper)
+  kind: install
+  tags:
+  - recon
+  - network
+  - osint
+  - enumeration
+  description: ProjectDiscovery CLI for mapping organization names, domains, and ASNs
+    to IPv4/IPv6 CIDR ranges for attack-surface discovery.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: asnmap
+    brew: asnmap
+    go: github.com/projectdiscovery/asnmap/cmd/asnmap@latest
+  install:
+    go: github.com/projectdiscovery/asnmap/cmd/asnmap@latest
+  run:
+  - asnmap -version
+  project_url: https://github.com/projectdiscovery/asnmap
+  usage:
+  - - map an organization name to CIDR ranges
+    - asnmap -org "Example Corp" -silent
+  - - map a domain to its ASN and CIDR blocks
+    - asnmap -d example.com -json
+  lab_safe_notes: Passive ASN/WHOIS/BGP lookup only — sends no packets to target
+    hosts.

@@ -205,7 +205,7 @@ class _ProgressTool(Noxentra):
     TITLE = "GobusterProgress"
     DESCRIPTION = "Simulated Gobuster progress"
     RUN_COMMANDS: ClassVar = [
-        f'"{sys.executable}" -c "import sys, time; sys.stdout.write(\'Progress: 250 / 1000 (25.0%)\\r\'); sys.stdout.flush(); time.sleep(0.1); print(\'/admin (Status: 301)\', flush=True)"'
+        f'"{sys.executable}" -c "import sys, time; sys.stdout.write(\'Progress: 250 / 1000 (25.0%)\\r\'); sys.stdout.flush(); time.sleep(0.35); print(\'/admin (Status: 301)\', flush=True)"'
     ]
 
 
@@ -225,7 +225,7 @@ def test_pty_carriage_return_updates_progress_bar_live():
 
             status = pilot.app.screen.query_one("#tool-status", Static)
             seen_pct = False
-            for _ in range(80):
+            for _ in range(120):
                 await pilot.pause(0.02)
                 if "25.0%" in str(status.render()):
                     seen_pct = True

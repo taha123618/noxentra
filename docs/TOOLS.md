@@ -1,6 +1,6 @@
 # Tool catalog
 
-Every tool noxentra can install, launch, or point you at — **288 active tools
+Every tool noxentra can install, launch, or point you at — **294 active tools
 across 21 categories**, plus 44 archived entries kept out of this list (they are
 unmaintained or dead upstream and are hidden in the app unless you set
 `show_archived true` via `/config`).
@@ -69,6 +69,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [massdns (High-Performance DNS Resolver)](https://github.com/blechschmidt/massdns) — <sub>dns, recon, enumeration</sub>
 - [arp-scan (Layer-2 Host Discovery)](https://github.com/royhills/arp-scan) — <sub>network, recon, scanner</sub>
 - [fping (Parallel ICMP Sweep)](https://github.com/schweikert/fping) — <sub>network, recon, scanner</sub>
+- [puredns (Fast Domain Resolver & Wildcard Filter)](https://github.com/d3mondev/puredns) — <sub>dns, recon, enumeration</sub>
+- [asnmap (ASN & CIDR Network Mapper)](https://github.com/projectdiscovery/asnmap) — <sub>recon, network, osint, enumeration</sub>
 
 ## 📚 Wordlist Generator
 
@@ -161,6 +163,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [grpcurl (gRPC CLI Client)](https://github.com/fullstorydev/grpcurl) — <sub>web, api, recon, enumeration</sub>
 - [websocat (WebSocket CLI Client)](https://github.com/vi/websocat) — <sub>web, api, network</sub>
 - [mitmproxy2swagger (Traffic-to-OpenAPI Generator)](https://github.com/alufers/mitmproxy2swagger) — <sub>web, api, enumeration</sub>
+- [cariddi (Endpoint, Secret & API Crawler)](https://github.com/edoardottt/cariddi) — <sub>web, recon, scanner</sub>
+- [waymore (Comprehensive Archive URL Finder)](https://github.com/xnl-h4ck3r/waymore) — <sub>web, osint, recon</sub>
 - [PortSwigger Web Security Academy](https://portswigger.net/web-security) — <sub>learning, web, reference</sub>
 - [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) — <sub>cheatsheet, reference, payload, web</sub>
 - [HackTricks](https://book.hacktricks.xyz/) — <sub>cheatsheet, reference, web, privesc</sub>
@@ -270,7 +274,7 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [XSS Payload Generator](https://github.com/capture0x/XSS-LOADER.git) — <sub>web, xss, payload</sub>
 - [Advanced XSS Detection Suite](https://github.com/UltimateHackers/XSStrike) — <sub>web, xss, scanner, fuzzing</sub>
 - [kxss (Reflection Finder)](https://github.com/Emoe/kxss) — <sub>web, xss, scanner, recon</sub>
-- [gxss (XSS Reflection Scanner)](https://github.com/KathanP19/Gxss) — <sub>web, xss, scanner, recon</sub>
+- [freq (Concurrent XSS Reflection Checker)](https://github.com/takshal/freq) — <sub>web, xss, scanner, recon</sub>
 - [qsreplace (Query String Payload Replacer)](https://github.com/tomnomnom/qsreplace) — <sub>web, xss, fuzzing, recon</sub>
 - [airixss (XSS Vulnerability Checker)](https://github.com/ferreiraklet/airixss) — <sub>web, xss, scanner</sub>
 - [PortSwigger — XSS Labs](https://portswigger.net/web-security/cross-site-scripting) — <sub>learning, web, xss, reference</sub>
@@ -304,6 +308,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [bloodyAD (AD Privilege Escalation)](https://github.com/CravateRouge/bloodyAD) — <sub>active-directory, privesc, enumeration, kerberos</sub>
 - [ligolo-ng (TUN-based Network Pivoting)](https://github.com/nicocha30/ligolo-ng) — <sub>active-directory, tunneling, lateral-movement, network</sub>
 - [krbrelayx (Kerberos Relaying Toolkit)](https://github.com/dirkjanm/krbrelayx) — <sub>active-directory, kerberos, relay, credentials</sub>
+- [RustHound (Fast AD BloodHound Collector)](https://github.com/g0h4n/RustHound) — <sub>active-directory, enumeration, recon</sub>
+- [adidnsdump (AD Integrated DNS Dumper)](https://github.com/dirkjanm/adidnsdump) — <sub>active-directory, dns, enumeration</sub>
 - [The Hacker Recipes (AD)](https://www.thehacker.recipes/) — <sub>reference, active-directory, learning</sub>
 
 ## ☁  Cloud Security
@@ -354,9 +360,9 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [tshark (CLI Packet Analyzer)](https://www.wireshark.org/docs/man-pages/tshark.html) — <sub>network, sniffing, pcap, forensics</sub>
 - [CyberChef (Cyber Swiss-Army Knife)](https://gchq.github.io/CyberChef/) — <sub>reference, online-service</sub>
 - [D4 (Deep Web Reconnaissance Directory)](https://github.com/sijad/d4) — <sub>recon, enumeration, web</sub>
-- [Crefile (OSINT Credential Hunting)](https://github.com/kathanP19/Crefile) — <sub>osint, recon, credentials</sub>
+- [h8mail (Email & Breach OSINT)](https://github.com/khast3x/h8mail) — <sub>osint, recon, credentials, email</sub>
 - [ScrapedBeast (OSINT Scraping Framework)](https://github.com/skulldivine/ScrapedBeast) — <sub>osint, recon, crawler</sub>
-- [C3 (Cyber Connect Consciousness) AI Recon](https://github.com/KathanP19/C3) — <sub>osint, recon, scanner</sub>
+- [mosint (Email OSINT & Domain Recon)](https://github.com/alpkeskin/mosint) — <sub>osint, recon, email, lookup</sub>
 
 ## 🔓 Hash Cracking
 

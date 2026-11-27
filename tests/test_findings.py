@@ -227,3 +227,73 @@ def test_parse_grype():
     assert fs[0].severity == "critical"
     assert fs[0].source_tool == "grype"
     assert targets == ["dir:."]
+
+
+def test_parse_terrascan():
+    from noxentra.findings import parse_terrascan
+
+    raw = json.dumps({
+        "results": {
+            "violations": [{
+                "rule_name": "s3BucketEncryption",
+                "rule_id": "AC_AWS_0207",
+                "severity": "HIGH",
+                "file": "main.tf",
+                "line": 12,
+                "resource_name": "bucket",
+                "resource_type": "aws_s3_bucket",
+                "category": "Data Protection",
+                "description": "S3 bucket encryption disabled",
+            }]
+        }
+    })
+    fs, targets = parse_terrascan(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].kind == "misconfiguration"
+    assert fs[0].target == "main.tf:12"
+    assert fs[0].severity == "high"
+    assert fs[0].source_tool == "terrascan"
+    assert targets == ["main.tf"]
+
+
+def test_parse_kube_hunter():
+    from noxentra.findings import parse_kube_hunter
+
+    raw = json.dumps({
+        "vulnerabilities": [{
+            "vid": "KHV002",
+            "vulnerability": "Kubelet API Read-Only Port",
+            "severity": "medium",
+            "location": "10.0.0.5:10255",
+            "category": "Information Disclosure",
+            "avd_reference": "AVD-KSV-0001",
+            "description": "Read-only port exposed",
+        }]
+    })
+    fs, targets = parse_kube_hunter(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].kind == "vulnerability"
+    assert fs[0].target == "10.0.0.5:10255"
+    assert fs[0].severity == "medium"
+    assert fs[0].source_tool == "kube-hunter"
+    assert targets == ["10.0.0.5:10255"]
+
+
+def test_parse_cloudsplaining():
+    from noxentra.findings import parse_cloudsplaining
+
+    raw = json.dumps({
+        "roles": {
+            "AdminRole": {
+                "arn": "arn:aws:iam::123456789012:role/AdminRole",
+                "PrivilegeEscalation": [{"type": "CreatePolicyVersion"}],
+                "ResourceExposure": ["s3:PutBucketPolicy"],
+            }
+        }
+    })
+    fs, targets = parse_cloudsplaining(raw, TS)
+    assert len(fs) == 2
+    assert fs[0].kind == "iam-risk"
+    assert fs[0].severity == "high"
+    assert fs[0].source_tool == "cloudsplaining"
+    assert targets == ["arn:aws:iam::123456789012:role/AdminRole"]

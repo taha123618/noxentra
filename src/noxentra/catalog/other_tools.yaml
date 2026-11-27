@@ -75,31 +75,32 @@ tools:
     lab_safe_notes:
       "Reference directory of onion/deep web sites — use only against
       authorized research targets or for educational OSINT exercises."
-  - title: Crefile (OSINT Credential Hunting)
+  - title: h8mail (Email & Breach OSINT)
     kind: install
     tags:
       - osint
       - recon
       - credentials
+      - email
     description:
-      Collects paste site credentials (Pastebin, Ghostbin, ZeroBin, etc.)
-      using Pastebin API and paste sites scraping.
+      Email OSINT and password breach hunting tool that queries local breach
+      compilations and public/API breach services for exposed credentials.
     supported_os:
       - linux
       - macos
     system_pkgs:
-      which: cref
+      which: h8mail
     install:
-      pip: cref
+      pipx: h8mail
     run:
-      - cref --help
-    project_url: https://github.com/kathanP19/Crefile
+      - h8mail --help
+    project_url: https://github.com/khast3x/h8mail
     usage:
-      - - search multiple paste sites for keywords
-        - cref <keyword>
+      - - check an email address against breach sources
+        - h8mail -t target@example.com
     lab_safe_notes:
-      Passive paste scraping — use strict scope limits; unauthorized
-      scraping may violate terms of service.
+      Queries external OSINT/breach APIs or local datasets — use only for
+      authorized defensive audits or domains you own.
   - title: ScrapedBeast (OSINT Scraping Framework)
     kind: install
     tags:
@@ -124,28 +125,30 @@ tools:
     lab_safe_notes:
       Automated scraping — only run against targets you own or have
       explicit permission to analyze.
-  - title: C3 (Cyber Connect Consciousness) AI Recon
+  - title: mosint (Email OSINT & Domain Recon)
     kind: install
     tags:
       - osint
       - recon
-      - scanner
+      - email
+      - lookup
     description:
-      AI-driven reconnaissance platform combining social media intelligence,
-      credential hunting, and dark web scraping with automated reporting.
+      Fast Go-based OSINT tool for email verification, social account checks,
+      DNS/MX lookups, and related domain/breach intelligence.
     supported_os:
       - linux
       - macos
     system_pkgs:
-      which: c3
+      which: mosint
+      go: github.com/alpkeskin/mosint/v3/cmd/mosint@latest
     install:
-      pip: c3
+      go: github.com/alpkeskin/mosint/v3/cmd/mosint@latest
     run:
-      - c3 --help
-    project_url: https://github.com/KathanP19/C3
+      - mosint --help
+    project_url: https://github.com/alpkeskin/mosint
     usage:
-      - - start C3 interactive assistant
-        - c3
+      - - gather OSINT on an email address
+        - mosint target@example.com
     lab_safe_notes:
-      "AI-assisted recon — ensure all data sources are within authorized
-      scope and respect privacy regulations."
+      Passive OSINT lookups against public APIs and DNS — scope queries to
+      authorized targets.

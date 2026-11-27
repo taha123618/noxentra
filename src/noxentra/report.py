@@ -7,8 +7,13 @@ from noxentra.constants import VERSION
 from noxentra.engagement import Engagement
 from noxentra.findings import load_findings
 
-_KIND_TITLES = {"subdomain": "Subdomains", "service": "Live Services",
-                "vulnerability": "Vulnerabilities"}
+_KIND_TITLES = {
+    "subdomain": "Subdomains",
+    "service": "Live Services",
+    "vulnerability": "Vulnerabilities",
+    "misconfiguration": "Misconfigurations",
+    "iam-risk": "IAM Risks",
+}
 _SEV_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4, "unknown": 5}
 _SARIF_LEVEL = {"critical": "error", "high": "error", "medium": "warning",
                 "low": "note", "info": "note", "unknown": "note"}

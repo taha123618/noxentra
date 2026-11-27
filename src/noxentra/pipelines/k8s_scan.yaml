@@ -1,0 +1,11 @@
+# pipelines/k8s_scan.yaml
+name: k8s_scan
+description: Kubernetes cluster passive penetration scan (kube-hunter).
+steps:
+  - tool: kube-hunter
+    args: ["--report", "json"]
+    input: hosts
+    per_target_flag: "--remote"
+    workers: 2
+    output: raw/kube_hunter.json
+    parser: kube-hunter

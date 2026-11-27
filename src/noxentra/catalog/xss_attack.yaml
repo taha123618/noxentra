@@ -128,18 +128,19 @@ tools:
       XSS, but it does send requests to the target, so feed it only authorized URLs.
       Its stdout (URLs with unfiltered chars) chains straight into dalfox pipe.
 
-  - title: "gxss (XSS Reflection Scanner)"
+  - title: "freq (Concurrent XSS Reflection Checker)"
     kind: install
     tags: [web, xss, scanner, recon]
-    description: "Fast Go tool that injects probe strings into query parameters and reports reflected parameters in HTTP responses."
-    system_pkgs: {which: gxss, go: "github.com/KathanP19/Gxss@latest"}
-    install: {go: "github.com/KathanP19/Gxss@latest"}
-    run: ["gxss -h"]
-    project_url: "https://github.com/KathanP19/Gxss"
+    description: "Fast Go tool that reads URLs from stdin, injects XSS payloads into query parameters concurrently, and reports reflected responses."
+    system_pkgs: {which: freq, go: "github.com/takshal/freq@latest"}
+    install: {go: "github.com/takshal/freq@latest"}
+    run: ["freq -h"]
+    project_url: "https://github.com/takshal/freq"
     usage:
-      - ["check URLs on stdin for parameter reflection", "cat urls.txt | gxss -p KhXSS"]
+      - ["check URLs on stdin for reflected XSS", "cat urls.txt | freq"]
     lab_safe_notes: >-
-      Sends benign reflection probes to target URLs — feed only authorized scope URLs.
+      Sends HTTP requests with reflection payloads to the supplied URLs — feed only
+      authorized scope targets.
 
   - title: "qsreplace (Query String Payload Replacer)"
     kind: install

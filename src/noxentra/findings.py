@@ -431,6 +431,111 @@ def parse_grype(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     return findings, targets
 
 
+def _load_json_dict(raw: str) -> dict | None:
+    """Parse `raw` as a JSON object, returning None on empty/invalid/non-dict input."""
+    text = raw.strip()
+    if not text:
+        return None
+    try:
+        top = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    return top if isinstance(top, dict) else None
+
+
+def parse_terrascan(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `terrascan scan -o json` output into IaC misconfiguration Findings."""
+    findings: list[Finding] = []
+    targets: list[str] = []
+    top = _load_json_dict(raw)
+    if not top:
+        return findings, targets
+
+    results = top.get("results") if isinstance(top.get("results"), dict) else {}
+    for v in results.get("violations") or []:
+        if not isinstance(v, dict):
+            continue
+        rule_id = str(v.get("rule_id") or "")
+        rule_name = str(v.get("rule_name") or rule_id or "terrascan-violation")
+        sev = str(v.get("severity") or "medium").lower()
+        target = str(v.get("file") or v.get("resource_name") or "iac")
+        line = v.get("line")
+        loc = f"{target}:{line}" if line else target
+        name = f"{rule_id}: {rule_name}" if rule_id else rule_name
+        details = {
+            "rule_id": rule_id,
+            "category": v.get("category"),
+            "resource_name": v.get("resource_name"),
+            "resource_type": v.get("resource_type"),
+            "description": v.get("description"),
+        }
+        findings.append(Finding("misconfiguration", loc, name, sev, "terrascan", details, json.dumps(v), ts))
+        if target not in targets:
+            targets.append(target)
+    return findings, targets
+
+
+def parse_kube_hunter(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `kube-hunter --report json` output into Kubernetes Findings."""
+    findings: list[Finding] = []
+    targets: list[str] = []
+    top = _load_json_dict(raw)
+    if not top:
+        return findings, targets
+
+    for v in top.get("vulnerabilities") or []:
+        if not isinstance(v, dict):
+            continue
+        vuln = str(v.get("vulnerability") or v.get("vid") or "kube-hunter-finding")
+        sev = str(v.get("severity") or "medium").lower()
+        loc = str(v.get("location") or "cluster")
+        details = {
+            "vid": v.get("vid"),
+            "avd_reference": v.get("avd_reference"),
+            "category": v.get("category"),
+            "description": v.get("description"),
+        }
+        findings.append(Finding("vulnerability", loc, vuln, sev, "kube-hunter", details, json.dumps(v), ts))
+        if loc not in targets:
+            targets.append(loc)
+    return findings, targets
+
+
+def parse_cloudsplaining(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `cloudsplaining scan` JSON report into IAM Findings."""
+    findings: list[Finding] = []
+    targets: list[str] = []
+    top = _load_json_dict(raw)
+    if not top:
+        return findings, targets
+
+    risk_map = (
+        ("PrivilegeEscalation", "high"),
+        ("CredentialsExposure", "high"),
+        ("DataExfiltration", "high"),
+        ("ResourceExposure", "medium"),
+        ("InfrastructureModification", "low"),
+    )
+    for section in ("roles", "users", "groups", "inline_policies", "customer_managed_policies", "aws_managed_policies"):
+        bucket = top.get(section)
+        if not isinstance(bucket, dict):
+            continue
+        for principal, data in bucket.items():
+            if not isinstance(data, dict):
+                continue
+            target = str(data.get("arn") or data.get("name") or principal)
+            for risk_key, sev in risk_map:
+                items = data.get(risk_key) or []
+                if not items:
+                    continue
+                name = f"{risk_key} ({len(items)})"
+                details = {"section": section, "risk": risk_key, "items": items}
+                findings.append(Finding("iam-risk", target, name, sev, "cloudsplaining", details, json.dumps({risk_key: items}), ts))
+                if target not in targets:
+                    targets.append(target)
+    return findings, targets
+
+
 PARSERS = {
     "subfinder": parse_subfinder,
     "httpx": parse_httpx,
@@ -446,6 +551,9 @@ PARSERS = {
     "katana": parse_katana,
     "trivy": parse_trivy,
     "grype": parse_grype,
+    "terrascan": parse_terrascan,
+    "kube-hunter": parse_kube_hunter,
+    "cloudsplaining": parse_cloudsplaining,
 }
 
 
