@@ -787,3 +787,30 @@ tools:
     - uncover -q 'ssl:"example.com"' -silent | httpx -silent
   lab_safe_notes: Passive API queries only (never touches targets directly). Configure
     provider API keys in ~/.config/uncover/provider-config.yaml.
+- title: Nosey Parker (Secret Scanner)
+  kind: install
+  tags:
+  - scanner
+  - git-secrets
+  - credentials
+  - recon
+  description: High-speed Rust secret scanner by Praetorian for finding API keys, tokens,
+    and credentials across Git history, filesystems, and archives.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: noseyparker
+    brew: noseyparker
+  install:
+    brew: noseyparker
+  run:
+  - noseyparker --help
+  project_url: https://github.com/praetorian-inc/noseyparker
+  usage:
+  - - scan a local repository and git history
+    - noseyparker scan --datastore np.datastore ./repo
+  - - summarize discovered secrets
+    - noseyparker report --datastore np.datastore
+  lab_safe_notes: Runs completely locally and offline on repositories or directories you
+    are authorized to audit — store output datastores securely.

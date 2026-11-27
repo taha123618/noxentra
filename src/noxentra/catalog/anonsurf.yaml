@@ -83,6 +83,36 @@ tools:
       `proxy_dns` to avoid DNS leaks. Chain only through proxies you are
       authorized to use, against authorized targets.
 
+  - title: "sshuttle (Transparent VPN over SSH)"
+    kind: install
+    tags: [anonymity, tunneling, network]
+    description: "Transparent proxy/VPN over any SSH connection — routes subnets and DNS without root or VPN software on the remote host."
+    system_pkgs: {which: sshuttle, apt: sshuttle, brew: sshuttle}
+    install: {pip: sshuttle}
+    run: ["sshuttle --version"]
+    project_url: "https://github.com/sshuttle/sshuttle"
+    usage:
+      - ["route a remote subnet over SSH", "sshuttle -r user@jumpbox 10.10.0.0/16"]
+      - ["route subnet and DNS queries", "sshuttle --dns -r user@jumpbox 10.10.0.0/16"]
+    lab_safe_notes: >-
+      Modifies local firewall/routing rules on the operator machine to forward traffic
+      through an SSH jump host you control — scope routed CIDRs to authorized networks.
+
+  - title: "gost (Modern Multi-Protocol Tunnel)"
+    kind: install
+    tags: [anonymity, tunneling, network]
+    description: "Fast Go security tunnel supporting SOCKS5, HTTP/HTTPS, SSH, WebSocket, and port-forwarding chains."
+    system_pkgs: {which: gost, brew: gost, go: "github.com/go-gost/gost/cmd/gost@latest"}
+    install: {go: "github.com/go-gost/gost/cmd/gost@latest"}
+    run: ["gost -V"]
+    project_url: "https://github.com/go-gost/gost"
+    usage:
+      - ["start a local SOCKS5 proxy", "gost -L socks5://127.0.0.1:1080"]
+      - ["forward traffic through an upstream proxy", "gost -L :8080 -F socks5://127.0.0.1:1080"]
+    lab_safe_notes: >-
+      Bind listeners to 127.0.0.1 unless intentionally exposing a tunnel, and use
+      authenticated endpoints for remote hops.
+
   # --- anonymity reference ---------------------------------------------------
   - title: "Whonix — Anonymity & Tor OpSec (docs)"
     kind: resource

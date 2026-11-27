@@ -730,6 +730,36 @@ tools:
     - interactsh-client -json -o interactions.jsonl
   lab_safe_notes: Listens passively on an OOB domain you control; only inject callback
     URLs into authorized targets.
+- title: jwt_tool (JWT Security Auditor)
+  kind: install
+  tags:
+  - web
+  - api
+  - vuln-scan
+  - scanner
+  description: Toolkit for validating, forging, scanning, and tampering with JSON Web
+    Tokens (alg:none, weak HMAC secrets, kid injection, JWKS spoofing).
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: jwt_tool.py
+  install:
+    commands:
+    - git clone https://github.com/ticarpi/jwt_tool.git
+    - cd jwt_tool && python3 -m pip install --user -r requirements.txt
+  run:
+  - python3 jwt_tool.py --help
+  project_url: https://github.com/ticarpi/jwt_tool
+  usage:
+  - - decode and inspect a JWT offline
+    - python3 jwt_tool.py <JWT>
+  - - run known-vulnerability checks against a target endpoint
+    - python3 jwt_tool.py -t https://target/api/me -rh "Authorization: Bearer <JWT>" -M at
+  - - dictionary-crack a weak HMAC secret offline
+    - python3 jwt_tool.py <JWT> -C -d wordlist.txt
+  lab_safe_notes: Decoding and dictionary cracking (`-C`) are completely offline. Active
+    tampering (`-M at`) sends modified tokens to the target — authorized targets only.
 - title: PortSwigger Web Security Academy
   kind: resource
   tags:
