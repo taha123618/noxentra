@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pipelines &amp; Parsers — Noxentra</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <meta name="description" content="Explore all 11 headless reconnaissance, web, cloud, IaC, and Kubernetes pipelines and 17 normalized finding parsers in Noxentra." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style/pipelines.css" />
+  <link rel="stylesheet" href="style/layout.css" />
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main>
+    <section class="hero-sm">
+      <div class="wrap">
+        <h1>Headless Pipelines &amp; Parsers</h1>
+        <p class="sub">11 declarative YAML pipelines and 17 normalized output parsers that merge, deduplicate, and diff findings into <code>findings.json</code>.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>Interactive CLI Command Builder</h2>
+        <div class="builder">
+          <input class="field" id="eng" value="acme" aria-label="Engagement name" placeholder="engagement" />
+          <input class="field" id="tgt" value="example.com" aria-label="Target" placeholder="targets" />
+          <input class="field" id="scp" value="admin.example.com" aria-label="Scope exclusion" placeholder="scope-out (optional)" />
+          <select class="field" id="fmt" aria-label="Report format">
+            <option value="all">--format all</option>
+            <option value="sarif">--format sarif</option>
+            <option value="html">--format html</option>
+            <option value="md">--format md</option>
+          </select>
+        </div>
+        <div class="cmd-box">
+          <code id="cli-out">noxentra --engagement acme --targets example.com --scope-out admin.example.com --pipeline full_recon --report --format all</code>
+          <button class="cmd-btn" type="button" id="copy-cli">copy</button>
+        </div>
+
+        <div class="pipe-grid" id="pipe-grid"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <h2>17 Normalized Finding Parsers</h2>
+        <p class="sub" style="margin-bottom:16px;">Every parser maps tool-specific stdout/JSON into normalized <code>Finding</code> records (<code>subdomain</code>, <code>service</code>, <code>vulnerability</code>, <code>misconfiguration</code>, <code>iam-risk</code>).</p>
+        <div class="parsers">
+          <span class="parser-chip">subfinder</span><span class="parser-chip">httpx</span><span class="parser-chip">nuclei</span>
+          <span class="parser-chip">nmap</span><span class="parser-chip">gobuster</span><span class="parser-chip">ffuf</span>
+          <span class="parser-chip">feroxbuster</span><span class="parser-chip">dnsx</span><span class="parser-chip">whatweb</span>
+          <span class="parser-chip">gau</span><span class="parser-chip">tlsx</span><span class="parser-chip">katana</span>
+          <span class="parser-chip">trivy</span><span class="parser-chip">grype</span><span class="parser-chip">terrascan</span>
+          <span class="parser-chip">kube-hunter</span><span class="parser-chip">cloudsplaining</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/pipelines.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noxentra — Security &amp; Reconnaissance Console</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <meta name="description"
+    content="Noxentra is a local-first security and reconnaissance console combining a Textual TUI, headless engagement pipelines, and normalized SARIF/HTML/Markdown reporting." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style/index.css" />
+  <link rel="stylesheet" href="style/layout.css" />
+</head>
+
+<body>
+  <header id="site-header"></header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="meta-line">
+            <span class="status">●</span>
+            <span>Textual TUI + Headless CLI · Python 3.10+</span>
+          </div>
+          <h1>One security console from recon to SARIF.</h1>
+          <p class="hero-copy">
+            Noxentra organizes 294 security tools across 21 categories into an interactive TUI and a headless pipeline
+            orchestrator. Plan steps in plain English, run scoped scans, and normalize findings into Markdown, HTML, and
+            SARIF.
+          </p>
+          <div class="install-row">
+            <div class="cmd-box">
+              <span class="ps1">$</span>
+              <code id="install-cmd">pipx install noxentra</code>
+              <button class="cmd-btn" type="button" id="copy-btn">copy</button>
+            </div>
+            <a class="btn-solid" href="docs.html">Read Documentation</a>
+          </div>
+          <div class="hero-links">
+            <a href="catalog.html">Browse 294 tools →</a>
+            <a href="pipelines.html">11 pipelines →</a>
+            <a href="https://github.com/taha123618/noxentra" target="_blank" rel="noopener noreferrer">★ Star on GitHub →</a>
+          </div>
+        </div>
+
+        <div class="term" aria-label="Noxentra CLI and TUI simulator">
+          <div class="term-bar">
+            <div class="term-tabs" role="tablist" aria-label="Modes">
+              <button class="term-tab" role="tab" aria-selected="true" aria-controls="p-goal" id="t-goal">/goal</button>
+              <button class="term-tab" role="tab" aria-selected="false" aria-controls="p-cli"
+                id="t-cli">--engagement</button>
+              <button class="term-tab" role="tab" aria-selected="false" aria-controls="p-find"
+                id="t-find">/find</button>
+              <button class="term-tab" role="tab" aria-selected="false" aria-controls="p-report"
+                id="t-report">/report</button>
+            </div>
+            <span class="term-mode">no auto-exec</span>
+          </div>
+          <div class="term-body">
+            <div class="panel active" role="tabpanel" id="p-goal" aria-labelledby="t-goal">
+              <div class="ln"><span class="g">noxentra &gt;</span> <span class="w">/goal enumerate subdomains and scan
+                  live web targets on example.com</span></div>
+              <div class="ln"> </div>
+              <div class="ln"><span class="m">scope</span> example.com <span class="d">(authorized target confirmation
+                  required)</span></div>
+              <div class="ln"><span class="m">plan</span> 3 steps · list-form subprocess · 0 commands executed yet</div>
+              <div class="ln"> </div>
+              <div class="ln"> [1] subfinder -d example.com -silent</div>
+              <div class="ln"> [2] httpx -silent -title -status-code -tech-detect</div>
+              <div class="ln"> [3] nuclei -severity medium,high,critical -jsonl</div>
+              <div class="ln"> </div>
+              <div class="ln"><span class="y">run step 1?</span> [y] run · [e] edit · [s] skip · [q] abort</div>
+            </div>
+
+            <div class="panel" role="tabpanel" id="p-cli" aria-labelledby="t-cli">
+              <div class="ln"><span class="g">$</span> <span class="w">noxentra --engagement acme --targets example.com
+                  --scope-out admin.example.com --pipeline full_recon</span></div>
+              <div class="ln"> </div>
+              <div class="ln">[1/4] nmap <span class="g">ok</span> 4 open ports normalized</div>
+              <div class="ln">[2/4] subfinder <span class="g">ok</span> 38 subdomains discovered</div>
+              <div class="ln">[3/4] httpx <span class="g">ok</span> 19 live HTTP services</div>
+              <div class="ln">[4/4] nuclei <span class="g">ok</span> 3 findings (+3 new, 3 total)</div>
+              <div class="ln"> </div>
+              <div class="ln"><span class="m">written</span> ~/.noxentra/engagements/acme/findings.json</div>
+            </div>
+
+            <div class="panel" role="tabpanel" id="p-find" aria-labelledby="t-find">
+              <div class="ln"><span class="g">noxentra &gt;</span> <span class="w">/find scan terraform and kubernetes
+                  manifests</span></div>
+              <div class="ln"> </div>
+              <div class="ln"><span class="g">catalog (vetted)</span></div>
+              <div class="ln"> • Terrascan (IaC Policy &amp; Misconfig Scanner) <span class="d">[cloud, scanner,
+                  vuln-scan]</span></div>
+              <div class="ln"> • Checkov (IaC Misconfig Scanner) <span class="d">[cloud, scanner, vuln-scan]</span>
+              </div>
+              <div class="ln"> • Trivy (Container/K8s Scanner) <span class="d">[scanner, vuln-scan, cloud]</span></div>
+              <div class="ln"> </div>
+              <div class="ln"><span class="m">github (suggest-only · 0 model calls)</span></div>
+              <div class="ln"> • aquasecurity/tfsec 7.2k★ · trusted owner</div>
+            </div>
+
+            <div class="panel" role="tabpanel" id="p-report" aria-labelledby="t-report">
+              <div class="ln"><span class="g">$</span> <span class="w">noxentra --engagement acme --report --format
+                  all</span></div>
+              <div class="ln"> </div>
+              <div class="ln"> <span class="g">md</span> ~/.noxentra/engagements/acme/report.md</div>
+              <div class="ln"> <span class="g">html</span> ~/.noxentra/engagements/acme/report.html</div>
+              <div class="ln"> <span class="g">sarif</span> ~/.noxentra/engagements/acme/report.sarif.json</div>
+              <div class="ln"> </div>
+              <div class="ln"><span class="d">optional:</span> --ai-summary / --ai-report <span class="d">(grounded on
+                  real findings.json only)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="interface">
+      <div class="wrap">
+        <div class="section-hdr">
+          <div>
+            <h2>Actual interface</h2>
+            <p class="section-sub">Captured directly from the Textual TUI and classic REPL.</p>
+          </div>
+          <div class="shot-tabs" role="group" aria-label="Screenshots">
+            <button class="shot-btn" type="button" aria-pressed="true" data-shot="1">Main Console</button>
+            <button class="shot-btn" type="button" aria-pressed="false" data-shot="2">/tags</button>
+            <button class="shot-btn" type="button" aria-pressed="false" data-shot="3">/ai</button>
+            <button class="shot-btn" type="button" aria-pressed="false" data-shot="4">Tool Card</button>
+          </div>
+        </div>
+        <div class="shot-frame">
+          <div class="shot-chrome">
+            <div class="shot-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span>noxentra — textual tui · 120×38</span>
+          </div>
+          <img id="shot-img" src="assets/screenshots/1.png"
+            alt="Noxentra interactive console showing categories and live search" />
+          <div class="shot-caption" id="shot-cap">Main console: 21 tool categories, live search across 294 active tools,
+            and `/` command palette.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="architecture">
+      <div class="wrap">
+        <div class="section-hdr">
+          <div>
+            <h2>Engineering invariants</h2>
+            <p class="section-sub">Built to be predictable on authorized engagements and safe in CI.</p>
+          </div>
+        </div>
+        <div class="matrix">
+          <div class="cell">
+            <h3>List-form subprocesses</h3>
+            <p>Every command runs as an explicit argument list. Never <code>shell=True</code>, never
+              <code>curl | bash</code>, and never forced <code>sudo</code>.
+            </p>
+          </div>
+          <div class="cell">
+            <h3>Offline fallbacks everywhere</h3>
+            <p>AI recommendations, command lookup, and reporting degrade cleanly to deterministic local behavior with
+              zero API keys configured.</p>
+          </div>
+          <div class="cell">
+            <h3>Grounded AI summaries</h3>
+            <p>Untrusted scan output is wrapped in <code>&lt;scan_data&gt;</code> delimiters; AI triage only reads
+              verified entries in <code>findings.json</code>.</p>
+          </div>
+          <div class="cell">
+            <h3>17 normalized parsers</h3>
+            <p>Parses output from <code>nmap</code>, <code>subfinder</code>, <code>httpx</code>, <code>nuclei</code>,
+              <code>trivy</code>, <code>grype</code>, <code>terrascan</code>, <code>kube-hunter</code>,
+              <code>cloudsplaining</code>, and more.
+            </p>
+          </div>
+          <div class="cell">
+            <h3>Scope exclusions</h3>
+            <p>Pass <code>--scope-out</code> globs or exclusion files; out-of-scope targets are filtered and logged
+              before any step executes.</p>
+          </div>
+          <div class="cell">
+            <h3>Local-only secrets</h3>
+            <p>Optional LLM and GitHub tokens are written solely to <code>~/.noxentra/.env</code> with <code>0600</code>
+              permissions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pipelines">
+      <div class="wrap">
+        <div class="section-hdr">
+          <div>
+            <h2>Headless pipelines</h2>
+            <p class="section-sub">Click any pipeline to preview its CLI command, or run via <code>/engage</code>.</p>
+          </div>
+          <a class="btn-solid" href="docs.html#pipelines">Full CLI reference</a>
+        </div>
+        <div class="cmd-box" style="width:100%;justify-content:space-between;margin-bottom:16px;">
+          <div>
+            <span class="ps1">$</span>
+            <code
+              id="pipe-cmd">noxentra --engagement acme --targets example.com --pipeline full_recon --report --format all</code>
+          </div>
+          <button class="cmd-btn" type="button" id="pipe-copy">copy</button>
+        </div>
+        <table id="pipe-table">
+          <thead>
+            <tr>
+              <th>Pipeline</th>
+              <th>Chain</th>
+              <th>Output</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-pipe="recon" data-target="example.com" style="cursor:pointer;">
+              <td>recon</td>
+              <td>Passive subdomain discovery → live HTTP probe → vulnerability scan</td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="full_recon" data-target="example.com" style="cursor:pointer;background:#141418;">
+              <td>full_recon</td>
+              <td><code>nmap</code> → subdomain discovery → <code>httpx</code> → <code>nuclei</code></td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="dns_enum" data-target="example.com" style="cursor:pointer;">
+              <td>dns_enum</td>
+              <td><code>subfinder</code> → <code>dnsx</code> resolution → <code>httpx</code></td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="web_enum" data-target="https://app.example.com" style="cursor:pointer;">
+              <td>web_enum</td>
+              <td><code>httpx</code> → parallel <code>gobuster</code> directory brute-force</td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="web_deep" data-target="https://app.example.com" style="cursor:pointer;">
+              <td>web_deep</td>
+              <td><code>httpx</code> → <code>whatweb</code> → parallel <code>ffuf</code> fuzzing</td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="passive_urls" data-target="example.com" style="cursor:pointer;">
+              <td>passive_urls</td>
+              <td><code>gau</code> archive URLs → <code>httpx</code> → <code>nuclei</code></td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="tls_recon" data-target="example.com" style="cursor:pointer;">
+              <td>tls_recon</td>
+              <td><code>subfinder</code> → <code>tlsx</code> cert/SAN probe → <code>httpx</code></td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="cloud_scan" data-target="." style="cursor:pointer;">
+              <td>cloud_scan</td>
+              <td><code>trivy fs</code> → <code>grype</code> SBOM/vulnerability cross-check</td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="container_scan" data-target="alpine:3.19" style="cursor:pointer;">
+              <td>container_scan</td>
+              <td><code>trivy image</code> → <code>grype</code></td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="iac_scan" data-target="./terraform" style="cursor:pointer;">
+              <td>iac_scan</td>
+              <td><code>terrascan</code> IaC policy scan → <code>trivy fs</code></td>
+              <td>findings.json</td>
+            </tr>
+            <tr data-pipe="k8s_scan" data-target="10.0.0.10" style="cursor:pointer;">
+              <td>k8s_scan</td>
+              <td><code>kube-hunter</code> passive Kubernetes cluster scan</td>
+              <td>findings.json</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script src="js/site.js"></script>
+</body>
+
+</html>

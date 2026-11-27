@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentation — Noxentra</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <meta name="description" content="Complete Noxentra documentation: installation, TUI/CLI grammar, AI workflows, 11 headless pipelines, normalized reporting, and security architecture." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style/docs.css" />
+  <link rel="stylesheet" href="style/layout.css" />
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="container docs-layout">
+    <aside class="sidebar" aria-label="Documentation navigation">
+      <div class="sidebar-group">
+        <div class="sidebar-title">Getting Started</div>
+        <a href="#installation">Installation</a>
+        <a href="#quick-start">Quick Start &amp; Grammar</a>
+        <a href="#commands">Interactive Commands</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-title">AI &amp; Discovery</div>
+        <a href="#ai-workflows">/goal, /ai &amp; /find</a>
+        <a href="#ai-config">Model &amp; API Key Setup</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-title">Automation</div>
+        <a href="#pipelines">11 Headless Pipelines</a>
+        <a href="#reports">Normalized Reports</a>
+      </div>
+      <div class="sidebar-group">
+        <div class="sidebar-title">Architecture</div>
+        <a href="#safety">Security &amp; Invariants</a>
+      </div>
+    </aside>
+
+    <div class="content">
+      <h1>Noxentra Documentation</h1>
+      <p class="lead">
+        Everything you need to install Noxentra, navigate the Textual TUI or classic REPL,
+        configure opt-in AI workflows, and run headless reconnaissance pipelines.
+      </p>
+
+      <section class="doc-section" id="installation">
+        <h2>1. Installation</h2>
+        <p>Noxentra requires Python 3.10+ on Linux (Kali, Parrot, Ubuntu) or macOS.</p>
+
+        <h3>Recommended: pipx</h3>
+        <div class="code-wrap">
+          <div class="code-head"><span>shell</span><button class="copy-btn" type="button" data-copy>Copy</button></div>
+          <pre>pipx install noxentra
+noxentra</pre>
+        </div>
+
+        <h3>From source (development)</h3>
+        <div class="code-wrap">
+          <div class="code-head"><span>shell</span><button class="copy-btn" type="button" data-copy>Copy</button></div>
+          <pre>uv sync --group dev
+uv run noxentra          # Launch Textual TUI
+uv run noxentra --classic # Launch classic REPL</pre>
+        </div>
+
+        <div class="callout">
+          <strong>Existing binaries reused:</strong> If a tool (such as <code>nmap</code>, <code>subfinder</code>,
+          <code>nuclei</code>, or <code>trivy</code>) is already on your <code>PATH</code> via <code>apt</code>,
+          <code>brew</code>, <code>go</code>, or <code>pipx</code>, Noxentra detects and uses it without re-cloning.
+        </div>
+      </section>
+
+      <section class="doc-section" id="quick-start">
+        <h2>2. Quick Start &amp; Console Grammar</h2>
+        <p>Launch <code>noxentra</code> to open the full-screen Textual TUI. Type anywhere to filter categories and tools, or press <code>/</code> to open the command palette. In <code>--classic</code> mode, three simple prefixes cover everything:</p>
+        <table>
+          <thead><tr><th>Input</th><th>Meaning</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><code>/…</code></td><td>Run a built-in command</td><td><code>/engage</code>, <code>/find</code>, <code>/goal</code></td></tr>
+            <tr><td><code>@…</code></td><td>Jump to a tool or tag</td><td><code>@nuclei</code>, <code>@tag:cloud</code></td></tr>
+            <tr><td>Plain English</td><td>Intent-based tool recommendation</td><td><code>scan kubernetes cluster</code></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="doc-section" id="commands">
+        <h2>3. Interactive Commands</h2>
+        <table>
+          <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>/engage</code></td><td>Create/open engagements, check tool readiness (<code>X/Y ready</code>), and run pipelines live.</td></tr>
+            <tr><td><code>/report</code></td><td>Browse deduplicated findings and export Markdown, HTML, SARIF v2.1.0, or AI summaries.</td></tr>
+            <tr><td><code>/goal &lt;objective&gt;</code></td><td>Draft a multi-step command plan and approve each step interactively (<code>[y]</code>/<code>[e]</code>/<code>[s]</code>/<code>[q]</code>).</td></tr>
+            <tr><td><code>/find &lt;need&gt;</code></td><td>Search the 294 curated catalog tools first, then GitHub API (suggest-only, zero auto-install).</td></tr>
+            <tr><td><code>/tags</code></td><td>List all 64 canonical taxonomy tags with live tool counts.</td></tr>
+            <tr><td><code>/config</code></td><td>Configure AI endpoint, Ollama model, GitHub token, and display preferences.</td></tr>
+            <tr><td><code>/skill</code></td><td>Inspect the operator playbook and AI grounding rules.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="doc-section" id="ai-workflows">
+        <h2>4. AI Workflows (/goal, /ai &amp; /find)</h2>
+        <ul>
+          <li><strong><code>/ai</code> (Recommendations):</strong> Maps plain-English requests strictly onto the 64-tag taxonomy in <code>tags.py</code>. It can never invent non-existent tools, and falls back to keyword matching offline.</li>
+          <li><strong><code>/goal</code> (Step-by-Step Planner):</strong> Calls the model once to plan commands, asks for target authorization, and pauses before every step. Tool stdout is never fed back into the planner.</li>
+          <li><strong><code>/find</code> (Suggest-Only Discovery):</strong> Makes zero model calls. Ranks vetted catalog tools first, then active GitHub repositories, bookmarking selections into <code>~/.noxentra/found.yaml</code> without install/run commands.</li>
+        </ul>
+      </section>
+
+      <section class="doc-section" id="ai-config">
+        <h2>5. Model &amp; API Key Setup</h2>
+        <p>The AI layer is 100% opt-in. Configure an OpenAI-compatible endpoint or a local Ollama instance via <code>/config</code>:</p>
+        <div class="code-wrap">
+          <div class="code-head"><span>~/.noxentra/.env (mode 0600)</span><button class="copy-btn" type="button" data-copy>Copy</button></div>
+          <pre>/config ai_base_url https://api.openai.com/v1
+/config ai_model gpt-4o-mini
+/config test</pre>
+        </div>
+        <p>API keys are stored exclusively in <code>~/.noxentra/.env</code> with <code>0600</code> permissions — never in <code>config.json</code> and never printed back.</p>
+      </section>
+
+      <section class="doc-section" id="pipelines">
+        <h2>6. Headless Orchestrator &amp; 11 Pipelines</h2>
+        <p>Run engagements non-interactively from your terminal or CI/CD runner:</p>
+        <div class="code-wrap">
+          <div class="code-head"><span>shell</span><button class="copy-btn" type="button" data-copy>Copy</button></div>
+          <pre>noxentra --list-pipelines
+noxentra --engagement acme --targets example.com,10.0.0.1 --scope-out admin.example.com --pipeline full_recon
+noxentra --engagement acme --targets ./terraform --pipeline iac_scan --report --format all</pre>
+        </div>
+        <table>
+          <thead><tr><th>Pipeline</th><th>Workflow</th></tr></thead>
+          <tbody>
+            <tr><td><code>recon</code></td><td>Passive subdomain discovery → live-host probe → vulnerability scan</td></tr>
+            <tr><td><code>full_recon</code></td><td><code>nmap</code> port/service scan → subdomain discovery → <code>httpx</code> → <code>nuclei</code></td></tr>
+            <tr><td><code>dns_enum</code></td><td><code>subfinder</code> → <code>dnsx</code> resolution/records → <code>httpx</code></td></tr>
+            <tr><td><code>web_enum</code></td><td><code>httpx</code> live probe → parallel <code>gobuster</code> directory brute-force</td></tr>
+            <tr><td><code>web_deep</code></td><td><code>httpx</code> → <code>whatweb</code> fingerprinting → parallel <code>ffuf</code> fuzzing</td></tr>
+            <tr><td><code>passive_urls</code></td><td><code>gau</code> archive URLs → <code>httpx</code> → <code>nuclei</code></td></tr>
+            <tr><td><code>tls_recon</code></td><td><code>subfinder</code> → <code>tlsx</code> cert/SAN probe → <code>httpx</code></td></tr>
+            <tr><td><code>cloud_scan</code></td><td><code>trivy fs</code> filesystem/IaC scan → <code>grype</code> SBOM/vuln check</td></tr>
+            <tr><td><code>container_scan</code></td><td><code>trivy image</code> container scan → <code>grype</code> cross-check</td></tr>
+            <tr><td><code>iac_scan</code></td><td><code>terrascan</code> IaC policy scan → <code>trivy fs</code> vulnerability check</td></tr>
+            <tr><td><code>k8s_scan</code></td><td><code>kube-hunter</code> passive Kubernetes cluster penetration scan</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="doc-section" id="reports">
+        <h2>7. Normalized Findings &amp; Reports</h2>
+        <p>
+          17 built-in parsers normalize output from <code>nmap</code>, <code>subfinder</code>, <code>dnsx</code>,
+          <code>tlsx</code>, <code>httpx</code>, <code>nuclei</code>, <code>gobuster</code>, <code>ffuf</code>,
+          <code>feroxbuster</code>, <code>whatweb</code>, <code>gau</code>, <code>katana</code>, <code>trivy</code>,
+          <code>grype</code>, <code>terrascan</code>, <code>kube-hunter</code>, and <code>cloudsplaining</code> into
+          <code>findings.json</code>.
+        </p>
+        <div class="code-wrap">
+          <div class="code-head"><span>shell</span><button class="copy-btn" type="button" data-copy>Copy</button></div>
+          <pre>noxentra --engagement acme --report --format all   # report.md, report.html, report.sarif.json
+noxentra --engagement acme --ai-summary            # opt-in triage of real findings
+noxentra --engagement acme --ai-report             # opt-in narrative draft (report.draft.md)</pre>
+        </div>
+      </section>
+
+      <section class="doc-section" id="safety">
+        <h2>8. Security &amp; Trust Invariants</h2>
+        <ul>
+          <li><strong>List-form <code>subprocess</code> only:</strong> No <code>shell=True</code> and no <code>curl | bash</code> installers.</li>
+          <li><strong>No forced <code>sudo</code>:</strong> Uses standard package managers and user-space installs (<code>pipx</code>, <code>go</code>, <code>brew</code>).</li>
+          <li><strong>Prompt-injection isolation:</strong> Untrusted tool output passed to <code>--ai-summary</code> or <code>--ai-report</code> is wrapped in <code>&lt;scan_data&gt;</code> delimiters.</li>
+          <li><strong>Authorized targets only:</strong> Scope exclusions (<code>--scope-out</code>) are logged and filtered before execution.</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/docs.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>
