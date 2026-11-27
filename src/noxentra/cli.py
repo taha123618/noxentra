@@ -597,11 +597,17 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="noxentra", add_help=True,
                                 description="noxentra headless orchestrator")
     p.add_argument("--engagement", help="engagement name (creates if new)")
-    p.add_argument("--targets", help="a domain, or a path to a file of domains (one per line)")
+    p.add_argument("--targets", help="target, comma-separated targets, or a file path (one per line)")
+    p.add_argument("--scope-out", dest="scope_out",
+                   help="comma-separated exclusion globs or a file path (merged into engagement)")
     p.add_argument("--pipeline", default=None, help="pipeline to run against the engagement's targets (default: recon)")
     p.add_argument("--report", action="store_true", help="(re)generate the report")
     p.add_argument("--format", dest="report_format", choices=["md", "html", "sarif", "all"],
                    default="md", help="report output format (default: md)")
+    p.add_argument("--list-pipelines", dest="list_pipelines", action="store_true",
+                   help="list available pipelines and exit")
+    p.add_argument("--list-engagements", dest="list_engagements", action="store_true",
+                   help="list saved engagements and exit")
     p.add_argument("--ai-summary", dest="ai_summary", action="store_true",
                    help="opt-in local-AI (Ollama) summary of findings")
     p.add_argument("--ai-report", dest="ai_report", action="store_true",
@@ -609,11 +615,32 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     return p
 
 
-def _load_targets(spec: str) -> list[str]:
+def _load_list_arg(spec: str) -> list[str]:
     p = Path(spec)
     if p.is_file():
         return [ln.strip() for ln in p.read_text().splitlines() if ln.strip()]
-    return [spec]
+    return [part.strip() for part in spec.split(",") if part.strip()]
+
+
+def _load_targets(spec: str) -> list[str]:
+    return _load_list_arg(spec)
+
+
+def _print_pipelines() -> None:
+    for item in orchestrator.list_pipelines():
+        desc = f" — {item['description']}" if item["description"] else ""
+        console.print(f"[cyan]{item['name']}[/cyan]{desc}")
+
+
+def _print_engagements() -> None:
+    from noxentra.tui import data
+
+    rows = data.engagements()
+    if not rows:
+        console.print("[dim]No engagements found.[/dim]")
+        return
+    for r in rows:
+        console.print(f"[cyan]{r.name}[/cyan] · {r.targets_count} target(s) · {r.findings_count} finding(s)")
 
 
 def _run_headless(args) -> None:
@@ -622,6 +649,14 @@ def _run_headless(args) -> None:
                         border_style="yellow"))
     targets = _load_targets(args.targets) if args.targets else None
     e = engagement.get_or_create(args.engagement, targets)
+    if getattr(args, "scope_out", None):
+        merged_out = list(e.scope_out)
+        for pat in _load_list_arg(args.scope_out):
+            if pat not in merged_out:
+                merged_out.append(pat)
+        if merged_out != e.scope_out:
+            e.scope_out = merged_out
+            e.save()
 
     for t in e.targets:
         if not e.in_scope(t):
@@ -639,7 +674,9 @@ def _run_headless(args) -> None:
             console.print(f"[cyan]Running pipeline '{pipeline}'...[/cyan]")
             with orchestrator.live_progress(console.print):
                 result = orchestrator.run_pipeline(e, pipeline)
-            console.print(f"[green]{len(result)} findings ->[/green] {e.findings_file}")
+            new_n = e.runs[-1].get("new_findings") if e.runs else None
+            prefix = f"+{new_n} new, " if new_n is not None else ""
+            console.print(f"[green]{prefix}{len(result)} total findings ->[/green] {e.findings_file}")
             ran = True
 
     if ran or args.report:
@@ -690,6 +727,12 @@ def main():
         # exit 2 (instead of silently opening the menu); -h/--help exits 0.
         parser = _build_arg_parser()
         args = parser.parse_args(argv)
+        if args.list_pipelines or args.list_engagements:
+            if args.list_pipelines:
+                _print_pipelines()
+            if args.list_engagements:
+                _print_engagements()
+            return
         if not args.engagement:
             parser.error("--engagement is required in headless mode")   # prints usage, exits 2
         _run_headless(args)

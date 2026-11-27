@@ -298,14 +298,24 @@ PARSERS = {
 }
 
 
-def merge_findings(existing: list[Finding], incoming: list[Finding]) -> list[Finding]:
-    """Combine `existing` and `incoming`, deduplicating by `(kind, target, name, source_tool)`."""
+def diff_findings(existing: list[Finding], incoming: list[Finding]) -> tuple[list[Finding], int]:
+    """Merge `existing` and `incoming` by `(kind, target, name, source_tool)` and return `(merged, new_count)`."""
     merged: dict[tuple[str, str, str, str], Finding] = {}
     for f in existing:
         merged[(f.kind, f.target, f.name, f.source_tool)] = f
+    new_count = 0
     for f in incoming:
-        merged[(f.kind, f.target, f.name, f.source_tool)] = f
-    return list(merged.values())
+        key = (f.kind, f.target, f.name, f.source_tool)
+        if key not in merged:
+            new_count += 1
+        merged[key] = f
+    return list(merged.values()), new_count
+
+
+def merge_findings(existing: list[Finding], incoming: list[Finding]) -> list[Finding]:
+    """Combine `existing` and `incoming`, deduplicating by `(kind, target, name, source_tool)`."""
+    merged, _ = diff_findings(existing, incoming)
+    return merged
 
 
 def save_findings(path: Path, findings: list[Finding]) -> None:

@@ -40,6 +40,17 @@ def list_pipelines() -> list[dict[str, str]]:
     return items
 
 
+def pipeline_preflight(name: str) -> list[dict[str, object]]:
+    """Return per-step tool availability `[{tool, installed, path}, ...]` for pipeline `name`."""
+    steps = load_pipeline(name).get("steps", [])
+    report: list[dict[str, object]] = []
+    for step in steps:
+        tool = str(step["tool"])
+        resolved = shutil.which(tool) or ""
+        report.append({"tool": tool, "installed": bool(resolved), "path": resolved})
+    return report
+
+
 def _resolve_wordlist() -> str:
     """Locate a standard system web wordlist, falling back to the bundled minimal list."""
     candidates = (
@@ -294,7 +305,13 @@ def run_pipeline(
         all_findings.extend(parsed)
 
     existing = findings_mod.load_findings(e.findings_file)
-    merged = findings_mod.merge_findings(existing, all_findings)
+    merged, new_count = findings_mod.diff_findings(existing, all_findings)
     findings_mod.save_findings(e.findings_file, merged)
-    e.add_run({"pipeline": pipeline_name, "at": ts, "findings": len(all_findings)})
+    e.add_run({
+        "pipeline": pipeline_name,
+        "at": ts,
+        "findings": len(all_findings),
+        "new_findings": new_count,
+    })
+    _emit(f"[green]✔ {pipeline_name}: +{new_count} new, {len(merged)} total finding(s)[/green]")
     return merged

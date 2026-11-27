@@ -43,6 +43,7 @@ students — all working **legally, on systems they own or are authorised to tes
   - [🏷 Tags and search](#-tags-and-search)
   - [▶ Background panes (tmux)](#-background-panes-tmux)
   - [⚙ Settings and the AI layer](#-settings-and-the-ai-layer)
+  - [🛰 `/engage` & `/report` — live pipelines, findings browser, and exports](#-engage--report--live-pipelines-findings-browser-and-exports)
   - [📋 Headless engagements](#-headless-engagements)
 - [Documentation](#documentation)
 
@@ -240,10 +241,12 @@ Some individual tools need a language runtime to install/run; the core app doesn
 
 `noxentra` opens an **interactive terminal UI**: browse the categories, **type to
 search every tool** across all of them, `↑↓` to move, `Enter` to open, `←`/`Esc` to go
-back, and `/` for the command palette (`/recommend`, `/find`, `/goal`, `/tags`,
-`/skill`, `/report`, `/config`, `/update`, `/menu`, `/quit`). When a
-newer release is out it shows an *update available* line on launch, and `/update`
-detects how you installed noxentra and shows the exact upgrade command to run.
+back, and `/` for the command palette (`/engage`, `/recommend`, `/find`, `/goal`,
+`/tags`, `/skill`, `/report`, `/config`, `/update`, `/menu`, `/quit`). Running a tool
+or pipeline streams live output, progress, and elapsed time into the built-in live
+panel (`c` cancels). When a newer release is out it shows an *update available* line on
+launch, and `/update` detects how you installed noxentra and shows the exact upgrade
+command to run.
 
 For a keyboard-driven REPL instead, `noxentra --classic` takes three kinds of input:
 
@@ -304,10 +307,10 @@ falls back to the classic numbered menu, where `/` or `s` searches, `t` filters 
 
 ## Features
 
-> **TUI & `--classic`.** The default TUI supports `/recommend`, `/find`, `/goal`,
-> `/tags`, `/skill`, `/report`, `/config`, `/update`, `/menu`, and `/quit` via the `/`
-> command palette. Background tmux panes and `@tool` / `@tag:` shortcuts also run in
-> **`--classic`** (`noxentra --classic`). The screenshots below showing a `/` prompt
+> **TUI & `--classic`.** The default TUI supports `/engage`, `/recommend`, `/find`,
+> `/goal`, `/tags`, `/skill`, `/report`, `/config`, `/update`, `/menu`, and `/quit` via
+> the `/` command palette. Background tmux panes and `@tool` / `@tag:` shortcuts also run
+> in **`--classic`** (`noxentra --classic`). The screenshots below showing a `/` prompt
 > are from `--classic`.
 
 ### 🔎 `/find` — a tool for a need you don't have yet
@@ -416,20 +419,37 @@ guessing. Your API key is written only to `~/.noxentra/.env` (mode 600), never t
 `config.json`, and never printed back. `/config test` reports the real failure if a
 probe fails.
 
+### 🛰 `/engage` & `/report` — live pipelines, findings browser, and exports
+
+- **`/engage`** opens the interactive engagement workspace: create or select an
+  engagement (name, comma-separated targets, optional `scope_in` / `scope_out`
+  exclusions), see pre-flight tool readiness (`X/Y ready`) per pipeline (`recon`,
+  `full_recon`, `web_enum`, `dns_enum`, `web_deep`), and watch live streamed execution
+  inside the TUI (`c` cancels mid-run). Findings from multiple runs on the same
+  engagement are merged, deduplicated, and diffed (`+N new, M total`) in `findings.json`.
+- **`/report`** exports deterministic Markdown (`report.md`), self-contained HTML with
+  severity summary cards and live filtering (`report.html`), or SARIF v2.1.0
+  (`report.sarif.json`), and includes **Browse findings** to search findings by
+  severity, tool, target, or name and inspect raw details in-app.
+
 ### 📋 Headless engagements
 
-The same catalog drives a non-interactive orchestrator that normalizes tool output
-into one `findings.json`:
+The same catalog and pipeline orchestrator drive a non-interactive CLI that normalizes
+output from `nmap`, `subfinder`, `dnsx`, `httpx`, `nuclei`, `gobuster`, `ffuf`,
+`feroxbuster`, and `whatweb` into `findings.json`:
 
 ```bash
-noxentra --engagement acme --targets example.com --pipeline recon
-noxentra --engagement acme --report          # deterministic Markdown report
-noxentra --engagement acme --ai-summary      # opt-in triage of the REAL findings
-noxentra --engagement acme --ai-report       # opt-in narrative draft (report.draft.md)
+noxentra --list-pipelines
+noxentra --list-engagements
+noxentra --engagement acme --targets example.com,10.0.0.1 --scope-out admin.example.com --pipeline full_recon
+noxentra --engagement acme --report --format all   # report.md, report.html, report.sarif.json
+noxentra --engagement acme --ai-summary            # opt-in triage of the REAL findings
+noxentra --engagement acme --ai-report             # opt-in narrative draft (report.draft.md)
 ```
 
-Out-of-scope targets are flagged and logged before anything runs, and the AI passes
-only ever summarize findings that exist.
+`--targets` and `--scope-out` accept either comma-separated values or a file path (one
+entry per line). Out-of-scope targets are flagged and logged before anything runs, and
+the AI passes only ever summarize findings that exist.
 
 ---
 

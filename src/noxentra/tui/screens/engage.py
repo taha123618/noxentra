@@ -83,7 +83,10 @@ class EngageScreen(NoxentraScreen):
         if self._selected is not None:
             opts = []
             for p in orchestrator.list_pipelines():
-                label = f"{glyphs.RUN}  Run {p['name']}   —  {p['description']}"
+                checks = orchestrator.pipeline_preflight(p["name"])
+                ready = sum(1 for c in checks if c["installed"])
+                badge = f"{ready}/{len(checks)} ready"
+                label = f"{glyphs.RUN}  Run {p['name']} ({badge})   —  {p['description']}"
                 if not n or n in p["name"].lower() or n in p["description"].lower():
                     opts.append(Option(label, id=f"p:{p['name']}"))
             opts.extend([
@@ -126,6 +129,15 @@ class EngageScreen(NoxentraScreen):
                 self.app.notify("A pipeline is already running — press 'c' to cancel.", severity="warning")
                 return
             pipeline_name = option_id.split(":", 1)[1]
+            checks = orchestrator.pipeline_preflight(pipeline_name)
+            if checks and not any(c["installed"] for c in checks):
+                missing = ", ".join(str(c["tool"]) for c in checks)
+                self.app.notify(
+                    f"No tools installed for '{pipeline_name}' (missing: {missing})",
+                    title="Missing pipeline tools",
+                    severity="warning",
+                )
+                return
             self._confirm_and_run(self._selected.obj, pipeline_name)
             return
         if option_id.startswith("e:"):
@@ -201,9 +213,10 @@ class EngageScreen(NoxentraScreen):
                 on_progress=_emit,
                 stop_event=stop_event,
             )
+            new_n = eng.runs[-1].get("new_findings", 0) if eng.runs else 0
             self.app.call_from_thread(
                 self._panel().append_line,
-                f"✔ Total deduplicated findings: {len(found)}",
+                f"✔ +{new_n} new, {len(found)} total deduplicated findings",
             )
             if stop_event.is_set():
                 rc = 130

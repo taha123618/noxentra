@@ -207,3 +207,23 @@ def test_run_pipeline_stops_when_stop_event_set(tmp_path, monkeypatch):
     assert called == ["subfinder"]
     assert len(findings) == 1
     assert any("cancelled" in ev.lower() for ev in events)
+
+
+def test_pipeline_preflight_and_scan_diffing(tmp_path, monkeypatch):
+    _root(tmp_path, monkeypatch)
+    e = engagement.create("acme", targets=["example.com"])
+    monkeypatch.setattr(orchestrator.shutil, "which", lambda t: "/usr/bin/" + t if t == "subfinder" else None)
+
+    pre = orchestrator.pipeline_preflight("recon")
+    assert [c["tool"] for c in pre] == ["subfinder", "httpx", "nuclei"]
+    assert [c["installed"] for c in pre] == [True, False, False]
+
+    outputs = iter(["a.example.com\n", "a.example.com\nb.example.com\n"])
+
+    def fake_run(cmd, input=None, **kwargs):
+        return subprocess.CompletedProcess(cmd, 0, stdout=next(outputs), stderr="")
+
+    monkeypatch.setattr(orchestrator.subprocess, "run", fake_run)
+    orchestrator.run_pipeline(e, "recon")
+    orchestrator.run_pipeline(e, "recon")
+    assert [r["new_findings"] for r in e.runs] == [1, 1]

@@ -143,6 +143,7 @@ def test_engage_screen_creates_and_runs_pipeline(tmp_path, monkeypatch):
     from noxentra.tui.widgets.permission import PermissionModal
 
     monkeypatch.setattr(engagement, "ENGAGEMENTS_ROOT", tmp_path)
+    monkeypatch.setattr(orchestrator.shutil, "which", lambda t: "/usr/bin/" + t)
 
     def fake_run_pipeline(e, pipeline_name="recon", on_progress=None, stop_event=None):
         if on_progress:
@@ -179,6 +180,6 @@ def test_engage_screen_creates_and_runs_pipeline(tmp_path, monkeypatch):
                 if not panel.running:
                     break
             assert not panel.running
-            assert "Total deduplicated findings" in "\n".join(str(line.text) for line in pilot.app.screen.query_one("#engage-log").lines)
+            assert "total deduplicated findings" in "\n".join(str(line.text) for line in pilot.app.screen.query_one("#engage-log").lines)
 
     asyncio.run(run())

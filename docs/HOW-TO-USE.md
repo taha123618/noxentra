@@ -9,9 +9,9 @@ and something you get back — no prior knowledge of the codebase needed.
 
 > **TUI vs `--classic`.** The default `noxentra` is an interactive TUI: browse
 > categories, type to search every tool, `↑↓`/`Enter`/`Esc` to move, and `/` for the
-> command palette (`/recommend`, `/find`, `/goal`, `/tags`, `/skill`, `/report`,
-> `/config`, `/update`, `/menu`, `/quit`). The `@…` shortcuts and background tmux
-> panes (section 8) run in **`noxentra --classic`**.
+> command palette (`/engage`, `/recommend`, `/find`, `/goal`, `/tags`, `/skill`,
+> `/report`, `/config`, `/update`, `/menu`, `/quit`). The `@…` shortcuts and background
+> tmux panes (section 8) run in **`noxentra --classic`**.
 
 - [1. First run](#1-first-run)
 - [2. Learn the grammar in 60 seconds](#2-learn-the-grammar-in-60-seconds)
@@ -21,7 +21,8 @@ and something you get back — no prior knowledge of the codebase needed.
 - [6. Connect a model (`/config`)](#6-connect-a-model-config)
 - [7. Add a GitHub token for `/find` (`/config github`)](#7-add-a-github-token-for-find-config-github)
 - [8. Run tools in background panes](#8-run-tools-in-background-panes)
-- [9. Headless mode: engagements, pipelines, reports](#9-headless-mode-engagements-pipelines-reports)
+- [9. TUI engagements, pipelines & findings (`/engage`, `/report`)](#9-tui-engagements-pipelines--findings-engage-report)
+- [10. Headless mode: engagements, pipelines, reports](#10-headless-mode-engagements-pipelines-reports)
 
 ---
 
@@ -342,31 +343,56 @@ Turn backgrounding off entirely with `/config background_runner off`.
 
 ---
 
-## 9. Headless mode: engagements, pipelines, reports
+## 9. TUI engagements, pipelines & findings (`/engage`, `/report`)
 
-The same catalog drives a non-interactive orchestrator, for CI or a scripted
-engagement. Findings are normalized into one `findings.json` you can grep, diff
-or feed into other tooling.
+1. Open **`/engage`** from the `/` command palette.
+2. Select **`＋ Create new engagement…`** (or press `n`) to enter an engagement name,
+   comma-separated targets (e.g. `75.2.60.5, https://devteampro.com/`), and optional
+   `scope_in` / `scope_out` globs.
+3. Pick a pipeline (`recon`, `full_recon`, `web_enum`, `dns_enum`, `web_deep`). Each
+   row shows its pre-flight readiness (`X/Y ready` on `PATH`); pipelines with `0`
+   installed tools are flagged before launch.
+4. Confirm authorization, then watch live streamed output in the panel (`c` cancels
+   mid-run). Re-running or chaining pipelines merges, deduplicates, and diffs findings
+   (`+N new, M total`) into `findings.json`.
+5. Open **`/report`** to:
+   - Export **`report.md`**, **`report.html`** (self-contained with severity cards and
+     client-side filtering), or **`report.sarif.json`** (SARIF v2.1.0).
+   - Select **Browse findings** to search across severity, tool, target, or name and
+     press `Enter` to inspect full `details` and raw output.
+   - Run opt-in **AI Summary** or **AI Report Draft** (`report.draft.md`).
+
+---
+
+## 10. Headless mode: engagements, pipelines, reports
+
+The same catalog and orchestrator drive a non-interactive CLI for scripts and CI,
+normalizing output from `nmap`, `subfinder`, `dnsx`, `httpx`, `nuclei`, `gobuster`,
+`ffuf`, `feroxbuster`, and `whatweb` into `findings.json`:
 
 ```bash
-# create/extend an engagement and run the default recon pipeline against it
-noxentra --engagement acme --targets example.com --pipeline recon
+# discover pipelines or existing engagements (no --engagement needed)
+noxentra --list-pipelines
+noxentra --list-engagements
 
-# a file of targets, one per line
-noxentra --engagement acme --targets ./scope.txt --pipeline recon
+# create/update an engagement with comma-separated targets and exclusions
+noxentra --engagement acme --targets example.com,10.0.0.1 --scope-out admin.example.com --pipeline full_recon
 
-# (re)generate the deterministic Markdown report
-noxentra --engagement acme --report
+# or pass a file of targets / exclusions, one per line
+noxentra --engagement acme --targets ./scope.txt --scope-out ./exclude.txt --pipeline recon
+
+# export Markdown, HTML, SARIF, or all formats at once
+noxentra --engagement acme --report --format all
 
 # opt-in AI passes over the REAL findings only
 noxentra --engagement acme --ai-summary
 noxentra --engagement acme --ai-report     # writes report.draft.md
 ```
 
-`--engagement` is required in headless mode. Out-of-scope targets are flagged and
-logged before anything runs. `--ai-summary` and `--ai-report` only ever
-summarize findings that exist — the deterministic `report.md` is never
-overwritten by the AI draft.
+`--engagement` is required for all headless flags other than `--list-pipelines` and
+`--list-engagements`. Out-of-scope targets are flagged and logged before anything runs.
+`--ai-summary` and `--ai-report` only ever summarize findings that exist — the
+deterministic `report.md` is never overwritten by the AI draft.
 
 ---
 
@@ -376,6 +402,7 @@ overwritten by the AI draft.
 |---|---|
 | `~/.noxentra/config.json` | settings (`/config`) |
 | `~/.noxentra/.env` | API key + GitHub token, mode 600 |
+| `~/.noxentra/engagements/<name>/` | `engagement.json`, `findings.json`, `report.{md,html,sarif.json}`, `run.log`, `raw/` |
 | `~/.noxentra/found.yaml` | tools you kept from `/find` |
 | `~/.noxentra/goals/<utc-timestamp>/` | `/goal` plan, run log, step output |
 | `~/.noxentra/tools/` | installed tools |

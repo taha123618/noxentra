@@ -3,6 +3,7 @@ from pathlib import Path
 
 from noxentra.findings import (
     Finding,
+    diff_findings,
     load_findings,
     merge_findings,
     parse_dnsx,
@@ -105,6 +106,10 @@ def test_merge_findings_deduplicates_preserving_newer():
     by_target = {f.target: f for f in merged}
     assert by_target["a.example.com"].timestamp == "t2"
     assert "b.example.com" in by_target
+
+    merged2, new_count = diff_findings(old, new)
+    assert len(merged2) == 3
+    assert new_count == 1
 
 
 def test_parse_ffuf():
