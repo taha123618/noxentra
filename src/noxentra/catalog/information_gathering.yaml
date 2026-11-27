@@ -652,3 +652,138 @@ tools:
     modes run ACTIVE scans and real exploit checks; only stealth is low-intrusion.
     Point it solely at systems you're authorized to test — prefer stealth or discover
     first to map scope.
+- title: gau (GetAllUrls)
+  kind: install
+  tags:
+  - recon
+  - osint
+  - web
+  - enumeration
+  description: Fetches known URLs from AlienVault OTX, Wayback Machine, Common Crawl,
+    and URLScan for any domain — passive URL discovery before active probing.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: gau
+    go: github.com/lc/gau/v2/cmd/gau@latest
+  install:
+    go: github.com/lc/gau/v2/cmd/gau@latest
+  run:
+  - gau --help
+  project_url: https://github.com/lc/gau
+  usage:
+  - - fetch archived URLs for a domain
+    - gau example.com
+  - - include subdomains and filter out static assets
+    - gau --subs --blacklist png,jpg,gif,css,woff2 example.com
+  - - pipe URLs into httpx for live probing
+    - gau example.com | httpx -silent
+  lab_safe_notes: Purely passive (queries public archives, never touches the target).
+    Pipe into httpx or dalfox when ready to validate live endpoints on authorized targets.
+- title: waybackurls (Wayback URLs)
+  kind: install
+  tags:
+  - recon
+  - osint
+  - web
+  - enumeration
+  description: Accepts domains on stdin and prints URLs archived by the Wayback Machine
+    and Common Crawl — lightweight passive endpoint discovery.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: waybackurls
+    go: github.com/tomnomnom/waybackurls@latest
+  install:
+    go: github.com/tomnomnom/waybackurls@latest
+  run:
+  - waybackurls -h
+  project_url: https://github.com/tomnomnom/waybackurls
+  usage:
+  - - fetch archived URLs for a domain
+    - echo example.com | waybackurls
+  - - exclude subdomains
+    - echo example.com | waybackurls -no-subs
+  lab_safe_notes: Passive archive lookup only — sends zero packets to the target.
+- title: tlsx (TLS Recon & Cert Prober)
+  kind: install
+  tags:
+  - recon
+  - network
+  - web
+  - fingerprint
+  - scanner
+  description: Fast, configurable TLS grabber for inspecting certificates, SANs, cipher
+    suites, JARM fingerprints, and TLS versions across hosts.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: tlsx
+    go: github.com/projectdiscovery/tlsx/cmd/tlsx@latest
+  install:
+    go: github.com/projectdiscovery/tlsx/cmd/tlsx@latest
+  run:
+  - tlsx -version
+  project_url: https://github.com/projectdiscovery/tlsx
+  usage:
+  - - extract SANs and CNs from TLS certificates
+    - echo example.com | tlsx -san -cn -silent
+  - - emit structured JSONL certificate metadata
+    - tlsx -l hosts.txt -json -silent
+  lab_safe_notes: Performs a standard TLS handshake per host — lightweight and non-destructive,
+    ideal for discovering additional virtual hosts via SANs on authorized targets.
+- title: cdncheck (CDN & WAF IP Detector)
+  kind: install
+  tags:
+  - recon
+  - network
+  - fingerprint
+  description: Classifies IPs and domains behind CDNs, cloud providers, and WAFs so
+    port scans stay focused on origin infrastructure.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: cdncheck
+    go: github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
+  install:
+    go: github.com/projectdiscovery/cdncheck/cmd/cdncheck@latest
+  run:
+  - cdncheck -version
+  project_url: https://github.com/projectdiscovery/cdncheck
+  usage:
+  - - identify CDN/WAF/cloud ranges for hosts
+    - cdncheck -i hosts.txt -resp
+  - - exclude CDN hosts before port scanning
+    - cdncheck -i hosts.txt -exclude-cdn
+  lab_safe_notes: Uses local/embedded provider ranges and DNS resolution — safe pre-scan
+    filtering to avoid hammering shared CDN edges.
+- title: uncover (Multi-Engine Asset Discovery)
+  kind: install
+  tags:
+  - recon
+  - osint
+  - network
+  description: Queries Shodan, Censys, FOFA, and ZoomEye APIs from one CLI to surface
+    exposed hosts and services passively.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: uncover
+    go: github.com/projectdiscovery/uncover/cmd/uncover@latest
+  install:
+    go: github.com/projectdiscovery/uncover/cmd/uncover@latest
+  run:
+  - uncover -version
+  project_url: https://github.com/projectdiscovery/uncover
+  usage:
+  - - query search engines with a dork
+    - uncover -q 'org:"Example Corp"' -silent
+  - - pipe discovered hosts into httpx
+    - uncover -q 'ssl:"example.com"' -silent | httpx -silent
+  lab_safe_notes: Passive API queries only (never touches targets directly). Configure
+    provider API keys in ~/.config/uncover/provider-config.yaml.

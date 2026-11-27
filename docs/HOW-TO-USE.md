@@ -349,9 +349,9 @@ Turn backgrounding off entirely with `/config background_runner off`.
 2. Select **`＋ Create new engagement…`** (or press `n`) to enter an engagement name,
    comma-separated targets (e.g. `75.2.60.5, https://devteampro.com/`), and optional
    `scope_in` / `scope_out` globs.
-3. Pick a pipeline (`recon`, `full_recon`, `web_enum`, `dns_enum`, `web_deep`). Each
-   row shows its pre-flight readiness (`X/Y ready` on `PATH`); pipelines with `0`
-   installed tools are flagged before launch.
+3. Pick a pipeline (`recon`, `full_recon`, `web_enum`, `dns_enum`, `web_deep`,
+   `passive_urls`, `tls_recon`). Each row shows its pre-flight readiness (`X/Y ready`
+   on `PATH`); pipelines with `0` installed tools are flagged before launch.
 4. Confirm authorization, then watch live streamed output in the panel (`c` cancels
    mid-run). Re-running or chaining pipelines merges, deduplicates, and diffs findings
    (`+N new, M total`) into `findings.json`.
@@ -367,8 +367,8 @@ Turn backgrounding off entirely with `/config background_runner off`.
 ## 10. Headless mode: engagements, pipelines, reports
 
 The same catalog and orchestrator drive a non-interactive CLI for scripts and CI,
-normalizing output from `nmap`, `subfinder`, `dnsx`, `httpx`, `nuclei`, `gobuster`,
-`ffuf`, `feroxbuster`, and `whatweb` into `findings.json`:
+normalizing output from `nmap`, `subfinder`, `dnsx`, `tlsx`, `httpx`, `nuclei`,
+`gobuster`, `ffuf`, `feroxbuster`, `whatweb`, `gau`, and `katana` into `findings.json`:
 
 ```bash
 # discover pipelines or existing engagements (no --engagement needed)

@@ -285,6 +285,80 @@ def parse_whatweb(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     return findings, urls
 
 
+def parse_gau(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `gau` / `waybackurls` line-delimited URLs into service Findings."""
+    findings: list[Finding] = []
+    urls: list[str] = []
+    seen: set[str] = set()
+    for ln in raw.splitlines():
+        url = ln.strip()
+        if not url or not url.startswith(("http://", "https://")) or url in seen:
+            continue
+        seen.add(url)
+        findings.append(Finding("service", url, url, "info", "gau", {}, url, ts))
+        urls.append(url)
+    return findings, urls
+
+
+def parse_tlsx(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `tlsx -json` JSONL certificate metadata into service Findings and SANs."""
+    findings: list[Finding] = []
+    hosts: list[str] = []
+    seen_hosts: set[str] = set()
+    for ln in raw.splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            obj = json.loads(ln)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(obj, dict):
+            continue
+        host = obj.get("host") or obj.get("ip") or ""
+        if not isinstance(host, str) or not host:
+            continue
+        cn = obj.get("subject_cn") or ""
+        sans = [s for s in (obj.get("subject_an") or []) if isinstance(s, str)]
+        port = obj.get("port") or 443
+        label = f"{host}:{port} ({cn})" if cn else f"{host}:{port}"
+        details = {"port": port, "subject_cn": cn, "subject_an": sans, "tls_version": obj.get("tls_version")}
+        findings.append(Finding("service", host, label, "info", "tlsx", details, ln, ts))
+        for candidate in [host, *sans]:
+            clean = candidate.lstrip("*.")
+            if clean and clean not in seen_hosts:
+                seen_hosts.add(clean)
+                hosts.append(clean)
+    return findings, hosts
+
+
+def parse_katana(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `katana` JSONL (`-jsonl`) or plain crawled URLs into service Findings."""
+    findings: list[Finding] = []
+    urls: list[str] = []
+    for ln in raw.splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        url = ""
+        method = "GET"
+        try:
+            obj = json.loads(ln)
+            if isinstance(obj, dict):
+                req = obj.get("request") if isinstance(obj.get("request"), dict) else {}
+                url = req.get("endpoint") or obj.get("endpoint") or obj.get("url") or ""
+                method = req.get("method") or "GET"
+        except json.JSONDecodeError:
+            if ln.startswith(("http://", "https://")):
+                url = ln
+        if not isinstance(url, str) or not url:
+            continue
+        label = f"{method} {url}" if method != "GET" else url
+        findings.append(Finding("service", url, label, "info", "katana", {"method": method}, ln, ts))
+        urls.append(url)
+    return findings, urls
+
+
 PARSERS = {
     "subfinder": parse_subfinder,
     "httpx": parse_httpx,
@@ -295,6 +369,9 @@ PARSERS = {
     "feroxbuster": parse_feroxbuster,
     "dnsx": parse_dnsx,
     "whatweb": parse_whatweb,
+    "gau": parse_gau,
+    "tlsx": parse_tlsx,
+    "katana": parse_katana,
 }
 
 

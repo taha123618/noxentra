@@ -648,6 +648,88 @@ tools:
   lab_safe_notes: Enumeration is active (many requests) — use --throttle and scope
     --url to the target. The -P password attack hammers the login form, so run it
     only against authorized boxes. A free WPScan API token unlocks real CVE data.
+- title: Kiterunner (API Endpoint Discovery)
+  kind: install
+  tags:
+  - web
+  - api
+  - fuzzing
+  - enumeration
+  description: Contextual API endpoint and route discovery using Assetnote's Swagger/OpenAPI-trained
+    wordlists rather than flat path guessing.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: kr
+    brew: kiterunner
+    go: github.com/assetnote/kiterunner/cmd/kr@latest
+  install:
+    go: github.com/assetnote/kiterunner/cmd/kr@latest
+  run:
+  - kr --help
+  project_url: https://github.com/assetnote/kiterunner
+  usage:
+  - - scan an API with Assetnote routes wordlist
+    - kr scan https://target -w routes-large.kite
+  - - brute-force with a standard wordlist
+    - kr brute https://target -w wordlist.txt
+  lab_safe_notes: Sends active HTTP requests across methods (GET/POST/PUT/DELETE) —
+    throttle with -x and scope strictly to authorized API targets.
+- title: hakrawler (Fast Web Crawler)
+  kind: install
+  tags:
+  - web
+  - crawler
+  - recon
+  - enumeration
+  description: Fast Go web spider for discovering endpoints, subdomains, and JS files
+    by piping URLs on stdin.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: hakrawler
+    go: github.com/hakluke/hakrawler@latest
+  install:
+    go: github.com/hakluke/hakrawler@latest
+  run:
+  - hakrawler -h
+  project_url: https://github.com/hakluke/hakrawler
+  usage:
+  - - crawl a URL to depth 2
+    - echo https://target | hakrawler -d 2
+  - - include subdomains and emit JSON
+    - echo https://target | hakrawler -subs -json
+  lab_safe_notes: Actively spiders links on the target — cap depth (-d) and threads
+    (-t) on small lab targets.
+- title: interactsh-client (OOB Interaction Client)
+  kind: install
+  tags:
+  - web
+  - api
+  - vuln-scan
+  - recon
+  description: Out-of-band (OOB) interaction client for confirming blind SSRF, blind
+    XSS, XXE, and DNS/HTTP callbacks during authorized testing.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: interactsh-client
+    go: github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
+  install:
+    go: github.com/projectdiscovery/interactsh/cmd/interactsh-client@latest
+  run:
+  - interactsh-client -version
+  project_url: https://github.com/projectdiscovery/interactsh
+  usage:
+  - - start an OOB callback listener
+    - interactsh-client
+  - - log interactions as JSONL
+    - interactsh-client -json -o interactions.jsonl
+  lab_safe_notes: Listens passively on an OOB domain you control; only inject callback
+    URLs into authorized targets.
 - title: PortSwigger Web Security Academy
   kind: resource
   tags:

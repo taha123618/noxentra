@@ -159,7 +159,7 @@ def test_run_pipeline_per_target_flag_fans_out(tmp_path, monkeypatch):
 
 def test_list_pipelines_includes_web_enum():
     names = [p["name"] for p in orchestrator.list_pipelines()]
-    assert {"recon", "full_recon", "web_enum", "dns_enum", "web_deep"} <= set(names)
+    assert {"recon", "full_recon", "web_enum", "dns_enum", "web_deep", "passive_urls", "tls_recon"} <= set(names)
     expanded = orchestrator._expand_args(["dir", "-w", "{wordlist}"])
     assert "{wordlist}" not in expanded[2]
     assert expanded[2].endswith(".txt")

@@ -1,0 +1,21 @@
+# pipelines/passive_urls.yaml
+name: passive_urls
+description: Passive archive URLs (gau) -> live-host probe (httpx) -> vuln scan (nuclei).
+steps:
+  - tool: gau
+    args: ["--subs", "--blacklist", "png,jpg,gif,css,woff2"]
+    input: hosts
+    output: raw/gau.txt
+    parser: gau
+  - tool: httpx
+    args: ["-silent", "-json"]
+    input: previous
+    fallback_to_targets: true
+    output: raw/httpx.jsonl
+    parser: httpx
+  - tool: nuclei
+    args: ["-silent", "-jsonl"]
+    input: previous
+    fallback_to_targets: true
+    output: raw/nuclei.jsonl
+    parser: nuclei

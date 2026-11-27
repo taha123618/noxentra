@@ -9,11 +9,14 @@ from noxentra.findings import (
     parse_dnsx,
     parse_feroxbuster,
     parse_ffuf,
+    parse_gau,
     parse_gobuster,
     parse_httpx,
+    parse_katana,
     parse_nmap,
     parse_nuclei,
     parse_subfinder,
+    parse_tlsx,
     parse_whatweb,
     save_findings,
 )
@@ -152,3 +155,37 @@ def test_parse_whatweb():
     assert fs[0].source_tool == "whatweb"
     assert "nginx" in fs[0].details["tech"]
     assert forward == ["https://example.com"]
+
+
+def test_parse_gau():
+    raw = "https://example.com/a\nhttps://example.com/a\nnot-a-url\nhttp://example.com/b\n"
+    fs, forward = parse_gau(raw, TS)
+    assert len(fs) == 2
+    assert fs[0].source_tool == "gau"
+    assert forward == ["https://example.com/a", "http://example.com/b"]
+
+
+def test_parse_tlsx():
+    raw = json.dumps({
+        "host": "example.com",
+        "port": 443,
+        "subject_cn": "example.com",
+        "subject_an": ["*.example.com", "api.example.com"],
+        "tls_version": "tls13",
+    }) + "\n"
+    fs, forward = parse_tlsx(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].source_tool == "tlsx"
+    assert "example.com:443" in fs[0].name
+    assert forward == ["example.com", "api.example.com"]
+
+
+def test_parse_katana():
+    raw = (
+        json.dumps({"request": {"method": "POST", "endpoint": "https://example.com/api/login"}}) + "\n"
+        + "https://example.com/robots.txt\n"
+    )
+    fs, forward = parse_katana(raw, TS)
+    assert len(fs) == 2
+    assert fs[0].name == "POST https://example.com/api/login"
+    assert forward == ["https://example.com/api/login", "https://example.com/robots.txt"]
