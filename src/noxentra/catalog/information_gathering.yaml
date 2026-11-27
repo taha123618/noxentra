@@ -814,3 +814,45 @@ tools:
     - noseyparker report --datastore np.datastore
   lab_safe_notes: Runs completely locally and offline on repositories or directories you
     are authorized to audit — store output datastores securely.
+- title: anew (Unique Line Appender)
+  kind: install
+  tags: [recon, enumeration]
+  description: Appends lines from stdin to a file only if they don't already exist
+    and prints newly added lines — essential for incremental recon pipelines.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: anew
+    go: github.com/tomnomnom/anew@latest
+  install:
+    go: github.com/tomnomnom/anew@latest
+  run:
+  - anew -h
+  project_url: https://github.com/tomnomnom/anew
+  usage:
+  - - append only new subdomains to a running list
+    - subfinder -d example.com -silent | anew subs.txt
+  lab_safe_notes: Local file/stream utility — zero network traffic of its own.
+- title: unfurl (URL Component Extractor)
+  kind: install
+  tags: [recon, web, enumeration]
+  description: Parses URLs from stdin and extracts domains, paths, keys, values, and
+    extensions for targeted fuzzing or parameter analysis.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: unfurl
+    go: github.com/tomnomnom/unfurl@latest
+  install:
+    go: github.com/tomnomnom/unfurl@latest
+  run:
+  - unfurl -h
+  project_url: https://github.com/tomnomnom/unfurl
+  usage:
+  - - extract unique query parameter names from URLs
+    - cat urls.txt | unfurl keys | sort -u
+  - - extract unique hosts from URLs
+    - cat urls.txt | unfurl domains | sort -u
+  lab_safe_notes: Purely offline URL parser — ideal for post-processing gau/katana output.

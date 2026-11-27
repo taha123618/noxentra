@@ -760,6 +760,79 @@ tools:
     - python3 jwt_tool.py <JWT> -C -d wordlist.txt
   lab_safe_notes: Decoding and dictionary cracking (`-C`) are completely offline. Active
     tampering (`-M at`) sends modified tokens to the target — authorized targets only.
+- title: clairvoyance (GraphQL Schema Enumerator)
+  kind: install
+  tags:
+  - web
+  - api
+  - enumeration
+  - recon
+  description: Recovers GraphQL schemas even when introspection is disabled, using
+    field/type suggestion error messages.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: clairvoyance
+  install:
+    pip: clairvoyance
+  run:
+  - clairvoyance --help
+  project_url: https://github.com/nikitastupin/clairvoyance
+  usage:
+  - - reconstruct schema from a GraphQL endpoint
+    - clairvoyance https://target/graphql -o schema.json
+  lab_safe_notes: Sends probe queries to enumerate GraphQL fields — use -w/-c concurrency
+    limits and scope strictly to authorized APIs.
+- title: graphql-cop (GraphQL Security Auditor)
+  kind: install
+  tags:
+  - web
+  - api
+  - vuln-scan
+  - scanner
+  description: Automated GraphQL security testing tool checking for introspection,
+    field suggestions, batching, alias overloading, and CSRF.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: graphql-cop.py
+  install:
+    commands:
+    - git clone https://github.com/dolevf/graphql-cop.git
+    - cd graphql-cop && python3 -m pip install --user -r requirements.txt
+  run:
+  - python3 graphql-cop.py --help
+  project_url: https://github.com/dolevf/graphql-cop
+  usage:
+  - - audit a GraphQL endpoint
+    - python3 graphql-cop.py -t https://target/graphql
+  lab_safe_notes: Sends active GraphQL misconfiguration probes — authorize the target
+    before running.
+- title: Smuggler (HTTP Request Smuggling)
+  kind: install
+  tags:
+  - web
+  - vuln-scan
+  - scanner
+  description: Detects HTTP Request Smuggling (CL.TE and TE.CL) desynchronization
+    issues on reverse proxies and load balancers.
+  supported_os:
+  - linux
+  - macos
+  system_pkgs:
+    which: smuggler.py
+  install:
+    git: https://github.com/defparam/smuggler.git
+  run:
+  - python3 smuggler.py --help
+  project_url: https://github.com/defparam/smuggler
+  usage:
+  - - test a target URL for request smuggling
+    - python3 smuggler.py -u https://target
+  lab_safe_notes: Sends crafted HTTP desync probes — test only against authorized
+    staging or scoped targets.
 - title: PortSwigger Web Security Academy
   kind: resource
   tags:

@@ -57,6 +57,21 @@ tools:
       run it against web apps you are authorized to spider. The word list it builds is
       just text; responsible use applies when you feed it to a cracker or login test.
 
+  - title: "alterx (Subdomain Permutation Generator)"
+    kind: install
+    tags: [wordlist, subdomain-enum, recon]
+    description: "Fast, customizable subdomain permutation wordlist generator by ProjectDiscovery — feeds straight into dnsx or shuffledns."
+    system_pkgs: {which: alterx, go: "github.com/projectdiscovery/alterx/cmd/alterx@latest"}
+    install: {go: "github.com/projectdiscovery/alterx/cmd/alterx@latest"}
+    run: ["alterx -version"]
+    project_url: "https://github.com/projectdiscovery/alterx"
+    usage:
+      - ["generate subdomain permutations from discovered hosts", "cat subs.txt | alterx -silent"]
+      - ["pipe permutations into dnsx for resolution", "cat subs.txt | alterx -silent | dnsx -silent"]
+    lab_safe_notes: >-
+      Generating permutations is 100% offline. Pipe output into dnsx only for authorized
+      domains.
+
 # --- high-value wordlist references ------------------------------------------
   - title: "SecLists (Wordlist Collection)"
     kind: resource
