@@ -265,6 +265,35 @@ tools:
       Runs offline static policy checks against local IaC templates and manifests
       without touching live cloud resources.
 
+  - title: "kube-linter (Kubernetes Manifest Linter)"
+    kind: install
+    tags: [cloud, scanner, vuln-scan]
+    description: "Static analysis tool by StackRox/Red Hat that checks Kubernetes YAML manifests and Helm charts for security and misconfiguration best practices."
+    system_pkgs: {which: kube-linter, brew: kube-linter, go: "golang.stackrox.io/kube-linter/cmd/kube-linter@latest"}
+    install: {go: "golang.stackrox.io/kube-linter/cmd/kube-linter@latest"}
+    run: ["kube-linter version"]
+    project_url: "https://github.com/stackrox/kube-linter"
+    usage:
+      - ["lint Kubernetes manifests in a directory", "kube-linter lint ./k8s/"]
+      - ["emit JSON report for pipeline triage", "kube-linter lint ./k8s/ --format json"]
+    lab_safe_notes: >-
+      Offline static linting of local Kubernetes YAML and Helm templates.
+
+  - title: "cloudfox (AWS Situational Awareness)"
+    kind: install
+    tags: [cloud, enumeration, recon]
+    description: "Bishop Fox CLI for AWS penetration testers that maps exploitable attack paths across IAM, EC2, ECS, EKS, Lambda, and S3."
+    system_pkgs: {which: cloudfox, go: "github.com/BishopFox/cloudfox@latest"}
+    install: {go: "github.com/BishopFox/cloudfox@latest"}
+    run: ["cloudfox --help"]
+    project_url: "https://github.com/BishopFox/cloudfox"
+    usage:
+      - ["enumerate all AWS checks for a profile", "cloudfox aws --profile target all-checks"]
+      - ["list high-value IAM/EC2 principals", "cloudfox aws --profile target principals"]
+    lab_safe_notes: >-
+      Performs read-only AWS API enumeration (`Describe*`/`List*`/`Get*`) — run
+      only against AWS accounts you are authorized to assess.
+
 # --- high-value cloud-security references ------------------------------------
   - title: "HackTricks Cloud (cloud pentest playbook)"
     kind: resource

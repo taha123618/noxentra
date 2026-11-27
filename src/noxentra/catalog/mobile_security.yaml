@@ -132,6 +132,33 @@ tools:
       Produces a patched APK locally for dynamic analysis in your own emulator/test
       device — use only on apps you are authorized to test.
 
+  - title: "quark-engine (Android Malware Scoring)"
+    kind: install
+    tags: [mobile, apk, malware-analysis, scanner]
+    description: "Dalvik bytecode analysis engine that detects Android malware behaviors and scores suspicious API call sequences."
+    system_pkgs: {which: quark}
+    install: {pipx: quark-engine}
+    run: ["quark --help"]
+    project_url: "https://github.com/quark-engine/quark-engine"
+    usage:
+      - ["analyze an APK with Quark rules", "quark -a app.apk -s"]
+    lab_safe_notes: >-
+      Static Dalvik bytecode analysis — never executes the inspected APK.
+
+  - title: "Androguard (Android APK/DEX Analyzer)"
+    kind: install
+    tags: [mobile, apk, reversing, binary]
+    description: "Python reverse-engineering and static analysis suite for Android APKs, DEX bytecode, AXML manifests, and resources."
+    system_pkgs: {which: androguard}
+    install: {pipx: androguard}
+    run: ["androguard --help"]
+    project_url: "https://github.com/androguard/androguard"
+    usage:
+      - ["inspect AndroidManifest.xml from an APK", "androguard axml app.apk"]
+      - ["open an APK in interactive analysis shell", "androguard analyze app.apk"]
+    lab_safe_notes: >-
+      Purely static binary/manifest analysis — safe for offline APK triage.
+
 # --- high-value mobile-security references -----------------------------------
   - title: "OWASP MAS (Mobile App Security)"
     kind: resource

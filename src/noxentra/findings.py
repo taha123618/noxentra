@@ -536,6 +536,37 @@ def parse_cloudsplaining(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     return findings, targets
 
 
+def parse_kube_linter(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
+    """Parse `kube-linter lint --format json` output into misconfiguration Findings."""
+    findings: list[Finding] = []
+    targets: list[str] = []
+    top = _load_json_dict(raw)
+    if not top:
+        return findings, targets
+
+    for rep in top.get("Reports") or []:
+        if not isinstance(rep, dict):
+            continue
+        check = str(rep.get("Check") or "kube-linter-check")
+        diag = rep.get("Diagnostic") if isinstance(rep.get("Diagnostic"), dict) else {}
+        obj = rep.get("Object") if isinstance(rep.get("Object"), dict) else {}
+        meta = obj.get("Metadata") if isinstance(obj.get("Metadata"), dict) else {}
+        k8s = obj.get("K8sObject") if isinstance(obj.get("K8sObject"), dict) else {}
+        fpath = str(meta.get("FilePath") or k8s.get("Name") or "k8s")
+        kname = str(k8s.get("Name") or "")
+        name = f"{check} ({kname})" if kname else check
+        details = {
+            "check": check,
+            "message": diag.get("Message"),
+            "remediation": rep.get("Remediation"),
+            "object": kname,
+        }
+        findings.append(Finding("misconfiguration", fpath, name, "medium", "kube-linter", details, json.dumps(rep), ts))
+        if fpath not in targets:
+            targets.append(fpath)
+    return findings, targets
+
+
 PARSERS = {
     "subfinder": parse_subfinder,
     "httpx": parse_httpx,
@@ -554,6 +585,7 @@ PARSERS = {
     "terrascan": parse_terrascan,
     "kube-hunter": parse_kube_hunter,
     "cloudsplaining": parse_cloudsplaining,
+    "kube-linter": parse_kube_linter,
 }
 
 

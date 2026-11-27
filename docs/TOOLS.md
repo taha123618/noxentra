@@ -1,6 +1,6 @@
 # Tool catalog
 
-Every tool noxentra can install, launch, or point you at — **294 active tools
+Every tool noxentra can install, launch, or point you at — **300 active tools
 across 21 categories**, plus 44 archived entries kept out of this list (they are
 unmaintained or dead upstream and are hidden in the app unless you set
 `show_archived true` via `/config`).
@@ -207,6 +207,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [osquery (SQL Endpoint Visibility)](https://github.com/osquery/osquery) — <sub>forensics, enumeration, scanner</sub>
 - [Chainsaw (EVTX Threat Hunting)](https://github.com/WithSecureLabs/chainsaw) — <sub>forensics, malware-analysis, scanner</sub>
 - [Velociraptor (DFIR Endpoint Visibility)](https://github.com/Velocidex/velociraptor) — <sub>forensics, enumeration, malware-analysis</sub>
+- [yara-x (Rust YARA Scanner)](https://github.com/VirusTotal/yara-x) — <sub>forensics, malware-analysis, scanner</sub>
+- [hayabusa (Windows EVTX Threat Hunter)](https://github.com/Yamato-Security/hayabusa) — <sub>forensics, malware-analysis, scanner</sub>
 - [Eric Zimmerman's Tools](https://ericzimmerman.github.io/) — <sub>reference, forensics, online-service</sub>
 - [MalwareBazaar (Sample Database)](https://bazaar.abuse.ch/) — <sub>online-service, reference, malware-analysis</sub>
 
@@ -329,6 +331,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [Cloudsplaining (AWS IAM Analyzer)](https://github.com/salesforce/cloudsplaining) — <sub>cloud, scanner, enumeration</sub>
 - [kube-hunter (Kubernetes Pentest Scanner)](https://github.com/aquasecurity/kube-hunter) — <sub>cloud, scanner, vuln-scan</sub>
 - [Terrascan (IaC Policy & Misconfig Scanner)](https://github.com/tenable/terrascan) — <sub>cloud, scanner, vuln-scan</sub>
+- [kube-linter (Kubernetes Manifest Linter)](https://github.com/stackrox/kube-linter) — <sub>cloud, scanner, vuln-scan</sub>
+- [cloudfox (AWS Situational Awareness)](https://github.com/BishopFox/cloudfox) — <sub>cloud, enumeration, recon</sub>
 - [HackTricks Cloud (cloud pentest playbook)](https://cloud.hacktricks.xyz/) — <sub>reference, cloud, learning</sub>
 - [flaws.cloud (AWS Security Challenge)](http://flaws.cloud/) — <sub>learning, cloud, online-service</sub>
 
@@ -341,6 +345,8 @@ Back to the [README](../README.md) · [How to use noxentra](HOW-TO-USE.md)
 - [apkleaks (APK URI & Secret Scanner)](https://github.com/dwisiswant0/apkleaks) — <sub>mobile, apk, scanner, credentials</sub>
 - [mobsfscan (Mobile Static Code Analyzer)](https://github.com/MobSF/mobsfscan) — <sub>mobile, scanner, vuln-scan</sub>
 - [reFlutter (Flutter RE & SSL Bypass)](https://github.com/ptswarm/reFlutter) — <sub>mobile, reversing, apk</sub>
+- [quark-engine (Android Malware Scoring)](https://github.com/quark-engine/quark-engine) — <sub>mobile, apk, malware-analysis, scanner</sub>
+- [Androguard (Android APK/DEX Analyzer)](https://github.com/androguard/androguard) — <sub>mobile, apk, reversing, binary</sub>
 - [OWASP MAS (Mobile App Security)](https://mas.owasp.org/) — <sub>mobile, reference, learning</sub>
 - [Frida CodeShare](https://codeshare.frida.re/) — <sub>mobile, reversing, online-service, reference</sub>
 

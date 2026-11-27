@@ -231,6 +231,34 @@ tools:
       Local VQL triage is read-only; deploy agents only on endpoints you own or are
       authorized to investigate.
 
+  - title: "yara-x (Rust YARA Scanner)"
+    kind: install
+    tags: [forensics, malware-analysis, scanner]
+    description: "VirusTotal's modern Rust rewrite of YARA — faster, safer pattern matching and rule evaluation for malware triage and DFIR."
+    system_pkgs: {which: yr, brew: yara-x}
+    install: {brew: yara-x}
+    run: ["yr --help"]
+    project_url: "https://github.com/VirusTotal/yara-x"
+    usage:
+      - ["scan a directory with YARA rules", "yr scan rules.yar ./samples/"]
+      - ["compile and validate YARA rules", "yr check rules.yar"]
+    lab_safe_notes: >-
+      Purely offline static file and memory-dump scanning against YARA signatures.
+
+  - title: "hayabusa (Windows EVTX Threat Hunter)"
+    kind: install
+    tags: [forensics, malware-analysis, scanner]
+    description: "High-speed Sigma-based Windows Event Log (EVTX) forensics timeline generator and threat-hunting CLI written in Rust."
+    system_pkgs: {which: hayabusa, brew: hayabusa}
+    install: {brew: hayabusa}
+    run: ["hayabusa --help"]
+    project_url: "https://github.com/Yamato-Security/hayabusa"
+    usage:
+      - ["hunt EVTX logs and output CSV timeline", "hayabusa csv-timeline -d ./evtx/ -o timeline.csv"]
+      - ["output JSONL alerts for triage", "hayabusa json-timeline -d ./evtx/ -L -o alerts.jsonl"]
+    lab_safe_notes: >-
+      Offline read-only analysis over collected EVTX event log files.
+
 # --- high-value DFIR references ----------------------------------------------
   - title: "Eric Zimmerman's Tools"
     kind: resource

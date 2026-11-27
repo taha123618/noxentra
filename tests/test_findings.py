@@ -297,3 +297,26 @@ def test_parse_cloudsplaining():
     assert fs[0].severity == "high"
     assert fs[0].source_tool == "cloudsplaining"
     assert targets == ["arn:aws:iam::123456789012:role/AdminRole"]
+
+
+def test_parse_kube_linter():
+    from noxentra.findings import parse_kube_linter
+
+    raw = json.dumps({
+        "Reports": [{
+            "Check": "run-as-non-root",
+            "Diagnostic": {"Message": "container is not set to runAsNonRoot"},
+            "Remediation": "Set runAsNonRoot: true",
+            "Object": {
+                "Metadata": {"FilePath": "k8s/deploy.yaml"},
+                "K8sObject": {"Name": "api-deploy"},
+            },
+        }]
+    })
+    fs, targets = parse_kube_linter(raw, TS)
+    assert len(fs) == 1
+    assert fs[0].kind == "misconfiguration"
+    assert fs[0].target == "k8s/deploy.yaml"
+    assert fs[0].source_tool == "kube-linter"
+    assert "run-as-non-root" in fs[0].name
+    assert targets == ["k8s/deploy.yaml"]
