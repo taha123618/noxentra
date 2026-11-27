@@ -66,6 +66,16 @@ CreateEngagementModal > #engage-create-box {
 #eng-modal-actions { height: auto; padding-top: 1; }
 #eng-modal-actions Button { margin-right: 1; }
 
+FindingDetailModal { align: center middle; }
+FindingDetailModal > #finding-detail-box {
+    width: 80%;
+    max-width: 96;
+    border: round $accent;
+    padding: 1 2;
+    background: $panel;
+}
+#finding-detail-text { padding-bottom: 1; }
+
 /* Floating slash-command palette: overlay lifts it above the 3-row bottom prompt
    without growing the screen (pattern verified from Textual's Select). */
 CommandPalette {

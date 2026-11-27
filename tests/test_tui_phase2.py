@@ -74,11 +74,62 @@ def test_report_screen_exports_engagement_report(tmp_path, monkeypatch):
             assert ol.option_count == 1
             await pilot.press("enter")  # drill into report actions
             await pilot.pause()
-            assert ol.option_count == 3
+            assert ol.option_count == 6
             await pilot.press("enter")  # Export deterministic report (report.md)
             await pilot.pause()
             assert e.report_file.exists()
             assert "msg" in seen and "Saved" in seen["msg"][0][0]
+
+    asyncio.run(run())
+
+
+def test_report_screen_exports_html_sarif_and_browses_findings(tmp_path, monkeypatch):
+    from noxentra.findings import Finding, save_findings
+    from noxentra.tui.screens.report import FindingDetailModal
+
+    monkeypatch.setattr(engagement, "ENGAGEMENTS_ROOT", tmp_path)
+    e = engagement.create("acme", targets=["example.com"])
+    save_findings(e.findings_file, [
+        Finding("vulnerability", "https://example.com/.git/", "Exposed .git", "high",
+                "nuclei", {"template_id": "exposed-git"}, "raw-hit", "T"),
+        Finding("subdomain", "api.example.com", "api.example.com", "info",
+                "subfinder", {}, "api.example.com", "T"),
+    ])
+
+    async def run():
+        async with NoxentraApp().run_test(size=(100, 30)) as pilot:
+            await _until(pilot, MainScreen)
+            await _run_slash(pilot, "/report")
+            await _until(pilot, ReportScreen)
+
+            ol = pilot.app.screen.query_one("#report-engagements", OptionList)
+            await pilot.press("enter")  # select engagement
+            await pilot.pause()
+
+            # Export HTML (index 3) and SARIF (index 4)
+            ol.highlighted = 3
+            await pilot.press("enter")
+            await pilot.pause()
+            assert (e.workspace / "report.html").exists()
+
+            ol.highlighted = 4
+            await pilot.press("enter")
+            await pilot.pause()
+            assert (e.workspace / "report.sarif.json").exists()
+
+            # Browse findings (index 5), filter, and open FindingDetailModal
+            ol.highlighted = 5
+            await pilot.press("enter")
+            await pilot.pause()
+            assert ol.option_count == 2
+
+            inp = pilot.app.screen.query_one("#nx-prompt", Input)
+            inp.value = "high"
+            await pilot.pause()
+            assert ol.option_count == 1
+            await pilot.press("enter")
+            await _until(pilot, FindingDetailModal)
+            assert isinstance(pilot.app.screen, FindingDetailModal)
 
     asyncio.run(run())
 

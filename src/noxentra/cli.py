@@ -599,7 +599,9 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     p.add_argument("--engagement", help="engagement name (creates if new)")
     p.add_argument("--targets", help="a domain, or a path to a file of domains (one per line)")
     p.add_argument("--pipeline", default=None, help="pipeline to run against the engagement's targets (default: recon)")
-    p.add_argument("--report", action="store_true", help="(re)generate the Markdown report")
+    p.add_argument("--report", action="store_true", help="(re)generate the report")
+    p.add_argument("--format", dest="report_format", choices=["md", "html", "sarif", "all"],
+                   default="md", help="report output format (default: md)")
     p.add_argument("--ai-summary", dest="ai_summary", action="store_true",
                    help="opt-in local-AI (Ollama) summary of findings")
     p.add_argument("--ai-report", dest="ai_report", action="store_true",
@@ -641,8 +643,16 @@ def _run_headless(args) -> None:
             ran = True
 
     if ran or args.report:
-        path = report.generate_report(e)
-        console.print(f"[green]Report ->[/green] {path}")
+        fmt = getattr(args, "report_format", "md")
+        if fmt in ("md", "all"):
+            path = report.generate_report(e)
+            console.print(f"[green]Report ->[/green] {path}")
+        if fmt in ("html", "all"):
+            path = report.generate_html_report(e)
+            console.print(f"[green]HTML report ->[/green] {path}")
+        if fmt in ("sarif", "all"):
+            path = report.generate_sarif_report(e)
+            console.print(f"[green]SARIF report ->[/green] {path}")
 
     if args.ai_summary:
         summary = ai_summary.summarize(e)
