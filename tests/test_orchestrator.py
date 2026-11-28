@@ -258,3 +258,55 @@ def test_pipeline_preflight_and_scan_diffing(tmp_path, monkeypatch):
     orchestrator.run_pipeline(e, "recon")
     orchestrator.run_pipeline(e, "recon")
     assert [r["new_findings"] for r in e.runs] == [1, 1]
+
+
+def test_run_pipeline_filters_initial_targets_against_scope_out(tmp_path, monkeypatch):
+    _root(tmp_path, monkeypatch)
+    e = engagement.create(
+        "acme-scope",
+        targets=["in.example.com", "out.example.com", "https://sub.out.example.com:8443/app"],
+        scope_out=["out.example.com", "*.out.example.com"],
+    )
+    monkeypatch.setattr(orchestrator.shutil, "which", lambda t: "/usr/bin/" + t if t == "subfinder" else None)
+
+    seen_stdin: list[str] = []
+
+    def fake_run(cmd, input=None, **kwargs):
+        seen_stdin.append(input or "")
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(orchestrator.subprocess, "run", fake_run)
+    orchestrator.run_pipeline(e, "recon")
+    assert seen_stdin == ["in.example.com"]
+    log_text = e.log_file.read_text(encoding="utf-8")
+    assert "scope-out: dropped target out.example.com" in log_text
+    assert "scope-out: dropped target https://sub.out.example.com:8443/app" in log_text
+
+
+def test_run_pipeline_aborts_when_all_targets_excluded(tmp_path, monkeypatch):
+    _root(tmp_path, monkeypatch)
+    e = engagement.create("acme-all-out", targets=["out.example.com"], scope_out=["out.example.com"])
+    called = False
+
+    def fake_run(cmd, **kwargs):
+        nonlocal called
+        called = True
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(orchestrator.subprocess, "run", fake_run)
+    res = orchestrator.run_pipeline(e, "recon")
+    assert res == []
+    assert called is False
+    assert e.runs == []
+
+
+def test_run_pipeline_marks_cancelled_run(tmp_path, monkeypatch):
+    import threading
+
+    _root(tmp_path, monkeypatch)
+    e = engagement.create("acme-cancel", targets=["example.com"])
+    stop = threading.Event()
+    stop.set()
+    orchestrator.run_pipeline(e, "recon", stop_event=stop)
+    assert len(e.runs) == 1
+    assert e.runs[0]["cancelled"] is True

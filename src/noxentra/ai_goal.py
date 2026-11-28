@@ -11,12 +11,13 @@ from pathlib import Path
 
 from rich.markup import escape
 
-from noxentra import ai_recommend, prompt, skill
+from noxentra import ai_recommend, prompt, runner, skill
 from noxentra.constants import USER_CONFIG_DIR
 from noxentra.core import console
 
 STEP_TIMEOUT = 1800
 GOALS_ROOT = USER_CONFIG_DIR / "goals"
+_ORIG_SUBPROCESS_RUN = subprocess.run
 
 
 @dataclass
@@ -34,9 +35,27 @@ class Plan:
     steps: list[Step] = field(default_factory=list)
 
 
+_DISALLOWED_BINS = frozenset({"sudo", "doas"})
+_SHELL_BINS = frozenset({"sh", "bash", "zsh", "dash", "ksh", "fish"})
+_SHELL_META_TOKENS = (";", "&&", "||", "|", "$(", "`")
+
+
+def _is_safe_argv(argv: list[str]) -> bool:
+    """Reject privilege escalation, shell -c wrappers, and shell metacharacters."""
+    prog = Path(argv[0]).name.lower()
+    if prog in _DISALLOWED_BINS:
+        return False
+    if prog in _SHELL_BINS and any(a == "-c" or a.startswith("-c") for a in argv[1:]):
+        return False
+    for arg in argv:
+        if any(tok in arg for tok in _SHELL_META_TOKENS):
+            return False
+    return True
+
+
 def _validate(raw: dict) -> Plan:
-    """Parsed model reply -> Plan. Drops any step whose argv isn't a non-empty
-    list of strings; sets installed from shutil.which(argv[0]). Never raises."""
+    """Parsed model reply -> Plan. Drops unsafe or malformed steps; sets
+    installed from shutil.which(argv[0]). Never raises."""
     if not isinstance(raw, dict):
         return Plan("", [])
     target = str(raw.get("target", "")).strip()
@@ -46,7 +65,9 @@ def _validate(raw: dict) -> Plan:
             continue
         argv = s.get("argv")
         if not (isinstance(argv, list) and argv
-                and all(isinstance(a, str) for a in argv)):
+                and all(isinstance(a, str) and a for a in argv)):
+            continue
+        if not _is_safe_argv(argv):
             continue
         steps.append(Step(tool=argv[0], argv=argv, why=str(s.get("why", "")),
                           installed=shutil.which(argv[0]) is not None,
@@ -148,32 +169,51 @@ def _workspace() -> Path:
 
 
 def _run_step(step: Step, n: int, total: int, workspace: Path) -> None:
-    """Run one approved step, list-form, in the shared workspace cwd. Prints
+    """Run one approved step, list-form, in the shared workspace cwd. Streams
     output; writes it to a per-step file. Never raises."""
     console.print(f"[dim]─ step {n}/{total} ─[/dim] [cyan]{escape(' '.join(step.argv))}[/cyan]")
-    try:
-        # ponytail: capture-then-print; switch to Popen line-streaming if long tools feel laggy.
-        proc = subprocess.run(step.argv, cwd=str(workspace), capture_output=True,
-                              text=True, timeout=STEP_TIMEOUT, check=False)
-    except subprocess.TimeoutExpired:
-        console.print(f"[error]✗ step {n} timed out after {STEP_TIMEOUT}s[/error]")
-        _audit(workspace, f"step {n} TIMEOUT after {STEP_TIMEOUT}s")
-        return
-    except OSError as exc:
-        console.print(f"[error]✗ step {n} failed to launch: {escape(str(exc))}[/error]")
-        _audit(workspace, f"step {n} launch-failed: {exc}")
-        return
-    if proc.stdout:
-        console.print(proc.stdout.rstrip(), markup=False)
-    if proc.returncode != 0:
-        tail = " | ".join((proc.stderr or "").strip().splitlines()[-3:])
-        console.print(f"[error]✗ exit {proc.returncode}[/error] [dim]{escape(tail)}[/dim]")
-        _audit(workspace, f"step {n} exit {proc.returncode} stderr_tail={tail!r}")
+    if subprocess.run is _ORIG_SUBPROCESS_RUN:
+        try:
+            res = runner.run_streaming(
+                step.argv,
+                cwd=workspace,
+                timeout=STEP_TIMEOUT,
+                on_line=lambda line: console.print(line, markup=False),
+            )
+        except OSError as exc:
+            console.print(f"[error]✗ step {n} failed to launch: {escape(str(exc))}[/error]")
+            _audit(workspace, f"step {n} launch-failed: {exc}")
+            return
+        if res.timed_out:
+            console.print(f"[error]✗ step {n} timed out after {STEP_TIMEOUT}s[/error]")
+            _audit(workspace, f"step {n} TIMEOUT after {STEP_TIMEOUT}s")
+            return
+        rc, stdout, stderr = res.returncode, res.stdout, res.stderr
+    else:
+        try:
+            proc = subprocess.run(step.argv, cwd=str(workspace), capture_output=True,
+                                  text=True, timeout=STEP_TIMEOUT, check=False)
+        except subprocess.TimeoutExpired:
+            console.print(f"[error]✗ step {n} timed out after {STEP_TIMEOUT}s[/error]")
+            _audit(workspace, f"step {n} TIMEOUT after {STEP_TIMEOUT}s")
+            return
+        except OSError as exc:
+            console.print(f"[error]✗ step {n} failed to launch: {escape(str(exc))}[/error]")
+            _audit(workspace, f"step {n} launch-failed: {exc}")
+            return
+        rc, stdout, stderr = proc.returncode, proc.stdout or "", proc.stderr or ""
+        if stdout:
+            console.print(stdout.rstrip(), markup=False)
+
+    if rc != 0:
+        tail = " | ".join(stderr.strip().splitlines()[-3:])
+        console.print(f"[error]✗ exit {rc}[/error] [dim]{escape(tail)}[/dim]")
+        _audit(workspace, f"step {n} exit {rc} stderr_tail={tail!r}")
     else:
         console.print(f"[success]✓ step {n} done[/success]")
         _audit(workspace, f"step {n} exit 0")
     try:
-        (workspace / f"step-{n}-{_slug(step.tool)}.txt").write_text(proc.stdout or "")
+        (workspace / f"step-{n}-{_slug(step.tool)}.txt").write_text(stdout)
     except OSError as exc:
         console.print(f"[error]✗ step {n} failed to write output: {escape(str(exc))}[/error]")
 

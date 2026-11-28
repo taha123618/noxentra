@@ -82,9 +82,10 @@ class SocialScan(Noxentra):
     PROJECT_URL = "https://github.com/iojw/socialscan"
 
     def run(self):
+        from noxentra.os_detect import priv_argv
         name = input(
             "Enter Username or Emailid (if both then please space between email & username) >> ")
-        subprocess.run(["sudo", "socialscan", f"{name}"], check=False)
+        subprocess.run(priv_argv(["socialscan", f"{name}"]), check=False)
 
 
 class SocialMediaFinderTools(NoxentraCollection):

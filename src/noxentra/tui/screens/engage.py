@@ -214,12 +214,17 @@ class EngageScreen(NoxentraScreen):
                 stop_event=stop_event,
             )
             new_n = eng.runs[-1].get("new_findings", 0) if eng.runs else 0
-            self.app.call_from_thread(
-                self._panel().append_line,
-                f"✔ +{new_n} new, {len(found)} total deduplicated findings",
-            )
             if stop_event.is_set():
                 rc = 130
+                self.app.call_from_thread(
+                    self._panel().append_line,
+                    f"■ Cancelled — +{new_n} new, {len(found)} total findings saved",
+                )
+            else:
+                self.app.call_from_thread(
+                    self._panel().append_line,
+                    f"✔ +{new_n} new, {len(found)} total deduplicated findings",
+                )
         except (OSError, ValueError, KeyError) as exc:
             rc = 1
             err = str(exc)

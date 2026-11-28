@@ -19,8 +19,9 @@ class PortScan(Noxentra):
     def run(self):
         clear_screen()
         console.print(Panel(Text(self.TITLE, justify="center"), style="bold magenta"))
+        from noxentra.os_detect import priv_argv
         target = Prompt.ask("[bold magenta]Select a Target IP[/bold magenta]", default="", show_default=False)
-        subprocess.run(["sudo", "nmap", "-O", "-Pn", target], check=False)
+        subprocess.run(priv_argv(["nmap", "-O", "-Pn", target]), check=False)
 
 
 class Host2IP(Noxentra):

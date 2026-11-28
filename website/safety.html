@@ -28,11 +28,11 @@
         <div class="matrix">
           <div class="cell">
             <h2>1. List-form subprocesses only</h2>
-            <p>All tool execution uses explicit argument arrays. <code>shell=True</code> is prohibited and <code>curl | bash</code> install patterns are blocked by repo conformance tests.</p>
+            <p>All tool execution uses explicit argument arrays through a unified runner with <code>SIGTERM</code> &rarr; <code>SIGKILL</code> escalation on timeout or cancel. <code>shell=True</code> and <code>curl | bash</code> install patterns are prohibited.</p>
           </div>
           <div class="cell">
-            <h2>2. Zero auto-execution</h2>
-            <p>AI-generated plans (<code>/goal</code>) and command suggestions (<code>c</code>) never execute automatically. Every step pauses for explicit <code>[y]</code>/<code>[e]</code>/<code>[s]</code>/<code>[q]</code> operator confirmation.</p>
+            <h2>2. Zero auto-execution &amp; plan validation</h2>
+            <p>AI-generated plans (<code>/goal</code>) are validated in code to reject <code>sudo</code>/<code>doas</code>, shell <code>-c</code> wrappers, and shell metacharacters, and still pause for explicit <code>[y]</code>/<code>[e]</code>/<code>[s]</code>/<code>[q]</code> confirmation.</p>
           </div>
           <div class="cell">
             <h2>3. Grounded AI &amp; &lt;scan_data&gt; isolation</h2>
@@ -44,7 +44,7 @@
           </div>
           <div class="cell">
             <h2>5. Scope exclusions (--scope-out)</h2>
-            <p>Targets matching <code>--scope-out</code> globs or exclusion files are filtered and logged before any pipeline step runs.</p>
+            <p>Both initial targets and discovered hosts matching <code>--scope-out</code> globs or exclusion files are filtered and logged before any step runs. <code>engagement.json</code> and <code>findings.json</code> are written atomically.</p>
           </div>
           <div class="cell">
             <h2>6. Suggest-only /find discovery</h2>

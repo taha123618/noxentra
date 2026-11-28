@@ -187,10 +187,8 @@ def _stream_pty(
     try:
         while True:
             if stop_event is not None and stop_event.is_set() and proc.poll() is None:
-                try:
-                    proc.terminate()
-                except OSError:
-                    pass
+                from noxentra.runner import _terminate_gracefully
+                _terminate_gracefully(proc)
             ready, _, _ = select.select([master_fd], [], [], 0.1)
             if ready:
                 try:

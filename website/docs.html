@@ -169,10 +169,11 @@ noxentra --engagement acme --ai-report             # opt-in narrative draft (rep
       <section class="doc-section" id="safety">
         <h2>8. Security &amp; Trust Invariants</h2>
         <ul>
-          <li><strong>List-form <code>subprocess</code> only:</strong> No <code>shell=True</code> and no <code>curl | bash</code> installers.</li>
-          <li><strong>No forced <code>sudo</code>:</strong> Uses standard package managers and user-space installs (<code>pipx</code>, <code>go</code>, <code>brew</code>).</li>
+          <li><strong>List-form <code>subprocess</code> only:</strong> Unified runner with <code>SIGTERM</code> &rarr; <code>SIGKILL</code> escalation; no <code>shell=True</code> and no <code>curl | bash</code> installers.</li>
+          <li><strong>AI plan validation:</strong> <code>/goal</code> plans reject <code>sudo</code>/<code>doas</code>, shell <code>-c</code> wrappers, and shell metacharacters before operator confirmation.</li>
+          <li><strong>No forced <code>sudo</code>:</strong> Uses standard package managers, <code>priv_argv</code> detection, and user-space installs (<code>pipx</code>, <code>go</code>, <code>brew</code>).</li>
           <li><strong>Prompt-injection isolation:</strong> Untrusted tool output passed to <code>--ai-summary</code> or <code>--ai-report</code> is wrapped in <code>&lt;scan_data&gt;</code> delimiters.</li>
-          <li><strong>Authorized targets only:</strong> Scope exclusions (<code>--scope-out</code>) are logged and filtered before execution.</li>
+          <li><strong>Authorized targets &amp; atomic state:</strong> Scope exclusions (<code>--scope-out</code>) are filtered upfront and between steps, and state files write atomically.</li>
         </ul>
       </section>
     </div>

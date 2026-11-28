@@ -37,8 +37,10 @@ class BulkExtractor(Noxentra):
 
     def cli_mode(self):
         import subprocess
+
+        from noxentra.os_detect import priv_argv
         console.print(Panel(Text(self.TITLE + " - CLI Mode", justify="center"), style="bold magenta"))
-        subprocess.run(["sudo", "apt", "install", "-y", "bulk-extractor"], check=False)
+        subprocess.run(priv_argv(["apt", "install", "-y", "bulk-extractor"]), check=False)
         console.print("[magenta]bulk_extractor [options] imagefile[/]")
         subprocess.run(["bulk_extractor", "-h"], check=False)
 

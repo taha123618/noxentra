@@ -17,6 +17,20 @@ class Finding:
     timestamp: str
 
 
+def _iter_json_lines(raw: str):
+    """Yield `(obj, raw_line)` for each non-empty line in `raw` that parses as a JSON dict."""
+    for ln in raw.splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            obj = json.loads(ln)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(obj, dict):
+            yield obj, ln
+
+
 def parse_subfinder(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     hosts = [ln.strip() for ln in raw.splitlines() if ln.strip()]
     findings = [Finding("subdomain", h, h, "info", "subfinder", {}, h, ts) for h in hosts]
@@ -26,16 +40,7 @@ def parse_subfinder(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
 def parse_httpx(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     findings: list[Finding] = []
     urls: list[str] = []
-    for ln in raw.splitlines():
-        ln = ln.strip()
-        if not ln:
-            continue
-        try:
-            obj = json.loads(ln)
-        except json.JSONDecodeError:
-            continue  # skip malformed line, keep going
-        if not isinstance(obj, dict):          # valid JSON but not an object → skip
-            continue
+    for obj, ln in _iter_json_lines(raw):
         url = obj.get("url") or obj.get("input") or ""
         if not isinstance(url, str) or not url:
             continue
@@ -54,16 +59,7 @@ def parse_httpx(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
 
 def parse_nuclei(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     findings: list[Finding] = []
-    for ln in raw.splitlines():
-        ln = ln.strip()
-        if not ln:
-            continue
-        try:
-            obj = json.loads(ln)
-        except json.JSONDecodeError:
-            continue
-        if not isinstance(obj, dict):          # valid JSON but not an object → skip
-            continue
+    for obj, ln in _iter_json_lines(raw):
         info = obj.get("info")
         if not isinstance(info, dict):
             info = {}
@@ -159,16 +155,7 @@ def parse_ffuf(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
             if isinstance(item, dict):
                 records.append((item, json.dumps(item)))
     else:
-        for ln in text.splitlines():
-            ln = ln.strip()
-            if not ln:
-                continue
-            try:
-                obj = json.loads(ln)
-            except json.JSONDecodeError:
-                continue
-            if isinstance(obj, dict):
-                records.append((obj, ln))
+        records.extend(_iter_json_lines(text))
 
     for obj, raw_ln in records:
         url = obj.get("url") or ""
@@ -187,16 +174,7 @@ def parse_feroxbuster(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     """Parse feroxbuster JSONL (`--json`) lines into service Findings."""
     findings: list[Finding] = []
     urls: list[str] = []
-    for ln in raw.splitlines():
-        ln = ln.strip()
-        if not ln:
-            continue
-        try:
-            obj = json.loads(ln)
-        except json.JSONDecodeError:
-            continue
-        if not isinstance(obj, dict):
-            continue
+    for obj, ln in _iter_json_lines(raw):
         if obj.get("type") not in (None, "response"):
             continue
         url = obj.get("url") or ""
@@ -260,16 +238,7 @@ def parse_whatweb(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     elif isinstance(parsed, dict):
         records.append((parsed, text))
     else:
-        for ln in text.splitlines():
-            ln = ln.strip()
-            if not ln:
-                continue
-            try:
-                obj = json.loads(ln)
-            except json.JSONDecodeError:
-                continue
-            if isinstance(obj, dict):
-                records.append((obj, ln))
+        records.extend(_iter_json_lines(text))
 
     for obj, raw_ln in records:
         target = obj.get("target") or ""
@@ -305,16 +274,7 @@ def parse_tlsx(raw: str, ts: str) -> tuple[list[Finding], list[str]]:
     findings: list[Finding] = []
     hosts: list[str] = []
     seen_hosts: set[str] = set()
-    for ln in raw.splitlines():
-        ln = ln.strip()
-        if not ln:
-            continue
-        try:
-            obj = json.loads(ln)
-        except json.JSONDecodeError:
-            continue
-        if not isinstance(obj, dict):
-            continue
+    for obj, ln in _iter_json_lines(raw):
         host = obj.get("host") or obj.get("ip") or ""
         if not isinstance(host, str) or not host:
             continue
@@ -677,4 +637,18 @@ def save_findings(path: Path, findings: list[Finding]) -> None:
 def load_findings(path: Path) -> list[Finding]:
     if not path.exists():
         return []
-    return [Finding(**d) for d in json.loads(path.read_text(encoding="utf-8"))]
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return []
+    if not isinstance(data, list):
+        return []
+    out: list[Finding] = []
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        try:
+            out.append(Finding(**item))
+        except TypeError:
+            continue
+    return out

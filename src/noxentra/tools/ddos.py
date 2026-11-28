@@ -97,9 +97,10 @@ class GoldenEye(Noxentra):
 
     def run(self):
         from noxentra.config import get_tools_dir
+        from noxentra.os_detect import priv_argv
         # Bug 4 fix: removed os.system("cd GoldenEye; ...") — no-op cd subshell
         url = Prompt.ask("Enter target URL")
-        subprocess.run(["sudo", "./goldeneye.py", url],
+        subprocess.run(priv_argv(["./goldeneye.py", url]),
                        cwd=str(get_tools_dir() / "GoldenEye"), check=False)
 
 
