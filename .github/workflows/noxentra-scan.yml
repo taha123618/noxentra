@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
       - name: Install Noxentra
-        run: uv sync --frozen
+        run: uv sync
       - name: Run Noxentra Headless Assessment
         run: |
           uv run noxentra \
