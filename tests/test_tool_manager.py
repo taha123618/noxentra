@@ -27,3 +27,13 @@ def test_update_sys_uses_list_form_without_shell(monkeypatch):
     ]
     for _argv, kwargs in calls:
         assert kwargs.get("shell") is not True
+
+
+def test_priv_argv_respects_os_info_is_root_on_linux(monkeypatch):
+    import os
+
+    monkeypatch.setattr(os, "geteuid", lambda: 1000)
+    root_linux = os_detect.OSInfo(system="linux", pkg_manager="apt-get", is_root=True)
+    user_linux = os_detect.OSInfo(system="linux", pkg_manager="apt-get", is_root=False)
+    assert os_detect.priv_argv(["apt-get", "update"], os_info=root_linux) == ["apt-get", "update"]
+    assert os_detect.priv_argv(["apt-get", "update"], os_info=user_linux)[1:] == ["apt-get", "update"]
