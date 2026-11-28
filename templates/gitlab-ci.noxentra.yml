@@ -1,0 +1,11 @@
+noxentra_security_scan:
+  image: python:3.12-slim
+  stage: test
+  script:
+    - pip install --no-cache-dir .
+    - noxentra --engagement "gitlab-$CI_PIPELINE_ID" --targets "." --pipeline sast_scan --profile defensive_forensic --fail-on-critical 0 --report --format all
+  artifacts:
+    when: always
+    paths:
+      - ~/.noxentra/engagements/gitlab-$CI_PIPELINE_ID/report.md
+      - ~/.noxentra/engagements/gitlab-$CI_PIPELINE_ID/report.sarif.json

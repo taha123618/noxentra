@@ -93,7 +93,7 @@ uv run noxentra --classic # Launch classic REPL</pre>
             <tr><td><code>/engage</code></td><td>Create/open engagements, check tool readiness (<code>X/Y ready</code>), and run pipelines live.</td></tr>
             <tr><td><code>/report</code></td><td>Browse deduplicated findings and export Markdown, HTML, SARIF v2.1.0, or AI summaries.</td></tr>
             <tr><td><code>/goal &lt;objective&gt;</code></td><td>Draft a multi-step command plan and approve each step interactively (<code>[y]</code>/<code>[e]</code>/<code>[s]</code>/<code>[q]</code>).</td></tr>
-            <tr><td><code>/find &lt;need&gt;</code></td><td>Search the 306 curated catalog tools first, then GitHub API (suggest-only, zero auto-install).</td></tr>
+            <tr><td><code>/find &lt;need&gt;</code></td><td>Search the 309 curated catalog tools first, then GitHub API (suggest-only, zero auto-install).</td></tr>
             <tr><td><code>/tags</code></td><td>List all 64 canonical taxonomy tags with live tool counts.</td></tr>
             <tr><td><code>/config</code></td><td>Configure AI endpoint, Ollama model, GitHub token, and display preferences.</td></tr>
             <tr><td><code>/skill</code></td><td>Inspect the operator playbook and AI grounding rules.</td></tr>
@@ -123,13 +123,16 @@ uv run noxentra --classic # Launch classic REPL</pre>
       </section>
 
       <section class="doc-section" id="pipelines">
-        <h2>6. Headless Orchestrator &amp; 11 Pipelines</h2>
+        <h2>6. Headless Orchestrator &amp; 13 Pipelines</h2>
         <p>Run engagements non-interactively from your terminal or CI/CD runner:</p>
         <div class="code-wrap">
           <div class="code-head"><span>shell</span><button class="copy-btn" type="button" data-copy>Copy</button></div>
-          <pre>noxentra --list-pipelines
-noxentra --engagement acme --targets example.com,10.0.0.1 --scope-out admin.example.com --pipeline full_recon
-noxentra --engagement acme --targets ./terraform --pipeline iac_scan --report --format all</pre>
+          <pre>noxentra doctor
+noxentra --list-pipelines
+noxentra --engagement acme --targets example.com,10.0.0.1 --scope-out admin.example.com --profile safe_active --pipeline full_recon --enrich
+noxentra assets list --engagement acme                 # or: assets graph / assets diff
+noxentra --api-spec openapi.json                       # OpenAPI/Swagger, Postman &amp; JWT audit
+noxentra --engagement acme --targets . --pipeline sast_scan --fail-on-critical 0 --report --format all</pre>
         </div>
         <table>
           <thead><tr><th>Pipeline</th><th>Workflow</th></tr></thead>
@@ -145,6 +148,8 @@ noxentra --engagement acme --targets ./terraform --pipeline iac_scan --report --
             <tr><td><code>container_scan</code></td><td><code>trivy image</code> container scan → <code>grype</code> cross-check</td></tr>
             <tr><td><code>iac_scan</code></td><td><code>terrascan</code> IaC policy scan → <code>trivy fs</code> vulnerability check</td></tr>
             <tr><td><code>k8s_scan</code></td><td><code>kube-hunter</code> passive Kubernetes cluster penetration scan</td></tr>
+            <tr><td><code>secret_scan</code></td><td><code>gitleaks</code> Git &amp; filesystem secret scan</td></tr>
+            <tr><td><code>sast_scan</code></td><td><code>semgrep</code> static application security analysis</td></tr>
           </tbody>
         </table>
       </section>
@@ -152,11 +157,13 @@ noxentra --engagement acme --targets ./terraform --pipeline iac_scan --report --
       <section class="doc-section" id="reports">
         <h2>7. Normalized Findings &amp; Reports</h2>
         <p>
-          17 built-in parsers normalize output from <code>nmap</code>, <code>subfinder</code>, <code>dnsx</code>,
+          20 built-in parsers normalize output from <code>nmap</code>, <code>subfinder</code>, <code>dnsx</code>,
           <code>tlsx</code>, <code>httpx</code>, <code>nuclei</code>, <code>gobuster</code>, <code>ffuf</code>,
           <code>feroxbuster</code>, <code>whatweb</code>, <code>gau</code>, <code>katana</code>, <code>trivy</code>,
-          <code>grype</code>, <code>terrascan</code>, <code>kube-hunter</code>, and <code>cloudsplaining</code> into
-          <code>findings.json</code>.
+          <code>grype</code>, <code>terrascan</code>, <code>kube-hunter</code>, <code>cloudsplaining</code>,
+          <code>kube-linter</code>, <code>gitleaks</code>, and <code>semgrep</code> into <code>findings.json</code>
+          with SHA-256 evidence traceability in <code>evidence/manifest.json</code> and asset graphs in
+          <code>assets.json</code>.
         </p>
         <div class="code-wrap">
           <div class="code-head"><span>shell</span><button class="copy-btn" type="button" data-copy>Copy</button></div>
@@ -169,10 +176,11 @@ noxentra --engagement acme --ai-report             # opt-in narrative draft (rep
       <section class="doc-section" id="safety">
         <h2>8. Security &amp; Trust Invariants</h2>
         <ul>
-          <li><strong>List-form <code>subprocess</code> only:</strong> No <code>shell=True</code> and no <code>curl | bash</code> installers.</li>
-          <li><strong>No forced <code>sudo</code>:</strong> Uses standard package managers and user-space installs (<code>pipx</code>, <code>go</code>, <code>brew</code>).</li>
+          <li><strong>List-form <code>subprocess</code> only:</strong> Unified runner with <code>SIGTERM</code> &rarr; <code>SIGKILL</code> escalation; no <code>shell=True</code> and no <code>curl | bash</code> installers.</li>
+          <li><strong>AI plan validation:</strong> <code>/goal</code> plans reject <code>sudo</code>/<code>doas</code>, shell <code>-c</code> wrappers, and shell metacharacters before operator confirmation.</li>
+          <li><strong>No forced <code>sudo</code>:</strong> Uses standard package managers, <code>priv_argv</code> detection, and user-space installs (<code>pipx</code>, <code>go</code>, <code>brew</code>).</li>
           <li><strong>Prompt-injection isolation:</strong> Untrusted tool output passed to <code>--ai-summary</code> or <code>--ai-report</code> is wrapped in <code>&lt;scan_data&gt;</code> delimiters.</li>
-          <li><strong>Authorized targets only:</strong> Scope exclusions (<code>--scope-out</code>) are logged and filtered before execution.</li>
+          <li><strong>Authorized targets &amp; atomic state:</strong> Scope exclusions (<code>--scope-out</code>) are filtered upfront and between steps, and state files write atomically.</li>
         </ul>
       </section>
     </div>

@@ -123,9 +123,18 @@ def install_packages(packages: list[str], os_info: OSInfo | None = None) -> bool
     argv = shlex.split(cmd_template.replace("{packages}", "")) + list(packages)
 
     # Prepend privilege escalation only on Linux (brew on macOS doesn't need sudo)
-    if os_info.system == "linux" and not os_info.is_root:
-        from noxentra.constants import PRIV_CMD
-        argv = [PRIV_CMD, *argv]
+    argv = priv_argv(argv, os_info=os_info) if os_info.system == "linux" else argv
 
     result = subprocess.run(argv, check=False)
     return result.returncode == 0
+
+
+def priv_argv(argv: list[str], *, os_info: OSInfo | None = None) -> list[str]:
+    """Prepend `PRIV_CMD` (`doas`/`sudo`) when non-root on non-macOS, else return `argv`."""
+    import os
+
+    info = os_info or CURRENT_OS
+    if info.system == "macos" or info.is_root or os.geteuid() == 0:
+        return list(argv)
+    from noxentra.constants import PRIV_CMD
+    return [PRIV_CMD, *argv]

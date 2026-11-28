@@ -1,4 +1,4 @@
-import os
+import shlex
 import subprocess
 from typing import ClassVar
 
@@ -19,13 +19,17 @@ class UpdateTool(Noxentra):
         ], installable=False, runnable=False)
 
     def update_sys(self):
-        from noxentra.os_detect import CURRENT_OS, PACKAGE_UPDATE_CMDS
+        from noxentra.os_detect import CURRENT_OS, PACKAGE_UPDATE_CMDS, priv_argv
         mgr = CURRENT_OS.pkg_manager
         cmd = PACKAGE_UPDATE_CMDS.get(mgr)
         if cmd:
-            priv = "" if (CURRENT_OS.system == "macos" or os.geteuid() == 0) else "sudo "
-            # shell=True needed — cmd contains && chains; strings are hardcoded, not user input
-            subprocess.run(f"{priv}{cmd}", shell=True, check=False)
+            for part in cmd.split("&&"):
+                argv = shlex.split(part.strip())
+                if not argv:
+                    continue
+                res = subprocess.run(priv_argv(argv), check=False)
+                if res.returncode != 0:
+                    break
         else:
             console.print("[warning]Unknown package manager — update manually.[/warning]")
 

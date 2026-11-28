@@ -15,8 +15,9 @@ class Apk2Gold(Noxentra):
     PROJECT_URL = "https://github.com/lxdvs/apk2gold "
 
     def run(self):
+        from noxentra.os_detect import priv_argv
         uinput = input("Enter (.apk) File >> ")
-        subprocess.run(["sudo", "apk2gold", uinput], check=False)
+        subprocess.run(priv_argv(["apk2gold", uinput]), check=False)
 
 
 class ReverseEngineeringTools(NoxentraCollection):

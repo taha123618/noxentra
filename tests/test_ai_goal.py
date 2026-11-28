@@ -91,6 +91,27 @@ def test_validate_captures_install_hint(monkeypatch):
     assert plan.steps[0].installed is False
 
 
+def test_validate_rejects_unsafe_argv(monkeypatch):
+    monkeypatch.setattr(ai_goal.shutil, "which", lambda b: f"/usr/bin/{b}")
+    unsafe_cases = [
+        ["sudo", "nmap", "example.com"],
+        ["doas", "nmap", "example.com"],
+        ["bash", "-c", "nmap example.com"],
+        ["sh", "-c", "id"],
+        ["nmap", "example.com;rm -rf /"],
+        ["nmap", "example.com", "&&", "id"],
+        ["nmap", "example.com", "|", "cat"],
+        ["nmap", "$(whoami).example.com"],
+        ["nmap", "`id`.example.com"],
+    ]
+    for argv in unsafe_cases:
+        plan = ai_goal._validate({
+            "target": "example.com",
+            "steps": [{"tool": argv[0], "argv": argv, "why": "unsafe"}],
+        })
+        assert plan.steps == [], f"Expected unsafe argv {argv!r} to be rejected"
+
+
 def test_print_plan_shows_install_for_uninstalled(capsys):
     p = ai_goal.Plan("x", [ai_goal.Step("subfinder", ["subfinder", "-d", "x"], "enum",
                                         installed=False, install_hint="pipx install foo")])

@@ -126,43 +126,31 @@ class GoalScreen(NoxentraScreen):
     def _run_step_worker(
         self, step: ai_goal.Step, n: int, total: int, stop_event: threading.Event
     ) -> None:
-        import subprocess
+        from noxentra import runner
 
         ws = ai_goal._workspace()
         captured: list[str] = []
         rc = 0
         err = ""
         try:
-            proc = subprocess.Popen(
+            def _on_line(clean: str) -> None:
+                captured.append(clean)
+                self.app.call_from_thread(self._panel().append_line, clean)
+
+            res = runner.run_streaming(
                 step.argv,
-                cwd=str(ws),
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                bufsize=1,
-                errors="replace",
+                cwd=ws,
+                timeout=ai_goal.STEP_TIMEOUT,
+                stop_event=stop_event,
+                on_line=_on_line,
+                merge_stderr=True,
             )
-
-            def _watch():
-                while proc.poll() is None:
-                    if stop_event.wait(0.1):
-                        try:
-                            proc.terminate()
-                        except OSError:
-                            pass
-                        break
-
-            threading.Thread(target=_watch, daemon=True).start()
-            if proc.stdout is not None:
-                for line in proc.stdout:
-                    clean = line.rstrip("\r\n")
-                    captured.append(clean)
-                    self.app.call_from_thread(self._panel().append_line, clean)
-            rc = proc.wait()
-            if stop_event.is_set() and rc == 0:
-                rc = 130
-            ai_goal._audit(ws, f"step {n} exit {rc}")
+            rc = res.returncode
+            if res.timed_out:
+                err = f"timed out after {ai_goal.STEP_TIMEOUT}s"
+                ai_goal._audit(ws, f"step {n} TIMEOUT after {ai_goal.STEP_TIMEOUT}s")
+            else:
+                ai_goal._audit(ws, f"step {n} exit {rc}")
             (ws / f"step-{n}-{ai_goal._slug(step.tool)}.txt").write_text(
                 "\n".join(captured), encoding="utf-8"
             )

@@ -21,7 +21,7 @@ const WF = {
   },
   find: {
     title: "/find — Suggest-only catalog & GitHub search",
-    desc: "Searches the 306 curated catalog tools first, then queries the GitHub API with zero model calls and zero auto-install.",
+    desc: "Searches the 309 curated catalog tools first, then queries the GitHub API with zero model calls and zero auto-install.",
     points: [
       "Ranks active, trusted-owner repositories from catalog_owners.py",
       "Refuses out-of-scope requests (DoS, jamming, malware) before network calls",

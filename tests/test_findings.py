@@ -359,3 +359,14 @@ def test_parse_semgrep():
     assert fs[0].severity == "high"
     assert fs[0].source_tool == "semgrep"
     assert targets == ["app.py"]
+
+
+def test_load_findings_handles_corrupted_json(tmp_path):
+    from noxentra.findings import load_findings
+
+    bad = tmp_path / "findings.json"
+    bad.write_text("{not valid json", encoding="utf-8")
+    assert load_findings(bad) == []
+
+    bad.write_text(json.dumps({"not": "a list"}), encoding="utf-8")
+    assert load_findings(bad) == []

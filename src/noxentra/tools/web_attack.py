@@ -41,8 +41,9 @@ class Dirb(Noxentra):
     PROJECT_URL = "https://gitlab.com/kalilinux/packages/dirb"
 
     def run(self):
+        from noxentra.os_detect import priv_argv
         uinput = input("Enter Url >> ")
-        subprocess.run(["sudo", "dirb", uinput], check=False)
+        subprocess.run(priv_argv(["dirb", uinput]), check=False)
 
 
 

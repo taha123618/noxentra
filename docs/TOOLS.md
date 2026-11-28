@@ -1,7 +1,7 @@
 # Tool catalog
 
-Every tool noxentra can install, launch, or point you at — **306 active tools
-across 21 categories**, plus 44 archived entries kept out of this list (they are
+Every tool noxentra can install, launch, or point you at — **309 active tools
+across 22 categories**, plus 44 archived entries kept out of this list (they are
 unmaintained or dead upstream and are hidden in the app unless you set
 `show_archived true` via `/config`).
 

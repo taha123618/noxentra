@@ -11,6 +11,10 @@ from urllib.parse import urlparse
 import yaml
 
 import noxentra.findings as findings_mod
+from noxentra import assets as assets_mod
+from noxentra import evidence as evidence_mod
+from noxentra import policy as policy_mod
+from noxentra import runner
 from noxentra.engagement import Engagement
 
 PIPELINES_DIR = Path(__file__).resolve().parent / "pipelines"
@@ -101,76 +105,18 @@ def _run_streaming(
     emit,
     stop_event: threading.Event | None = None,
 ) -> subprocess.CompletedProcess:
-    """Run `cmd` via Popen, streaming stdout lines live while enforcing `STEP_TIMEOUT` and `stop_event`."""
-    proc = subprocess.Popen(
+    """Run `cmd` via unified runner, streaming stdout lines live while enforcing `STEP_TIMEOUT` and `stop_event`."""
+    res = runner.run_streaming(
         cmd,
-        stdin=subprocess.PIPE if stdin_text else subprocess.DEVNULL,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        bufsize=1,
-        encoding="utf-8",
-        errors="replace",
+        stdin_text=stdin_text,
+        timeout=STEP_TIMEOUT,
+        stop_event=stop_event,
+        on_line=lambda clean: emit(f"[dim]  [{tool}] {clean}[/dim]"),
     )
-    if proc.stdin is not None:
-        def _feed():
-            try:
-                proc.stdin.write(stdin_text)
-                proc.stdin.close()
-            except OSError:
-                pass
-        threading.Thread(target=_feed, daemon=True).start()
-
-    out_lines: list[str] = []
-    err_lines: list[str] = []
-    timed_out = threading.Event()
-
-    def _kill_on_timeout():
-        if proc.poll() is None:
-            timed_out.set()
-            try:
-                proc.terminate()
-            except OSError:
-                pass
-
-    timer = threading.Timer(STEP_TIMEOUT, _kill_on_timeout)
-    timer.daemon = True
-    timer.start()
-
-    if stop_event is not None:
-        def _watch_stop():
-            while proc.poll() is None:
-                if stop_event.wait(0.1):
-                    try:
-                        proc.terminate()
-                    except OSError:
-                        pass
-                    break
-        threading.Thread(target=_watch_stop, daemon=True).start()
-
-    def _read_err():
-        if proc.stderr is not None:
-            for line in iter(proc.stderr.readline, ""):
-                err_lines.append(line.rstrip("\r\n"))
-
-    err_thread = threading.Thread(target=_read_err, daemon=True)
-    err_thread.start()
-    try:
-        if proc.stdout is not None:
-            for line in iter(proc.stdout.readline, ""):
-                clean = line.rstrip("\r\n")
-                out_lines.append(clean)
-                emit(f"[dim]  [{tool}] {clean}[/dim]")
-        rc = proc.wait()
-        err_thread.join(timeout=1.0)
-    finally:
-        timer.cancel()
-
-    stdout = "\n".join(out_lines) + ("\n" if out_lines else "")
-    stderr = "\n".join(err_lines)
-    if timed_out.is_set():
-        raise subprocess.TimeoutExpired(cmd, STEP_TIMEOUT, output=stdout, stderr=stderr)
-    return subprocess.CompletedProcess(cmd, rc, stdout=stdout, stderr=stderr)
+    stdout = res.stdout + ("\n" if res.stdout else "")
+    if res.timed_out:
+        raise subprocess.TimeoutExpired(cmd, STEP_TIMEOUT, output=stdout, stderr=res.stderr)
+    return subprocess.CompletedProcess(cmd, res.returncode, stdout=stdout, stderr=res.stderr)
 
 
 def _exec_cmd(
@@ -200,12 +146,19 @@ def run_pipeline(
     pipeline_name: str = "recon",
     on_progress=None,
     stop_event: threading.Event | None = None,
+    profile: str | None = None,
 ) -> list[findings_mod.Finding]:
     pipeline = load_pipeline(pipeline_name)
     e.raw_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(timezone.utc).isoformat()
     all_findings: list[findings_mod.Finding] = []
-    forward: list[str] = list(e.targets)
+    active_targets: list[str] = []
+    for t in e.targets:
+        if e.scope_out and e.is_excluded(_host_of(t)):
+            e.log(f"scope-out: dropped target {t} (matches exclusion)")
+        else:
+            active_targets.append(t)
+    forward: list[str] = list(active_targets)
     steps = pipeline["steps"]
     total = len(steps)
     cb = on_progress or getattr(_progress_tls, "fn", None)
@@ -213,6 +166,11 @@ def run_pipeline(
     def _emit(msg: str) -> None:
         if cb is not None:
             cb(msg)
+
+    if e.targets and not active_targets:
+        e.log(f"scope-out: all {len(e.targets)} target(s) excluded; skipping pipeline '{pipeline_name}'")
+        _emit(f"[yellow]⚠ All targets excluded by scope_out; skipping {pipeline_name}.[/yellow]")
+        return findings_mod.load_findings(e.findings_file)
 
     for idx, step in enumerate(steps, start=1):
         if stop_event is not None and stop_event.is_set():
@@ -229,20 +187,31 @@ def run_pipeline(
         _emit(f"[cyan][{idx}/{total}] running {tool}…[/cyan]")
         mode = step["input"]
         if mode == "hosts":
-            items = [_host_of(t) for t in e.targets]
+            items = [_host_of(t) for t in active_targets]
         elif mode == "targets":
-            items = list(e.targets)
+            items = list(active_targets)
         else:
             items = list(forward)
             if not items and step.get("fallback_to_targets"):
-                items = list(e.targets)
+                items = list(active_targets)
+        workers_cap = int(step.get("workers", 4))
+        if profile is not None:
+            decision = policy_mod.evaluate_execution(profile, tool, items, scope_out=e.scope_out)
+            if not decision.allowed:
+                e.log(f"policy-block {tool}: {decision.reason}")
+                _emit(f"[yellow][{idx}/{total}] blocked {tool}: {decision.reason}[/yellow]")
+                if not step.get("fallback_to_targets"):
+                    forward = []
+                continue
+            items = decision.effective_targets
+            workers_cap = min(workers_cap, decision.max_concurrency)
         step_args = _expand_args(step["args"])
         per_flag = step.get("per_target_flag")
         per_pos = bool(step.get("per_target_positional"))
         per_suffix = step.get("per_target_suffix", "")
         try:
             if (per_flag or per_pos) and items:
-                workers = max(1, min(int(step.get("workers", 4)), len(items)))
+                workers = max(1, min(workers_cap, len(items)))
                 raw_chunks: list[str] = []
                 with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
                     futs = []
@@ -280,7 +249,18 @@ def run_pipeline(
             forward = []
             continue
         (e.workspace / step["output"]).write_text(raw, encoding="utf-8")
+        ev = evidence_mod.record_evidence(
+            e.workspace,
+            tool=tool,
+            execution_id=ts,
+            raw_output=raw,
+            target=",".join(items[:3]),
+            timestamp=ts,
+        )
         parsed, forward = findings_mod.PARSERS[step["parser"]](raw, ts)
+        for pf in parsed:
+            pf.details["evidence_id"] = ev.id
+            pf.details["evidence_sha256"] = ev.sha256
         if e.scope_out:
             kept = []
             for line in forward:
@@ -296,11 +276,18 @@ def run_pipeline(
     existing = findings_mod.load_findings(e.findings_file)
     merged, new_count = findings_mod.diff_findings(existing, all_findings)
     findings_mod.save_findings(e.findings_file, merged)
+    asset_list, edge_list = assets_mod.build_assets_from_findings(e.targets, merged, timestamp=ts)
+    assets_mod.save_assets(e.workspace / "assets.json", asset_list, edge_list)
+    was_cancelled = stop_event is not None and stop_event.is_set()
     e.add_run({
         "pipeline": pipeline_name,
         "at": ts,
         "findings": len(all_findings),
         "new_findings": new_count,
+        **({"cancelled": True} if was_cancelled else {}),
     })
-    _emit(f"[green]✔ {pipeline_name}: +{new_count} new, {len(merged)} total finding(s)[/green]")
+    if was_cancelled:
+        _emit(f"[yellow]■ {pipeline_name} cancelled: +{new_count} new, {len(merged)} total finding(s)[/yellow]")
+    else:
+        _emit(f"[green]✔ {pipeline_name}: +{new_count} new, {len(merged)} total finding(s)[/green]")
     return merged

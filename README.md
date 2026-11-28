@@ -4,7 +4,7 @@
 
 ### Noxentra — AI-Guided Reconnaissance & Security Assessment Platform
 
-**306 curated tools across 21 categories** — recon, OSINT, web, wireless, phishing,
+**309 curated tools across 22 categories** — recon, OSINT, web, wireless, phishing,
 forensics, post-exploitation and more — with an **AI layer that turns plain English
 into the right tool and the exact command**.
 
@@ -15,7 +15,7 @@ students — all working **legally, on systems they own or are authorised to tes
 <br/>
 
 
-![](https://img.shields.io/badge/21_Categories-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/306_Tools-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/64_Tags-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/AI--Guided-7B61FF?style=for-the-badge&labelColor=0D1117&logo=openai&logoColor=white) &nbsp;![](https://img.shields.io/badge/Linux_%7C_Kali_%7C_Parrot_%7C_macOS-7B61FF?style=for-the-badge&labelColor=0D1117&logo=linux&logoColor=white)
+![](https://img.shields.io/badge/22_Categories-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/309_Tools-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/64_Tags-7B61FF?style=for-the-badge&labelColor=0D1117) &nbsp;![](https://img.shields.io/badge/AI--Guided-7B61FF?style=for-the-badge&labelColor=0D1117&logo=openai&logoColor=white) &nbsp;![](https://img.shields.io/badge/Linux_%7C_Kali_%7C_Parrot_%7C_macOS-7B61FF?style=for-the-badge&labelColor=0D1117&logo=linux&logoColor=white)
 
 <br/>
 
@@ -56,8 +56,8 @@ students — all working **legally, on systems they own or are authorised to tes
   plans an objective step by step, then summarizes findings and drafts an engagement
   report. Bring your own key or run a local model — nothing auto-executes and nothing
   is fabricated.
-- **🗂 306 curated tools, one interactive console** — type to search every tool, then
-  install and run across 21 categories without hunting down Git repos; a fixed tag
+- **🗂 309 curated tools, one interactive console** — type to search every tool, then
+  install and run across 22 categories without hunting down Git repos; a fixed tag
   taxonomy (64 tags in use) makes every tool discoverable.
 - **🔎 It knows what it doesn't have** — `/find` searches your catalog first, then the
   GitHub API, and shows real maintained projects with the reason each was ranked.
@@ -77,7 +77,7 @@ students — all working **legally, on systems they own or are authorised to tes
 
 ## Tool Categories
 
-**306 tools across 21 categories** — the full list, with links and tags, is in
+**309 tools across 22 categories** — the full list, with links and tags, is in
 **[docs/TOOLS.md](docs/TOOLS.md)**.
 
 <div align="center">
@@ -315,7 +315,7 @@ falls back to the classic numbered menu, where `/` or `s` searches, `t` filters 
 
 ### 🔎 `/find` — a tool for a need you don't have yet
 
-Searches the 306 curated tools first, then the GitHub search API, and ranks the
+Searches the 309 curated tools first, then the GitHub search API, and ranks the
 results explainably. **Suggest-only** — it never clones, installs or runs anything —
 and it makes **zero model calls**.
 
@@ -366,6 +366,20 @@ UTC-stamped `run.log`, and the raw output of each step.
 
 The model is called **once**, for planning; tool output is never fed back to it. With
 no model configured, `/goal` degrades to tool recommendations for the same objective.
+
+### 🛡️ Platform Intelligence, Policy, Evidence & CI/CD
+
+```bash
+noxentra doctor                                        # environment & binary diagnostics
+noxentra --engagement acme --targets example.com --profile safe_active --pipeline recon --enrich
+noxentra assets list --engagement acme                 # or: assets graph / assets diff
+noxentra --api-spec openapi.json                       # OpenAPI/Swagger, Postman & JWT audit
+noxentra --engagement acme --fail-on-critical 0 --report --format sarif
+```
+
+- **Assessment profiles (`--profile`)**: `passive_recon`, `safe_active`, `full_authorized`, `lab_ctf`, `defensive_forensic`.
+- **Evidence & assets**: Raw tool outputs are SHA-256 hashed under `evidence/manifest.json` and linked to findings; discovered assets and relationships are persisted to `assets.json`.
+- **CI/CD templates**: Ready-to-use workflows in `.github/workflows/noxentra-scan.yml` and `templates/gitlab-ci.noxentra.yml`.
 
 ### 🧠 Recommendations — say what you want in plain English
 
