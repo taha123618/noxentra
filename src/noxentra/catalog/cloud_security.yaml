@@ -169,36 +169,6 @@ tools:
       Audits local Kubernetes daemon flags and file permissions read-only — run only on
       authorized cluster nodes.
 
-  - title: "Semgrep (Static Code Scanner)"
-    kind: install
-    tags: [cloud, scanner, vuln-scan]
-    description: "Fast, lightweight static analysis (SAST) across 30+ languages with custom YAML rules for catching security bugs and hardcoded secrets."
-    system_pkgs: {which: semgrep, brew: semgrep}
-    install: {pip: semgrep}
-    run: ["semgrep --version"]
-    project_url: "https://github.com/semgrep/semgrep"
-    usage:
-      - ["scan a repo with auto security rules", "semgrep scan --config auto ."]
-      - ["emit SARIF output", "semgrep scan --config auto --sarif -o semgrep.sarif ."]
-    lab_safe_notes: >-
-      Reads source code statically without executing it — safe for local audits and CI
-      security gates.
-
-  - title: "OSV-Scanner (Dependency Vuln Scanner)"
-    kind: install
-    tags: [cloud, scanner, vuln-scan]
-    description: "Google's vulnerability scanner that matches project lockfiles and SBOMs against the Open Source Vulnerabilities (OSV) database."
-    system_pkgs: {which: osv-scanner, brew: osv-scanner, go: "github.com/google/osv-scanner/cmd/osv-scanner@latest"}
-    install: {go: "github.com/google/osv-scanner/cmd/osv-scanner@latest"}
-    run: ["osv-scanner --version"]
-    project_url: "https://github.com/google/osv-scanner"
-    usage:
-      - ["scan lockfiles recursively in a repo", "osv-scanner scan -r ."]
-      - ["scan an SBOM file", "osv-scanner scan --sbom=sbom.cdx.json"]
-    lab_safe_notes: >-
-      Queries only dependency package names/versions against OSV — never uploads source
-      code.
-
   - title: "Cosign (Sigstore Artifact Signing)"
     kind: install
     tags: [cloud, scanner, enumeration]

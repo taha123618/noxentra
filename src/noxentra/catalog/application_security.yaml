@@ -1,0 +1,79 @@
+# Application Security — SAST, SCA, secret detection, and API specification testing.
+category:
+  title: "Application Security & APIs"
+
+overlay: []
+
+tools:
+  - title: "Semgrep (Static Code Scanner)"
+    kind: install
+    tags: [scanner, vuln-scan, git-secrets]
+    description: "Fast, lightweight static analysis (SAST) across 30+ languages with custom YAML rules for catching security bugs and hardcoded secrets."
+    system_pkgs: {which: semgrep, brew: semgrep}
+    install: {pip: semgrep}
+    run: ["semgrep --version"]
+    project_url: "https://github.com/semgrep/semgrep"
+    usage:
+      - ["scan a repo with auto security rules", "semgrep scan --config auto ."]
+      - ["emit SARIF output", "semgrep scan --config auto --sarif -o semgrep.sarif ."]
+    lab_safe_notes: >-
+      Reads source code statically without executing it — safe for local audits and CI
+      security gates.
+
+  - title: "OSV-Scanner (Dependency Vuln Scanner)"
+    kind: install
+    tags: [scanner, vuln-scan]
+    description: "Google's vulnerability scanner that matches project lockfiles and SBOMs against the Open Source Vulnerabilities (OSV) database."
+    system_pkgs: {which: osv-scanner, brew: osv-scanner, go: "github.com/google/osv-scanner/cmd/osv-scanner@latest"}
+    install: {go: "github.com/google/osv-scanner/cmd/osv-scanner@latest"}
+    run: ["osv-scanner --version"]
+    project_url: "https://github.com/google/osv-scanner"
+    usage:
+      - ["scan lockfiles recursively in a repo", "osv-scanner scan -r ."]
+      - ["scan an SBOM file", "osv-scanner scan --sbom=sbom.cdx.json"]
+    lab_safe_notes: >-
+      Queries only dependency package names/versions against OSV — never uploads source
+      code.
+
+  - title: "Bandit (Python Security Linter)"
+    kind: install
+    tags: [scanner, vuln-scan]
+    description: "AST-based static security analyzer for Python source code, detecting common issues like shell=True, weak hashes, and hardcoded passwords."
+    system_pkgs: {which: bandit, brew: bandit}
+    install: {pip: bandit}
+    run: ["bandit --version"]
+    project_url: "https://github.com/PyCQA/bandit"
+    usage:
+      - ["scan a Python source tree", "bandit -r src/"]
+      - ["emit JSON output", "bandit -r src/ -f json -o bandit.json"]
+    lab_safe_notes: >-
+      Offline AST analysis of Python files — never executes target code.
+
+  - title: "detect-secrets (Secret Detection)"
+    kind: install
+    tags: [scanner, git-secrets, credentials]
+    description: "Enterprise-grade secret scanner with baseline support to detect API keys, private keys, and tokens without committing raw secrets."
+    system_pkgs: {which: detect-secrets}
+    install: {pip: detect-secrets}
+    run: ["detect-secrets --version"]
+    project_url: "https://github.com/Yelp/detect-secrets"
+    usage:
+      - ["scan current repo and generate a baseline", "detect-secrets scan > .secrets.baseline"]
+      - ["audit an existing baseline", "detect-secrets audit .secrets.baseline"]
+    lab_safe_notes: >-
+      Static repository scanner — stores hashed secret fingerprints rather than plaintext
+      values in baselines.
+
+  - title: "Schemathesis (OpenAPI & GraphQL Tester)"
+    kind: install
+    tags: [api, web, fuzzing, scanner]
+    description: "Property-based API fuzzer and contract tester driven by OpenAPI/Swagger and GraphQL schemas."
+    system_pkgs: {which: schemathesis}
+    install: {pip: schemathesis}
+    run: ["schemathesis --version"]
+    project_url: "https://github.com/schemathesis/schemathesis"
+    usage:
+      - ["run schema checks against an authorized API", "schemathesis run openapi.json --url https://api.example.com"]
+    lab_safe_notes: >-
+      Sends generated HTTP requests to the target API — run only against explicitly
+      authorized or local staging endpoints.

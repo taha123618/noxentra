@@ -10,6 +10,7 @@ findings or no model is reachable — the caller then skips the summary.
 import json
 
 from noxentra.ai_recommend import ask
+from noxentra.compliance import redact_secrets
 from noxentra.engagement import Engagement
 from noxentra.findings import Finding, load_findings
 from noxentra.skill import charter, sanitize, wrap_untrusted
@@ -25,7 +26,7 @@ _SYSTEM = charter() + "\n\n" + (
 
 
 def _build_prompt(findings: list[Finding]) -> str:
-    data = wrap_untrusted(json.dumps([sanitize(f) for f in findings], indent=2))
+    data = wrap_untrusted(redact_secrets(json.dumps([sanitize(f) for f in findings], indent=2)))
     return f"{_SYSTEM}\n{data}\n"
 
 

@@ -614,6 +614,23 @@ def _build_arg_parser() -> argparse.ArgumentParser:
                    help="opt-in local-AI (Ollama) summary of findings")
     p.add_argument("--ai-report", dest="ai_report", action="store_true",
                    help="opt-in AI narrative report draft (report.draft.md; facts stay deterministic)")
+    p.add_argument("--doctor", action="store_true",
+                   help="run environment & dependency diagnostics and exit")
+    p.add_argument("--profile", default=None,
+                   choices=["passive_recon", "safe_active", "full_authorized", "lab_ctf", "defensive_forensic"],
+                   help="security policy profile to enforce during pipeline execution")
+    p.add_argument("--assets", choices=["list", "graph", "diff"], default=None,
+                   help="inspect engagement attack-surface assets or relationship graph")
+    p.add_argument("--api-spec", dest="api_spec", default=None,
+                   help="audit an OpenAPI/Swagger or Postman collection file")
+    p.add_argument("--enrich", action="store_true",
+                   help="enrich engagement findings with CVE/CWE/risk intelligence")
+    p.add_argument("--fail-on-critical", dest="fail_on_critical", type=int, default=None,
+                   help="CI/CD gate: exit 1 if critical findings exceed threshold")
+    p.add_argument("--fail-on-high", dest="fail_on_high", type=int, default=None,
+                   help="CI/CD gate: exit 1 if high findings exceed threshold")
+    p.add_argument("--notify-webhook", dest="notify_webhook", default=None,
+                   help="send assessment status notification JSON to webhook URL")
     return p
 
 
@@ -674,12 +691,67 @@ def _run_headless(args) -> None:
         else:
             pipeline = args.pipeline or "recon"
             console.print(f"[cyan]Running pipeline '{pipeline}'...[/cyan]")
+            prof = getattr(args, "profile", None)
             with orchestrator.live_progress(console.print):
-                result = orchestrator.run_pipeline(e, pipeline)
+                result = (
+                    orchestrator.run_pipeline(e, pipeline, profile=prof)
+                    if prof is not None
+                    else orchestrator.run_pipeline(e, pipeline)
+                )
             new_n = e.runs[-1].get("new_findings") if e.runs else None
             prefix = f"+{new_n} new, " if new_n is not None else ""
             console.print(f"[green]{prefix}{len(result)} total findings ->[/green] {e.findings_file}")
             ran = True
+
+    if getattr(args, "enrich", False):
+        from noxentra import findings as findings_mod
+        from noxentra import vuln_intel
+        loaded = findings_mod.load_findings(e.findings_file)
+        enriched = vuln_intel.enrich_findings(loaded)
+        findings_mod.save_findings(e.findings_file, enriched)
+        console.print(f"[green]Enriched {len(enriched)} finding(s) with CVE/CWE/risk intel.[/green]")
+
+    if getattr(args, "assets", None):
+        from noxentra import assets as assets_mod
+        from noxentra import findings as findings_mod
+        prev_assets, _ = assets_mod.load_assets(e.workspace / "assets.json")
+        current_findings = findings_mod.load_findings(e.findings_file)
+        curr_assets, curr_edges = assets_mod.build_assets_from_findings(e.targets, current_findings)
+        if args.assets == "list":
+            for a in curr_assets:
+                console.print(f"[cyan]{a.kind}[/cyan] {a.value} [dim]({','.join(a.sources)})[/dim]")
+        elif args.assets == "graph":
+            console.print(assets_mod.render_graph_text(curr_assets, curr_edges), markup=False)
+        elif args.assets == "diff":
+            d = assets_mod.diff_assets(prev_assets, curr_assets)
+            console.print(f"[green]+{len(d['added'])} added[/green], [yellow]-{len(d['removed'])} removed[/yellow]")
+            for a in d["added"]:
+                console.print(f"  + [{a.kind}] {a.value}", markup=False)
+            for a in d["removed"]:
+                console.print(f"  - [{a.kind}] {a.value}", markup=False)
+
+    if getattr(args, "fail_on_critical", None) is not None or getattr(args, "fail_on_high", None) is not None:
+        from noxentra import cicd
+        from noxentra import findings as findings_mod
+        gate = cicd.evaluate_gate(
+            findings_mod.load_findings(e.findings_file),
+            max_critical=args.fail_on_critical if args.fail_on_critical is not None else 0,
+            max_high=args.fail_on_high,
+        )
+        console.print(f"[{'green' if gate.passed else 'red'}]CI Gate: {gate.reason}[/{'green' if gate.passed else 'red'}]")
+        if not gate.passed:
+            sys.exit(gate.exit_code)
+
+    if getattr(args, "notify_webhook", None):
+        from noxentra import integrations
+        integrations.notify_webhook(
+            args.notify_webhook,
+            event="assessment_complete",
+            engagement_name=e.name,
+            summary=f"Targets={len(e.targets)}, runs={len(e.runs)}",
+            status="completed",
+        )
+        console.print(f"[green]Notified webhook ->[/green] {args.notify_webhook}")
 
     if ran or args.report:
         fmt = getattr(args, "report_format", "md")
@@ -725,10 +797,30 @@ def main():
     prompt.FORCE_CLASSIC = force_classic
 
     if argv:
+        if argv[0] == "doctor":
+            argv = ["--doctor", *argv[1:]]
+        elif argv[0] == "assets" and len(argv) >= 2 and argv[1] in ("list", "graph", "diff"):
+            argv = ["--assets", argv[1], *argv[2:]]
         # Any argument means headless mode. argparse rejects unknown/typo args with
         # exit 2 (instead of silently opening the menu); -h/--help exits 0.
         parser = _build_arg_parser()
         args = parser.parse_args(argv)
+        if args.doctor:
+            from noxentra import doctor
+            checks = doctor.run_diagnostics()
+            for chk in checks:
+                color = {"ok": "green", "warn": "yellow", "fail": "red"}.get(chk.status, "white")
+                console.print(f"[{color}]{chk.status.upper():4s}[/{color}] [cyan]{chk.name}[/cyan]: {chk.detail}")
+            if any(c.status == "fail" for c in checks):
+                sys.exit(1)
+            return
+        if args.api_spec:
+            from noxentra import api_assess
+            endpoints, api_findings = api_assess.audit_api_spec(Path(args.api_spec))
+            console.print(f"[cyan]API Spec:[/cyan] {len(endpoints)} endpoint(s), {len(api_findings)} finding(s)")
+            for af in api_findings:
+                console.print(f"  [{af.severity}] {af.name}", markup=False)
+            return
         if args.list_pipelines or args.list_engagements:
             if args.list_pipelines:
                 _print_pipelines()

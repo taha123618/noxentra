@@ -11,6 +11,9 @@ from urllib.parse import urlparse
 import yaml
 
 import noxentra.findings as findings_mod
+from noxentra import assets as assets_mod
+from noxentra import evidence as evidence_mod
+from noxentra import policy as policy_mod
 from noxentra import runner
 from noxentra.engagement import Engagement
 
@@ -143,6 +146,7 @@ def run_pipeline(
     pipeline_name: str = "recon",
     on_progress=None,
     stop_event: threading.Event | None = None,
+    profile: str | None = None,
 ) -> list[findings_mod.Finding]:
     pipeline = load_pipeline(pipeline_name)
     e.raw_dir.mkdir(parents=True, exist_ok=True)
@@ -190,13 +194,24 @@ def run_pipeline(
             items = list(forward)
             if not items and step.get("fallback_to_targets"):
                 items = list(active_targets)
+        workers_cap = int(step.get("workers", 4))
+        if profile is not None:
+            decision = policy_mod.evaluate_execution(profile, tool, items, scope_out=e.scope_out)
+            if not decision.allowed:
+                e.log(f"policy-block {tool}: {decision.reason}")
+                _emit(f"[yellow][{idx}/{total}] blocked {tool}: {decision.reason}[/yellow]")
+                if not step.get("fallback_to_targets"):
+                    forward = []
+                continue
+            items = decision.effective_targets
+            workers_cap = min(workers_cap, decision.max_concurrency)
         step_args = _expand_args(step["args"])
         per_flag = step.get("per_target_flag")
         per_pos = bool(step.get("per_target_positional"))
         per_suffix = step.get("per_target_suffix", "")
         try:
             if (per_flag or per_pos) and items:
-                workers = max(1, min(int(step.get("workers", 4)), len(items)))
+                workers = max(1, min(workers_cap, len(items)))
                 raw_chunks: list[str] = []
                 with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
                     futs = []
@@ -234,7 +249,18 @@ def run_pipeline(
             forward = []
             continue
         (e.workspace / step["output"]).write_text(raw, encoding="utf-8")
+        ev = evidence_mod.record_evidence(
+            e.workspace,
+            tool=tool,
+            execution_id=ts,
+            raw_output=raw,
+            target=",".join(items[:3]),
+            timestamp=ts,
+        )
         parsed, forward = findings_mod.PARSERS[step["parser"]](raw, ts)
+        for pf in parsed:
+            pf.details["evidence_id"] = ev.id
+            pf.details["evidence_sha256"] = ev.sha256
         if e.scope_out:
             kept = []
             for line in forward:
@@ -250,6 +276,8 @@ def run_pipeline(
     existing = findings_mod.load_findings(e.findings_file)
     merged, new_count = findings_mod.diff_findings(existing, all_findings)
     findings_mod.save_findings(e.findings_file, merged)
+    asset_list, edge_list = assets_mod.build_assets_from_findings(e.targets, merged, timestamp=ts)
+    assets_mod.save_assets(e.workspace / "assets.json", asset_list, edge_list)
     was_cancelled = stop_event is not None and stop_event.is_set()
     e.add_run({
         "pipeline": pipeline_name,

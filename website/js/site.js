@@ -1,7 +1,7 @@
 (() => {
   const NAV_LINKS = [
     { label: "Home", desc: "Overview & demo", href: "index.html" },
-    { label: "Catalog", desc: "306 tools · 21 categories", href: "catalog.html" },
+    { label: "Catalog", desc: "309 tools · 22 categories", href: "catalog.html" },
     { label: "Pipelines", desc: "13 headless workflows", href: "pipelines.html" },
     { label: "Workflows", desc: "/goal, /ai, /find, /config", href: "workflows.html" },
     { label: "Reports", desc: "MD, HTML, SARIF v2.1.0", href: "reports.html" },
@@ -46,7 +46,7 @@
         <div class="mobile-nav-body">
           <button class="mobile-search-btn" type="button" data-cmdk-open>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <span>Search 306 tools, pipelines, docs…</span>
+            <span>Search 309 tools, pipelines, docs…</span>
           </button>
           <div class="mobile-nav-links">
             ${NAV_LINKS.map((l) => `
@@ -105,7 +105,7 @@
 
   const PAGES = [
     { group: "Pages", label: "Home", hint: "Overview & interactive demo", href: "index.html" },
-    { group: "Pages", label: "Tool Catalog (306)", hint: "21 categories · 64 tags", href: "catalog.html" },
+    { group: "Pages", label: "Tool Catalog (309)", hint: "22 categories · 64 tags", href: "catalog.html" },
     { group: "Pages", label: "Headless Pipelines (13)", hint: "20 normalized parsers", href: "pipelines.html" },
     { group: "Pages", label: "AI Workflows", hint: "/goal, /ai, /find, /config", href: "workflows.html" },
     { group: "Pages", label: "Reports & SARIF Exports", hint: "MD, HTML, SARIF v2.1.0", href: "reports.html" },
@@ -140,7 +140,7 @@
   backdrop.innerHTML = `
     <div class="cmdk-modal" role="dialog" aria-modal="true" aria-label="Search Noxentra">
       <div class="cmdk-top">
-        <input class="cmdk-input" type="search" placeholder="Search 306 tools (e.g. nmap, nuclei, terrascan), pipelines, or docs..." aria-label="Search commands and tools" />
+        <input class="cmdk-input" type="search" placeholder="Search 309 tools (e.g. nmap, nuclei, terrascan), pipelines, or docs..." aria-label="Search commands and tools" />
         <span class="cmdk-count" id="cmdk-count"></span>
       </div>
       <div class="cmdk-list" role="listbox"></div>
@@ -220,7 +220,7 @@
     const q = input.value.trim().toLowerCase();
     visible = getMatches(q);
     activeIdx = Math.min(activeIdx, Math.max(0, visible.length - 1));
-    countEl.textContent = q ? `${visible.length} result${visible.length === 1 ? "" : "s"}` : "306 tools · 13 pipelines";
+    countEl.textContent = q ? `${visible.length} result${visible.length === 1 ? "" : "s"}` : "309 tools · 13 pipelines";
 
     if (!visible.length) {
       list.innerHTML = `<div class="cmdk-item"><span class="cmdk-hint">No matching tools, pipelines, or docs</span></div>`;

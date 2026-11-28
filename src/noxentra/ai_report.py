@@ -30,6 +30,7 @@ import re
 from pathlib import Path
 
 from noxentra.ai_recommend import ask
+from noxentra.compliance import redact_secrets
 from noxentra.engagement import Engagement
 from noxentra.findings import Finding, load_findings
 from noxentra.report import render_report
@@ -64,7 +65,7 @@ def _build_prompt(e: Engagement, findings: list[Finding]) -> str:
         "scope_out": [clean(s) for s in e.scope_out],
         "pipelines_run": _pipelines(e),
     }
-    data = wrap_untrusted(json.dumps([sanitize(f) for f in findings], indent=2))
+    data = wrap_untrusted(redact_secrets(json.dumps([sanitize(f) for f in findings], indent=2)))
     return f"{_SYSTEM}\nContext (trusted): {json.dumps(ctx)}\n{data}\n"
 
 

@@ -1,0 +1,38 @@
+name: Noxentra Security Scan
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: "Authorized target URL/domain/repo path"
+        required: true
+      pipeline:
+        description: "Noxentra pipeline name"
+        default: "sast_scan"
+
+jobs:
+  noxentra-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install Noxentra
+        run: uv sync --frozen
+      - name: Run Noxentra Headless Assessment
+        run: |
+          uv run noxentra \
+            --engagement ci-scan \
+            --targets "${{ inputs.targets || '.' }}" \
+            --pipeline "${{ inputs.pipeline || 'sast_scan' }}" \
+            --profile defensive_forensic \
+            --fail-on-critical 0 \
+            --report --format sarif
+      - name: Upload SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ~/.noxentra/engagements/ci-scan/report.sarif.json

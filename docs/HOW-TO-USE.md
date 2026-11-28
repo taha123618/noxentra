@@ -56,7 +56,7 @@ and something you get back — no prior knowledge of the codebase needed.
 4. You land on the banner + prompt. The header line tells you what you have:
    OS, IP, and `22 categories · 308 active · 44 archived` (that count includes
    the built-in Update/Uninstall menu; the tool catalog itself is
-   [21 categories / 306 tools](TOOLS.md)).
+   [22 categories / 309 tools](TOOLS.md)).
 
 5. Type `/help` for the command card, and `q` (or `/quit`, `Ctrl-D`) to leave.
 
@@ -116,7 +116,7 @@ metapackages), noxentra reuses that binary instead of re-cloning it.
 
 ## 4. Find a tool that isn't in the catalog (`/find`)
 
-`/find` answers "what should I use for X?" — first from the 306 curated tools,
+`/find` answers "what should I use for X?" — first from the 309 curated tools,
 then from the GitHub search API, ranked with a reason for each hit. It is
 **suggest-only**: it never clones, installs or runs anything, and it makes **zero
 model calls**.
